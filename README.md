@@ -8,6 +8,17 @@ When a value of savings is entered
 Then the system should choose which combination of indices to choose so that from the given value of savings.
 the maximum profit is returned.
 
+The inputs are:
+ - Savings: An Integer representing a monetary value
+ - Current Prices: A list of 1 or more stock prices, only identified by the index in the list
+ - Future Prices: Yeah... in this fictious world, the system knows the future expected prices of the stock
+    corresponding by index to the current prices list.
+
+ The outputs are:
+ - A list of 0 or more indices corresponding to the combination of current prices stocks that would give the
+    maximum profit based on the available savings
+ - An integer value of the maximum profit returned with the combination of indices
+
 Example:
 
 Savings value: 5
@@ -20,6 +31,15 @@ Choosing indices at 0 and 1 would give return profit of 2.
 Choosing only index 4 would give return profit of 1.
 No other combinations is possible.
 
-System chooses the max profit with the least used savings.
-If multiple combinations with same amount of savings exist, it returns them all.
-Savings is a positive Integer
+
+## **"Business Requirements"**
+
+
+To be able to better solve the challenge, I have decided to come up with these requirements to help me define the
+code and tests better.
+
+ - System chooses the max profit with the least amount of savings used.
+ - If multiple combinations with same amount of savings exist, it returns them all.
+ - Savings is a positive Integer only.
+ - Min/Max Stock Price - 1 to 1000
+ - Min/Max Savings - 1 to 1000
