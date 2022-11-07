@@ -40,6 +40,8 @@ code and tests better.
 
  - System chooses the max profit with the least amount of savings used.
  - If multiple combinations with same amount of savings exist, it returns them all.
+ - If loss is only possible, return empty list and max profit 0.
  - Savings is a positive Integer only.
  - Min/Max Stock Price - 1 to 1000
  - Min/Max Savings - 1 to 1000
+ - Min/Max Stocks in list - 1 to 100

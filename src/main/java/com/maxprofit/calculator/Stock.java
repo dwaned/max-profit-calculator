@@ -1,3 +1,5 @@
+package com.maxprofit.calculator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -7,11 +9,11 @@ import java.util.stream.Collectors;
 public class Stock {
     static Logger logger = Logger.getLogger(Stock.class.getName());
 
-
+    /*
     public static void main(String[] args) {
         logger.setLevel(Level.WARNING);
 
-        /* List<List<Integer>> result = getAllPermutationsForListOfSize(currentValue.size());
+         List<List<Integer>> result = getAllPermutationsForListOfSize(currentValue.size());
            logger.log(Level.CONFIG, String.format("Permutations of %d are %s", currentValue.size(), result));
            logger.log(Level.CONFIG, "-------------------");
 
@@ -19,16 +21,16 @@ public class Stock {
            logger.log(Level.INFO, String.format("Current Values %s", currentValue));
            logger.log(Level.INFO, String.format("Future Values %s", futureValue));
            logger.log(Level.INFO, String.format("Max profit is %d", returnIndicesMaxProfit(savings, currentValue, futureValue)));
-        */
 
 
     }
+    */
 
     public static List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
-        List<List<Integer>> perm = new ArrayList();
-        List<Integer> temp = new ArrayList();
-        List<Integer> allValues = new ArrayList();
-        List<Integer> single = new ArrayList();
+        ArrayList<List<Integer>> perm = new ArrayList<>();
+        ArrayList<Integer> temp = new ArrayList<>();
+        ArrayList<Integer> allValues = new ArrayList<>();
+        ArrayList<Integer> single = new ArrayList<>();
         int current;
 
         for (int i = 0; i < sizeOfList; i++) {
@@ -88,8 +90,17 @@ public class Stock {
         return perm;
     }
 
+    /**
+     * This method returns the combination of indices which yields the largest profit
+     * @param saving - The amount of savings
+     * @param currentValue - The list of current prices for stocks
+     * @param futureValue - The list of future prices for stocks
+     * @return A list of indices which yields the largest profit
+     */
     public static Data returnIndicesMaxProfit(int saving, List<Integer> currentValue, List<Integer> futureValue) {
-        logger.setLevel(Level.WARNING);
+        logger.setLevel(Level.FINEST);
+
+
 
         int maxProfit = 0;
         List<List<Integer>> chosenIndices = new ArrayList<>();
@@ -98,6 +109,42 @@ public class Stock {
         int currentProfit = 0;
         int tempUsedSaving = 0;
         int usedSavings = saving;
+
+        int futureValueItem, currentValueItem;
+
+
+        /*
+        Business Requirement Restrictions
+         */
+
+
+        if (currentValue.stream().anyMatch((o)-> o <= 0) || futureValue.stream().anyMatch((o)-> o <= 0)) {
+            logger.log(Level.SEVERE, "Future or current value is 0 or negative");
+            return new Data();
+        }
+
+        if (currentValue.size() != futureValue.size()) {
+            logger.log(Level.SEVERE, "Future and current prices list sizes do not match!");
+            return new Data();
+        } else {
+            if (currentValue.size() > 100) {
+                logger.log(Level.SEVERE, "Future and current prices list sizes are too large!");
+                return new Data();
+            }
+        }
+
+
+        /*
+        Solution Logic
+         */
+
+         /*
+        Current working logic
+         - Getting a list of all possible permutations
+         - Looping through all the possible permutations
+            - Checking that savings is not exceeded in each permutation
+
+         */
 
         for (int permutationsIndex = 0; permutationsIndex <= permutations.size() - 1; permutationsIndex++) {
 
@@ -112,14 +159,9 @@ public class Stock {
                     combination.add(permutations.get(permutationsIndex));
                     if (permutationsValIndex == permutations.get(permutationsIndex).size() - 1) {
                         for (int profCounter = 0; profCounter <= combination.size() - 1; profCounter++) {
-
-                            if (currentValue.get(combination.get(profCounter).get(profCounter)) != 0) {
-                                currentProfit += futureValue.get(combination.get(profCounter).get(profCounter)) - currentValue.get(combination.get(profCounter).get(profCounter));
-                            } else {
-                                logger.log(Level.SEVERE, "Price of stock cannot be 0!!!");
-                                // System.exit(1);
-                                break;
-                            }
+                            futureValueItem = futureValue.get(combination.get(profCounter).get(profCounter));
+                            currentValueItem = currentValue.get(combination.get(profCounter).get(profCounter));
+                            currentProfit += futureValueItem - currentValueItem;
                         }
 
                         if (logger.isLoggable(Level.FINEST)) {
@@ -129,14 +171,18 @@ public class Stock {
 
                         if (currentProfit > maxProfit) {
                             chosenIndices.clear();
-                            chosenIndices.add(combination.get(0));
                             maxProfit = currentProfit;
                             usedSavings = tempUsedSaving;
+                            logger.log(Level.FINEST, "Profit is higher. Storing combination");
+                            chosenIndices.add(combination.get(0));
                         } else if ((currentProfit == maxProfit) && (tempUsedSaving < usedSavings)) {
-                            logger.log(Level.FINEST, "Profit is same but less used savings");
                             chosenIndices.clear();
+                            logger.log(Level.FINEST, "Profit is same but using less savings");
                             chosenIndices.add(combination.get(0));
                             usedSavings = tempUsedSaving;
+                        } else if ((currentProfit == maxProfit) && (tempUsedSaving == usedSavings)) {
+                            logger.log(Level.FINEST, "Profit and savings are same. Storing combination");
+                            chosenIndices.add(combination.get(0));
                         }
 
                         currentProfit = 0;
@@ -146,22 +192,12 @@ public class Stock {
                 }
             }
         }
+
         logger.log(Level.INFO, String.format("Savings used: %d", usedSavings));
         logger.log(Level.INFO, String.format("Chosen Indices: %s", chosenIndices));
-        return new
 
-                Data(maxProfit, chosenIndices);
-
+        return new Data(maxProfit, chosenIndices);
     }
 
 }
 
-class Data {
-    int maxProfit;
-    List<List<Integer>> indices;
-
-    public Data(int maxProfit, List<List<Integer>> combination) {
-        this.maxProfit = maxProfit;
-        this.indices = combination;
-    }
-}

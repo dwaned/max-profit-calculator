@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class StepDefinitions {
@@ -52,10 +52,10 @@ public class StepDefinitions {
         Data actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
 
         if (actualResult.indices.size() == 1) {
-            assertEquals("Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit, resultIndices, actualResult.indices.get(0));
+            assertEquals(resultIndices, actualResult.indices.get(0),"Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit);
         } else {
             logger.log(Level.WARNING, String.format("Multiple combinations with same used savings: " + actualResult.indices));
-            assertTrue("Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit, actualResult.indices.contains(resultIndices));
+            assertTrue(actualResult.indices.contains(resultIndices),"Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit);
         }
     }
 
@@ -72,18 +72,23 @@ public class StepDefinitions {
     public void profitIsEuros(int profit) {
         System.out.format("Profit: %d\n", profit);
         int actualProfit = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext).maxProfit;
-        assertEquals("Actual Profit is %s " + actualProfit, profit, actualProfit);
+        assertEquals(profit, actualProfit, "Actual Profit is %s " + actualProfit);
     }
 
     @Then("there is no best combination for max profit")
     public void thereIsNoBestCombinationForMaxProfit() {
         Data actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
-        assertEquals("Actual Result: " + actualResult.indices, 0, actualResult.indices.size());
+        assertEquals(0, actualResult.indices.size(), "Actual Result: " + actualResult.indices);
     }
 
     @And("no profit is made")
     public void noProfitIsMade() {
         int actualProfit = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext).maxProfit;
-        assertEquals("Actual Profit is %s " + actualProfit, 0, actualProfit);
+        assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
+    }
+
+    @And("with the same amount for savings and max profit is the combination of indices with {string}")
+    public void withTheSameAmountForSavingsAndMaxProfitIsTheCombinationOfIndicesWith(String result) {
+        this.theBestCombinationOfIndicesForMaxProfitIs(result);
     }
 }

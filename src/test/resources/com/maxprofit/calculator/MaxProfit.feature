@@ -1,4 +1,4 @@
-Feature: Max Profit Calculator
+Feature: Cucumber Tests for the Max Profit Calculator
 
   Scenario: Max Profit obtained without using all savings
     Given I have 6 Euros of savings
@@ -43,8 +43,10 @@ Feature: Max Profit Calculator
     Then there is no best combination for max profit
     And no profit is made
 
-
-
-#  arg0: 9
-#  arg1: [2, 2, 2, 2, 2]
-#  arg2: [5, 14, 33, 6, 5]
+  Scenario: Random Scenario
+    Given I have 9 Euros of savings
+    When Array of current stock prices are "2, 2, 2, 2, 2"
+    And Array of future stock prices are "5, 14, 33, 6, 5"
+    Then the best combination of indices for max profit is "1, 2, 3, 4"
+    And with the same amount for savings and max profit is the combination of indices with "0, 1, 2, 3"
+    And profit is 50 Euros
