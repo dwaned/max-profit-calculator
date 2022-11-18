@@ -39,6 +39,14 @@ jobs:
       run: |
         cd target
         ls -a
+        
+    - name: Report jUnit Annotations as Github Actions Annotations
+      # You may pin to the exact commit or the version.
+      # uses: shyim/junit-report-annotations-action@3d2e5374f2b13e70f6f3209a21adfdbc42c466ae
+      uses: shyim/junit-report-annotations-action@0.2.0
+      with:
+        # glob to junit xml files
+        path: '**/surefire-reports/*.xml'
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
