@@ -20,9 +20,9 @@ The inputs are:
 
 Example:
 
-Savings value: 5
-Current prices Array [4,1,3]
-Future prices Array [5,2,6]
+- Savings value: 5
+- Current prices Array [4,1,3]
+- Future prices Array [5,2,6]
 
 Result should be [1,2] (Remember that starting index is 0)
 Choosing indices at 1 and 2 will return profit of 4, even if total used amount is 4 (from the savings of 5)
