@@ -31,22 +31,25 @@ jobs:
     
     - name: Step 3 - Build with Maven
       run: mvn -B package --file pom.xml site
+    
+    - name: Step 4 - Run Cucumber Tests
+      run: mvn test -Dcucumber.options="--tags @Cucumber"
       
-    - name: Step 4 - List the current directory   
+    - name: Step 5 - List the current directory   
       run: ls -a
     
-    - name: Step 5 - What is in the target folder
+    - name: Step 6 - What is in the target folder
       run: |
         cd target
         ls -a
         
-    - name: Step 6 - Report jUnit Annotations
+    - name: Step 7 - Report jUnit Annotations
       uses: ashley-taylor/junit-report-annotations-action@1.3
       if: always()
       with:
         access-token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Step 7 - Cucumber Report to Annotations
+    - name: Step 8 - Cucumber Report to Annotations
       # You may pin to the exact commit or the version.
       # uses: deblockt/cucumber-report-annotations-action@d45e6032f27de46edb8c8f771dc5994ff323d1b0
       uses: deblockt/cucumber-report-annotations-action@v1.11
