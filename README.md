@@ -3,9 +3,9 @@ This was a coding test for an interview process.
 
 
 Challenge:
-Given 2 Arrays containing the current price and the forecasted future price of a set of stocks,
-When a value of savings is entered
-Then the system should choose which combination of indices to choose so that from the given value of savings.
+- Given 2 Arrays containing the current price and the forecasted future price of a set of stocks,
+- When a value of savings is entered
+- Then the system should choose which combination of indices to choose so that from the given value of savings.
 the maximum profit is returned.
 
 The inputs are:
