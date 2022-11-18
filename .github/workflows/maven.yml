@@ -14,8 +14,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
+jobs:    
   build:
+    permissions:
+      id-token: write
 
     runs-on: ubuntu-latest
 
