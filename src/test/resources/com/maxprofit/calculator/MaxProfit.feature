@@ -1,3 +1,4 @@
+@Cucumber
 Feature: Cucumber Tests for the Max Profit Calculator
 
   Scenario: Max Profit obtained without using all savings
