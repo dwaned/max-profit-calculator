@@ -61,10 +61,6 @@
                             </targetTests>
                             <withHistory>true</withHistory>
                         </configuration>
-                   </plugin>
-                   <plugin>
-                        <groupId>org.pitest</groupId>
-                        <artifactId>pitest-maven</artifactId>
                         <reportSets>
                             <reportSet>
                                 <reports>
@@ -72,7 +68,7 @@
                                 </reports>
                             </reportSet>
                         </reportSets>
-                    </plugin>
+                   </plugin>                   
                </plugins>
            </build>
         </profile>
