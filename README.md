@@ -44,3 +44,4 @@ code and tests better.
  - Min/Max Stock Price - 1 to 1000
  - Min/Max Savings - 1 to 1000
  - Min/Max Stocks in list - 1 to 100
+ 
