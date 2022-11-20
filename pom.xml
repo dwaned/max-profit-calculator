@@ -62,6 +62,17 @@
                             <withHistory>true</withHistory>
                         </configuration>
                    </plugin>
+                   <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>report</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
                </plugins>
            </build>
         </profile>
@@ -95,7 +106,7 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
                 <reportSets>
@@ -105,7 +116,7 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>
+            </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
