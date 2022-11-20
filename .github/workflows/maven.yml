@@ -29,14 +29,20 @@ jobs:
         distribution: 'temurin'
         cache: maven
     
-    - name: Step 3 - Build with Maven and Unit Tests
-      run: mvn -B package --file pom.xml site
+    - name: Step 3 - Run Example Based Unit Tests
+      run: mvn test -Dtest=ExampleBasedTests
 
-    - name: Step 4 - Run Mutation Tests
+    - name: Step 4 - Run Property Based Unit Tests
+      run: mvn test -Dtest=PropertyBasedStockTests
+
+    - name: Step 5 - Run Mutation Tests
       run: mvn test -P pitest  
     
-    - name: Step 4 - Run Cucumber Tests
+    - name: Step 6 - Run Cucumber Tests
       run: mvn test -Dcucumber.options="--tags @Cucumber"
+
+    - name: Step 3 - Build with Maven
+      run: mvn -B package --file pom.xml -DskipTests
       
     - name: Step 5 - List the current directory   
       run: ls -a
