@@ -1,7 +1,6 @@
 package com.maxprofit.calculator;
 
-import io.cucumber.junit.platform.engine.Cucumber;
-
-@Cucumber
+@RunWith(Cucumber.class)
+@CucumberOptions(glue = {"com.maxprofit.calculator"})
 public class RunCucumberTest {
 }
