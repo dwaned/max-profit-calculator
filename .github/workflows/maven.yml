@@ -29,8 +29,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
     
-    - name: Step 3 - Build with Maven
+    - name: Step 3 - Build with Maven and Unit Tests
       run: mvn -B package --file pom.xml site
+
+    - name: Step 4 - Run Mutation Tests
+      run: mvn test -P pitest  
     
     - name: Step 4 - Run Cucumber Tests
       run: mvn test -Dcucumber.options="--tags @Cucumber"
