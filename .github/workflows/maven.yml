@@ -36,7 +36,7 @@ jobs:
       run: mvn test -Dtest=PropertyBasedStockTests
 
     - name: Step 5 - Run Mutation Tests
-      run: mvn test -P pitest  
+      run: mvn -Ppitest test-compile
     
     - name: Step 6 - Run Cucumber Tests
       run: mvn test -Dcucumber.options="--tags @Cucumber"
