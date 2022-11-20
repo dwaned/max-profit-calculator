@@ -135,7 +135,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <!-- required if you want to report source code names of property method parameters -->
                     <compilerArgs>
@@ -209,41 +209,7 @@
                         </configurationParameters>
                     </properties>
                 </configuration>
-            </plugin>
-            <!-- <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>${pitest.version}</version>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>mutationCoverage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.pitest</groupId>
-                        <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>${pitest-junit5-plugin.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <outputFormats>
-                        <outputFormat>CSV</outputFormat>
-                        <outputFormat>XML</outputFormat>
-                        <outputFormat>HTML</outputFormat>
-                    </outputFormats>
-                    <targetClasses>
-                        <param>com.maxprofit.calculator*</param>
-                    </targetClasses>
-                    <targetTests>
-                        <param>com.maxprofit.calculator*</param>
-                    </targetTests>
-                    <withHistory>true</withHistory>
-                </configuration>
-            </plugin> -->
+            </plugin>            
         </plugins>
     </build>
 
