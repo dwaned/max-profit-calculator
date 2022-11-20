@@ -52,7 +52,7 @@ jobs:
         # github token
         access-token: ${{ secrets.GITHUB_TOKEN }}
         # glob to cucumber json files
-        path: '**/cucumber-report.json'
+        path: '**/Cucumber.json.json'
         # the annotation status on undefined steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for undefined steps
         annotation-status-on-undefined: 'notice'
         # the annotation status on pending steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for pending steps
