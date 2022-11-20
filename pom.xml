@@ -23,7 +23,7 @@
     </properties>
 
     <profiles>
-       <profile> -->
+       <profile>
            <id>pitest</id>
            <build>
                <plugins>
