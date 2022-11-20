@@ -31,13 +31,6 @@
                        <groupId>org.pitest</groupId>
                        <artifactId>pitest-maven</artifactId>
                        <version>${pitest.version}</version>
-                       <reportSets>
-                            <reportSet>
-                                <reports>
-                                    <report>report</report>
-                                </reports>
-                            </reportSet>
-                        </reportSets>
                        <dependencies>
                            <dependency>
                                <groupId>org.pitest</groupId>
@@ -53,6 +46,13 @@
                                    <goal>mutationCoverage</goal>
                                </goals>
                            </execution>
+                           <execution>
+                                <id>report</id>
+                                <phase>site</phase>
+                                <goals>
+                                    <goal>report-aggregate</goal>
+                                </goals>
+                            </execution>
                        </executions>
                        <configuration>
                             <outputFormats>
