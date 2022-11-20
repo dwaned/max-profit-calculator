@@ -39,7 +39,7 @@ jobs:
       run: mvn -Ppitest test-compile
     
     - name: Step 6 - Run Cucumber Tests
-      run: mvn test -Dcucumber.options="--tags @Cucumber"
+      run: mvn test -Dtest=RunCucumberTest -Dcucumber.options="--tags @Cucumber"
 
     - name: Step 3 - Build with Maven
       run: mvn -B package --file pom.xml -DskipTests
