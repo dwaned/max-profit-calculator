@@ -44,7 +44,7 @@ jobs:
         access-token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Step 7 - Run Cucumber Tests
-      run: mvn test -Dcucumber.filter.tags="@Cucumber" -Dcucumber.plugin="pretty, json:cucumber-reports/cucumber-report.json"
+      run: mvn test -Dcucumber.filter.tags="@Cucumber" -Dcucumber.plugin="pretty, json:report.json"
       
     - name: Step 8 - Cucumber Report to Annotations
       uses: deblockt/cucumber-report-annotations-action@v1.11
