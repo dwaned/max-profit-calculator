@@ -98,7 +98,7 @@ public class Stock {
      * @return A list of indices which yields the largest profit
      */
     public static Data returnIndicesMaxProfit(int saving, List<Integer> currentValue, List<Integer> futureValue) {
-        logger.setLevel(Level.WARNING);
+        logger.setLevel(Level.OFF);
 
 
 
