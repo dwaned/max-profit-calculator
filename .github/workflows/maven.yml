@@ -44,7 +44,7 @@ jobs:
         access-token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Step 7 - Run Cucumber Tests
-      run: mvn test -Dtest="RunCucumberTest" -Dcucumber.filter.tags="@Cucumber" -Dcucumber.plugin="pretty, json:report.json"
+      run: mvn test -Dtest="RunCucumberTest"
       
     - name: Step 8 - Cucumber Report to Annotations
       uses: deblockt/cucumber-report-annotations-action@v1.11
@@ -52,7 +52,7 @@ jobs:
         # github token
         access-token: ${{ secrets.GITHUB_TOKEN }}
         # glob to cucumber json files
-        path: '**/cucumber-reports/*.json'
+        path: '**/cucumber-report/*.json'
         # the annotation status on undefined steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for undefined steps
         annotation-status-on-undefined: 'notice'
         # the annotation status on pending steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for pending steps
@@ -73,8 +73,6 @@ jobs:
     - name: Step 11 - What is in the target folder
       run: |
         cd target
-        ls -a
-        cd cucumber-reports
         ls -a
 
 #     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
