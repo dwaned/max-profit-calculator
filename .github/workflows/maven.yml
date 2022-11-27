@@ -72,9 +72,7 @@ jobs:
     
     - name: Step 11 - What is in the target folder
       run: |
-        cd target/cucumber-reports
-        ls -a
-        cd cucumber-reports
+        cd target
         ls -a
 
 #     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
