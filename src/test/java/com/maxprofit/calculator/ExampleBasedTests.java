@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Example Based Tests
+ * These are unit tests covering the Stock class in preparation for refactoring the functions of the class.
  */
 public class ExampleBasedTests {
     @Test

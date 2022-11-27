@@ -8,6 +8,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Property Based Tests
+ * These are property based tests ...
+ */
 public class PropertyBasedStockTests {
 
     /*

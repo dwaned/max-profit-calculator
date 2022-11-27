@@ -44,7 +44,7 @@ jobs:
         access-token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Step 7 - Run Cucumber Tests
-      run: mvn test -Dtest=RunCucumberTest -Dcucumber.options="--tags @Cucumber"
+      run: mvn test -Dtest="RunCucumberTest" -Dcucumber.filter.tags="@Cucumber" -Dcucumber.plugin="pretty, json:report.json"
       
     - name: Step 8 - Cucumber Report to Annotations
       uses: deblockt/cucumber-report-annotations-action@v1.11
@@ -73,6 +73,8 @@ jobs:
     - name: Step 11 - What is in the target folder
       run: |
         cd target/cucumber-reports
+        ls -a
+        cd cucumber-reports
         ls -a
 
 #     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive

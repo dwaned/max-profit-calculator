@@ -98,7 +98,7 @@ public class Stock {
      * @return A list of indices which yields the largest profit
      */
     public static Data returnIndicesMaxProfit(int saving, List<Integer> currentValue, List<Integer> futureValue) {
-        logger.setLevel(Level.FINEST);
+        logger.setLevel(Level.OFF);
 
 
 
@@ -164,24 +164,24 @@ public class Stock {
                             currentProfit += futureValueItem - currentValueItem;
                         }
 
-                        if (logger.isLoggable(Level.FINEST)) {
-                            logger.log(Level.FINEST, String.format("currentProf: %d Max Prof %d", currentProfit, maxProfit));
-                            logger.log(Level.FINEST, String.format("temp:%d usedSavings %d", tempUsedSaving, usedSavings));
+                        if (logger.isLoggable(Level.WARNING)) {
+                            logger.log(Level.WARNING, String.format("currentProf: %d Max Prof %d", currentProfit, maxProfit));
+                            logger.log(Level.WARNING, String.format("temp:%d usedSavings %d", tempUsedSaving, usedSavings));
                         }
 
                         if (currentProfit > maxProfit) {
                             chosenIndices.clear();
                             maxProfit = currentProfit;
                             usedSavings = tempUsedSaving;
-                            logger.log(Level.FINEST, "Profit is higher. Storing combination");
+                            logger.log(Level.WARNING, "Profit is higher. Storing combination");
                             chosenIndices.add(combination.get(0));
                         } else if ((currentProfit == maxProfit) && (tempUsedSaving < usedSavings)) {
                             chosenIndices.clear();
-                            logger.log(Level.FINEST, "Profit is same but using less savings");
+                            logger.log(Level.WARNING, "Profit is same but using less savings");
                             chosenIndices.add(combination.get(0));
                             usedSavings = tempUsedSaving;
                         } else if ((currentProfit == maxProfit) && (tempUsedSaving == usedSavings)) {
-                            logger.log(Level.FINEST, "Profit and savings are same. Storing combination");
+                            logger.log(Level.WARNING, "Profit and savings are same. Storing combination");
                             chosenIndices.add(combination.get(0));
                         }
 
@@ -193,8 +193,8 @@ public class Stock {
             }
         }
 
-        logger.log(Level.INFO, String.format("Savings used: %d", usedSavings));
-        logger.log(Level.INFO, String.format("Chosen Indices: %s", chosenIndices));
+        logger.log(Level.FINEST, String.format("Savings used: %d", usedSavings));
+        logger.log(Level.FINEST, String.format("Chosen Indices: %s", chosenIndices));
 
         return new Data(maxProfit, chosenIndices);
     }
