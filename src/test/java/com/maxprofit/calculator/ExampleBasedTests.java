@@ -16,9 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ExampleBasedTests {
     @Test
     public void shouldReturnSizeOfAllPossiblePermutationsForGivenStockPriceSize() {
-        assertEquals(7, Stock.getAllPermutationsForListOfSize(3).size());
-        assertEquals(1, Stock.getAllPermutationsForListOfSize(1).size());
-        assertEquals(15, Stock.getAllPermutationsForListOfSize(4).size());
+        Helper helper = new Helper();
+        assertEquals(7, helper.getAllPermutationsForListOfSize(3).size());
+        assertEquals(1, helper.getAllPermutationsForListOfSize(1).size());
+        assertEquals(15, helper.getAllPermutationsForListOfSize(4).size());
     }
 
     @Test
