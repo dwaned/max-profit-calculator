@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import com.maxprofit.calculator.Helper;
 
 public class Stock {
     static Logger logger = Logger.getLogger(Stock.class.getName());
@@ -26,69 +27,7 @@ public class Stock {
     }
     */
 
-    public static List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
-        ArrayList<List<Integer>> perm = new ArrayList<>();
-        ArrayList<Integer> temp = new ArrayList<>();
-        ArrayList<Integer> allValues = new ArrayList<>();
-        ArrayList<Integer> single = new ArrayList<>();
-        int current;
-
-        for (int i = 0; i < sizeOfList; i++) {
-
-            temp.clear();
-
-            // creating a combination of all integers to add in the end
-            allValues.add(i);
-
-            // adding the permutation of the single integer
-            single.add(i);
-
-            perm.add(new ArrayList<>(single));
-            single.clear();
-
-
-            //looping and excluding each integer to create the rest of the combinations
-            for (int j = 0; j <= sizeOfList - 1; j++) {
-
-                if (j != i) {
-                    temp.add(j);
-                    current = 0;
-
-                    while (current != sizeOfList) {
-
-
-                        if (j <= sizeOfList - 1) {
-                            if (temp.size() > 1 && !perm.contains(new ArrayList<>(temp.stream().sorted().collect(Collectors.toList())))) {
-
-                                perm.add(new ArrayList<>(temp.stream().sorted().collect(Collectors.toList())));
-                                temp.remove(temp.size() - 1);
-                            }
-                        }
-                        current++;
-                    }
-                }
-            }
-
-            temp.clear();
-
-            for (int k = sizeOfList - 1; k >= 0; k--) {
-
-                if (k != i) {
-                    temp.add(k);
-                }
-
-                if (temp.size() > 1 && !perm.contains(temp.stream().sorted().collect(Collectors.toList()))) {
-                    perm.add(new ArrayList<>(temp.stream().sorted().collect(Collectors.toList())));
-                }
-            }
-        }
-
-        //  adding the combination containing all integers
-        if (!perm.contains(new ArrayList<>(allValues)))
-            perm.add(new ArrayList<>(allValues));
-
-        return perm;
-    }
+    
 
     /**
      * This method returns the combination of indices which yields the largest profit
@@ -99,12 +38,10 @@ public class Stock {
      */
     public static Data returnIndicesMaxProfit(int saving, List<Integer> currentValue, List<Integer> futureValue) {
         logger.setLevel(Level.OFF);
-
-
-
         int maxProfit = 0;
+        Helper helper = new Helper();
         List<List<Integer>> chosenIndices = new ArrayList<>();
-        List<List<Integer>> permutations = getAllPermutationsForListOfSize(currentValue.size());
+        List<List<Integer>> permutations = helper.getAllPermutationsForListOfSize(currentValue.size());
         List<List<Integer>> combination = new ArrayList<>();
         int currentProfit = 0;
         int tempUsedSaving = 0;
@@ -163,12 +100,10 @@ public class Stock {
                             currentValueItem = currentValue.get(combination.get(profCounter).get(profCounter));
                             currentProfit += futureValueItem - currentValueItem;
                         }
-
                         if (logger.isLoggable(Level.WARNING)) {
                             logger.log(Level.WARNING, String.format("currentProf: %d Max Prof %d", currentProfit, maxProfit));
                             logger.log(Level.WARNING, String.format("temp:%d usedSavings %d", tempUsedSaving, usedSavings));
                         }
-
                         if (currentProfit > maxProfit) {
                             chosenIndices.clear();
                             maxProfit = currentProfit;
@@ -184,7 +119,6 @@ public class Stock {
                             logger.log(Level.WARNING, "Profit and savings are same. Storing combination");
                             chosenIndices.add(combination.get(0));
                         }
-
                         currentProfit = 0;
                         tempUsedSaving = 0;
                         combination.clear();
