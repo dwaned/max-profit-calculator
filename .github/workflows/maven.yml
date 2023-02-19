@@ -65,7 +65,7 @@ jobs:
         name: 'Cucumber Report'  
 
     - name: Step 9 - Build with Maven
-      run: mvn -B package --file pom.xml -DskipTests
+      run: mvn -B site --file pom.xml -DskipTests
       
     - name: Step 10 - List the current directory   
       run: ls -a
