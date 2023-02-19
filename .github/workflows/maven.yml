@@ -81,7 +81,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Dependabot security check
-        uses: dependabot/dependabot-script@v0.3.8
+        uses: dependabot/dependabot-script@v0
         with:
           directory: "/"
           format: "json"
