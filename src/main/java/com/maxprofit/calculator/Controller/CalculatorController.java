@@ -1,6 +1,6 @@
 package com.maxprofit.calculator.Controller;
 
-import com.maxprofit.calculator.Data;
+import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CalculatorController {
 
   @PostMapping("/calculate")
-  public String calculate(@RequestBody CalculationRequest request) {
-    Data result = Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
-    return "Max Profit: " + result.maxProfit + " with indices " + result.indices;
+  public CalculationResult calculate(@RequestBody CalculationRequest request) {
+    return Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
   }
 }

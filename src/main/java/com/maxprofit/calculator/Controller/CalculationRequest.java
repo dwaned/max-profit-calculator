@@ -3,25 +3,32 @@ package com.maxprofit.calculator.Controller;
 import java.util.List;
 
 public class CalculationRequest {
-    private final int savingsAmount;
-    private final List<Integer> currentPrices;
-    private final List<Integer> futurePrices;
-
-    public CalculationRequest(int savingsAmount, List<Integer> currentPrices, List<Integer> futurePrices) {
-        this.savingsAmount = savingsAmount;
-        this.currentPrices = currentPrices;
-        this.futurePrices = futurePrices;
-    }
+    private int savingsAmount;
+    private List<Integer> currentPrices;
+    private List<Integer> futurePrices;
 
     public int getSavingsAmount() {
         return savingsAmount;
     }
 
+    public void setSavingsAmount(int savingsAmount) {
+        this.savingsAmount = savingsAmount;
+    }
+
     public List<Integer> getCurrentPrices() {
         return currentPrices;
     }
+
+    public void setCurrentPrices(List<Integer> currentPrices) {
+        this.currentPrices = currentPrices;
+    }
+
     public List<Integer> getFuturePrices() {
         return futurePrices;
+    }
+
+    public void setFuturePrices(List<Integer> futurePrices) {
+        this.futurePrices = futurePrices;
     }
 
 }

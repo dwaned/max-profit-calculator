@@ -1,6 +1,6 @@
 package com.maxprofit.calculator.steps;
 
-import com.maxprofit.calculator.Data;
+import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -49,7 +49,7 @@ public class StepDefinitions {
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
 
-        Data actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
+        CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
 
         if (actualResult.indices.size() == 1) {
             assertEquals(resultIndices, actualResult.indices.get(0),"Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit);
@@ -77,7 +77,7 @@ public class StepDefinitions {
 
     @Then("there is no best combination for max profit")
     public void thereIsNoBestCombinationForMaxProfit() {
-        Data actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
+        CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
         assertEquals(0, actualResult.indices.size(), "Actual Result: " + actualResult.indices);
     }
 

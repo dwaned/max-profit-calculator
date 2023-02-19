@@ -38,7 +38,7 @@ public class PropertyBasedStockTests {
             @ForAll("StockPrices") ArrayList<Integer> currentPrices,
             @ForAll("StockPrices") ArrayList<Integer> futurePrices)  {
 //        Statistics.collect(savings,currentPrices,futurePrices);
-        Data result = Stock.returnIndicesMaxProfit(savings, currentPrices, futurePrices);
+        CalculationResult result = Stock.returnIndicesMaxProfit(savings, currentPrices, futurePrices);
         assertEquals(currentPrices.size(), futurePrices.size());
         assertFalse(currentPrices.stream().anyMatch(i -> i < 0));
         assertFalse(futurePrices.stream().anyMatch(i -> i < 0));

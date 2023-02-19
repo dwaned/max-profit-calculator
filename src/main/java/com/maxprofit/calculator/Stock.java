@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import com.maxprofit.calculator.Helper;
 
 public class Stock {
     static Logger logger = Logger.getLogger(Stock.class.getName());
@@ -36,7 +34,7 @@ public class Stock {
      * @param futureValue - The list of future prices for stocks
      * @return A list of indices which yields the largest profit
      */
-    public static Data returnIndicesMaxProfit(int saving, List<Integer> currentValue, List<Integer> futureValue) {
+    public static CalculationResult returnIndicesMaxProfit(int saving, List<Integer> currentValue, List<Integer> futureValue) {
         logger.setLevel(Level.OFF);
         int maxProfit = 0;
         Helper helper = new Helper();
@@ -57,16 +55,16 @@ public class Stock {
 
         if (currentValue.stream().anyMatch((o)-> o <= 0) || futureValue.stream().anyMatch((o)-> o <= 0)) {
             logger.log(Level.SEVERE, "Future or current value is 0 or negative");
-            return new Data();
+            return new CalculationResult();
         }
 
         if (currentValue.size() != futureValue.size()) {
             logger.log(Level.SEVERE, "Future and current prices list sizes do not match!");
-            return new Data();
+            return new CalculationResult();
         } else {
             if (currentValue.size() > 100) {
                 logger.log(Level.SEVERE, "Future and current prices list sizes are too large!");
-                return new Data();
+                return new CalculationResult();
             }
         }
 
@@ -130,7 +128,7 @@ public class Stock {
         logger.log(Level.FINEST, String.format("Savings used: %d", usedSavings));
         logger.log(Level.FINEST, String.format("Chosen Indices: %s", chosenIndices));
 
-        return new Data(maxProfit, chosenIndices);
+        return new CalculationResult(maxProfit, chosenIndices);
     }
 
 }
