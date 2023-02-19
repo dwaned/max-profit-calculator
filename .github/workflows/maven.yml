@@ -64,16 +64,11 @@ jobs:
         # the name of the check
         name: 'Cucumber Report'  
 
-    - name: Step 9 - Build with Maven
+    - name: Step 9 - OWASP Dependency Check
+      run: mvn dependency-check:check
+
+    - name: Step 10 - Maven Site
       run: mvn -B site --file pom.xml -DskipTests
-      
-    - name: Step 10 - List the current directory   
-      run: ls -a
-    
-    - name: Step 11 - What is in the target folder
-      run: |
-        cd target
-        ls -a
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
