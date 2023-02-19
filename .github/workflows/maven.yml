@@ -75,6 +75,23 @@ jobs:
         cd target
         ls -a
 
+  dependabot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Dependabot security check
+        uses: dependabot/dependabot-script@v0.3.8
+        with:
+          directory: "/"
+          format: "json"
+          output-file: "security-report.json"
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: security-report
+          path: security-report.json
+
 #     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
 #     - name: Update dependency graph
 #       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
