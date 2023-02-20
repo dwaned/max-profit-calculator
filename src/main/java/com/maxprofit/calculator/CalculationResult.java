@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class is used to contain the amount of maximum profit yielded with the chosen list of indices.
+ * This class is used to contain the amount of
+ * maximum profit yielded with the chosen list of indices.
  */
 public class CalculationResult {
     public int maxProfit;

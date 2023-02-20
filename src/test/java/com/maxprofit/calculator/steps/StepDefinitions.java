@@ -71,19 +71,19 @@ public class StepDefinitions {
     @Then("profit is {int} Euros")
     public void profitIsEuros(int profit) {
         System.out.format("Profit: %d\n", profit);
-        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext).maxProfit;
+        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext).maxProfit;
         assertEquals(profit, actualProfit, "Actual Profit is %s " + actualProfit);
     }
 
     @Then("there is no best combination for max profit")
     public void thereIsNoBestCombinationForMaxProfit() {
-        CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
+        CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext);
         assertEquals(0, actualResult.indices.size(), "Actual Result: " + actualResult.indices);
     }
 
     @And("no profit is made")
     public void noProfitIsMade() {
-        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext).maxProfit;
+        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext).maxProfit;
         assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
     }
 
