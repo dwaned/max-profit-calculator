@@ -2,8 +2,6 @@
 
 This was a coding test for an interview process.
 
-[![GitHub Super-Linter](https://github.com/<OWNER>/<REPOSITORY>/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-
 Challenge:
 
 - Given 2 Arrays containing the current price and the forecasted future price of a set of stocks,

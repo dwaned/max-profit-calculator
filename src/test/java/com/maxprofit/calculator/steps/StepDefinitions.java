@@ -87,7 +87,7 @@ public class StepDefinitions {
         assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
     }
 
-    @And("same savings and max profit is achieved with the combination {string}")
+    @And("same savings and max profit is achieved with the indices {string}")
     public void sameSvingsMaxProfitIsWithCombination(String indices) {
         this.theBestCombinationOfIndicesForMaxProfitIs(indices);
     }

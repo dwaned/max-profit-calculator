@@ -49,5 +49,5 @@ Scenario: Random Scenario
   When Array of current stock prices are "2, 2, 2, 2, 2"
   And Array of future stock prices are "5, 14, 33, 6, 5"
   Then the best combination of indices for max profit is "1, 2, 3, 4"
-  And same savings and max profit is achieved with the combination "0, 1, 2, 3"
+  And same savings and max profit is achieved with the indices "0, 1, 2, 3"
   And profit is 50 Euros
