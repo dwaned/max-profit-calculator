@@ -33,7 +33,7 @@ public class StepDefinitions {
     }
 
     @When("Array of current stock prices are {string}")
-    public void arrayOfCurrentStockPricesAre(String currentPrices) {
+    public void arrayOfCurrentStockPricesAre(final String currentPrices) {
         System.out.format("Current prices: %s\n", currentPrices);
         currentPricesContext = Stream.of(currentPrices.split(","))
                 .map(String::trim)
@@ -43,13 +43,13 @@ public class StepDefinitions {
 
 
     @Then("the best combination of indices for max profit is {string}")
-    public void theBestCombinationOfIndicesForMaxProfitIs(String result) {
-        List<Integer> resultIndices = Stream.of(result.split(","))
+    public void theBestCombinationOfIndicesForMaxProfitIs(final String result) {
+        final List<Integer> resultIndices = Stream.of(result.split(","))
                 .map(String::trim)
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
 
-        CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
+        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext,currentPricesContext,futurePricesContext);
 
         if (actualResult.indices.size() == 1) {
             assertEquals(resultIndices, actualResult.indices.get(0),"Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit);
@@ -60,7 +60,7 @@ public class StepDefinitions {
     }
 
     @And("Array of future stock prices are {string}")
-    public void arrayOfFutureStockPricesAre(String futurePrices) {
+    public void arrayOfFutureStockPricesAre(final String futurePrices) {
         System.out.format("Future prices: %s\n", futurePrices);
         futurePricesContext = Stream.of(futurePrices.split(","))
                 .map(String::trim)
@@ -69,7 +69,7 @@ public class StepDefinitions {
     }
 
     @Then("profit is {int} Euros")
-    public void profitIsEuros(int profit) {
+    public void profitIsEuros(final int profit) {
         System.out.format("Profit: %d\n", profit);
         int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext).maxProfit;
         assertEquals(profit, actualProfit, "Actual Profit is %s " + actualProfit);
@@ -77,18 +77,18 @@ public class StepDefinitions {
 
     @Then("there is no best combination for max profit")
     public void thereIsNoBestCombinationForMaxProfit() {
-        CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext);
+        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext);
         assertEquals(0, actualResult.indices.size(), "Actual Result: " + actualResult.indices);
     }
 
     @And("no profit is made")
     public void noProfitIsMade() {
-        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext).maxProfit;
+        final int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext, futurePricesContext).maxProfit;
         assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
     }
 
     @And("same savings and max profit is achieved with the indices {string}")
-    public void sameSvingsMaxProfitIsWithCombination(String indices) {
+    public void sameSvingsMaxProfitIsWithCombination(final String indices) {
         this.theBestCombinationOfIndicesForMaxProfitIs(indices);
     }
 }
