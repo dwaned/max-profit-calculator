@@ -35,7 +35,7 @@ jobs:
         uses: github/super-linter@v4.10.1
         env:
           DEFAUL_BRANCH: main
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Step 3 - Run Example Based Unit Tests
