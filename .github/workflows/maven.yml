@@ -29,6 +29,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
     
+    - name: Step 3 - Run Super-Linter
+      uses: github/super-linter@v3
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
     - name: Step 3 - Run Example Based Unit Tests
       run: mvn test -Dtest=ExampleBasedTests
 
