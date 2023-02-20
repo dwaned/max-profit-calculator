@@ -1,5 +1,7 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+# This workflow will build a Java project with Maven, and cache/restore any 
+# dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-
+# builds-and-tests/building-and-testing-java-with-maven
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -10,76 +12,77 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:    
-  MaxProfiCalculator:
+  MaxProfitCalculator:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Step 1 - Checkout the main branch
-      uses: actions/checkout@v3
+      - name: Step 1 - Checkout the main branch
+        uses: actions/checkout@v3
       
-    - name: Step 2 - Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
+      - name: Step 2 - Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
     
-    - name: Step 3 - Run Super-Linter
-      uses: github/super-linter@v4.10.1
-      env:
-        DEFAUL_BRANCH: main
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Step 3 - Run Super-Linter
+        uses: github/super-linter@v4.10.1
+        env:
+          DEFAUL_BRANCH: main
+          VALIDATE_ALL_CODEBASE: false
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-    - name: Step 3 - Run Example Based Unit Tests
-      run: mvn test -Dtest=ExampleBasedTests
+      - name: Step 3 - Run Example Based Unit Tests
+        run: mvn test -Dtest=ExampleBasedTests
 
-    - name: Step 4 - Run Property Based Unit Tests
-      run: mvn test -Dtest=PropertyBasedStockTests
+      - name: Step 4 - Run Property Based Unit Tests
+        run: mvn test -Dtest=PropertyBasedStockTests
 
-    - name: Step 5 - Run Mutation Tests
-      run: mvn -Ppitest test-compile
+      - name: Step 5 - Run Mutation Tests
+        run: mvn -Ppitest test-compile
     
-    - name: Step 6 - Report jUnit Annotations
-      uses: KyleAure/junit-report-annotations-action@1.5
-      with:
-        access-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Step 6 - Report jUnit Annotations
+        uses: KyleAure/junit-report-annotations-action@1.5
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Step 7 - Run Cucumber Tests
-      run: mvn test -Dtest="RunCucumberTest"
+      - name: Step 7 - Run Cucumber Tests
+        run: mvn test -Dtest="RunCucumberTest"
       
-    - name: Step 8 - Cucumber Report to Annotations
-      uses: deblockt/cucumber-report-annotations-action@v1.11
-      with:
-        # github token
-        access-token: ${{ secrets.GITHUB_TOKEN }}
-        # glob to cucumber json files
-        path: '**/cucumber-report/*.json'
-        # the annotation status on undefined steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for undefined steps
-        annotation-status-on-undefined: 'notice'
-        # the annotation status on pending steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for pending steps
-        annotation-status-on-pending: 'warning'
-        # if it is set to true, the number of errors will be indicated on the check title (visible on the pr check)
-        show-number-of-error-on-check-title: true
-        # indicate the number of test in error to fail the build. If the value is -1 this action will never fail the build.
-        number-of-test-error-to-fail-job: 1
-        # the name of the check
-        name: 'Cucumber Report'  
+      - name: Step 8 - Cucumber Report to Annotations
+        uses: deblockt/cucumber-report-annotations-action@v1.11
+        with:
+          # github token
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          # glob to cucumber json files
+          path: '**/cucumber-report/*.json'
+          # the annotation status on undefined steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for undefined steps
+          annotation-status-on-undefined: 'notice'
+          # the annotation status on pending steps. Can be 'notice', 'warning', 'failure'. if this property is not set, no annotation will be generated for pending steps
+          annotation-status-on-pending: 'warning'
+          # if it is set to true, the number of errors will be indicated on the check title (visible on the pr check)
+          show-number-of-error-on-check-title: true
+          # indicate the number of test in error to fail the build. If the value is -1 this action will never fail the build.
+          number-of-test-error-to-fail-job: 1
+          # the name of the check
+          name: 'Cucumber Report'  
 
-    - name: Step 9 - Build with Maven
-      run: mvn -B package --file pom.xml -DskipTests
+      - name: Step 9 - Build with Maven
+        run: mvn -B package --file pom.xml -DskipTests
       
-    - name: Step 10 - List the current directory   
-      run: ls -a
+      - name: Step 10 - List the current directory   
+        run: ls -a
     
-    - name: Step 11 - What is in the target folder
-      run: |
-        cd target
-        ls -a
+      - name: Step 11 - What is in the target folder
+        run: |
+          cd target
+          ls -a
 
 #     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
 #     - name: Update dependency graph
