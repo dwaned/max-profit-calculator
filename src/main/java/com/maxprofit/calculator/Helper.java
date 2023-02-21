@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
- class Helper {
+class Helper {
 
-     List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
+    List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
         ArrayList<List<Integer>> perm = new ArrayList<>();
         ArrayList<Integer> temp = new ArrayList<>();
         ArrayList<Integer> allValues = new ArrayList<>();
@@ -68,7 +68,6 @@ import java.util.stream.Collectors;
 
         return perm;
     }
-
 
 
 }
