@@ -5,11 +5,18 @@
  * It contains the amount of maximum profit yielded with the chosen list of
  * indices.
  */
+
+ package com.maxprofit.calculator;
+
+import java.util.Collections;
+import java.util.List;
+
 public class CalculationResult {
     /**
      * The maximum profit obtained.
      */
     public int maxProfit;
+
     /**
      * A list of lists of indices representing the best combination of indices to
      * obtain the maximum profit.
