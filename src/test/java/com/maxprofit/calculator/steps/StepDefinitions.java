@@ -93,25 +93,25 @@ public class StepDefinitions {
       assertEquals(
         resultIndices,
         actualResult.indices.get(0),
-        "Actual Result: " +
-        actualResult.indices +
-        " with profit of " +
-        actualResult.maxProfit
+        "Actual Result: "
+        + actualResult.indices 
+        + " with profit of "
+        + actualResult.maxProfit
       );
     } else {
       logger.log(
         Level.WARNING,
         String.format(
-          "Multiple combinations with same used savings: " +
-          actualResult.indices
+          "Multiple combinations with same used savings: "
+          + actualResult.indices
         )
       );
       assertTrue(
         actualResult.indices.contains(resultIndices),
-        "Actual Result: " +
-        actualResult.indices +
-        " with profit of " +
-        actualResult.maxProfit
+        "Actual Result: "
+        + actualResult.indices
+        + " with profit of "
+        + actualResult.maxProfit
       );
     }
   }
