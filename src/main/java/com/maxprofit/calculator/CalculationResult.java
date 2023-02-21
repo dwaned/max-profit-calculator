@@ -11,8 +11,8 @@ public class CalculationResult {
     public int maxProfit;
     public List<List<Integer>> indices;
 
-    public CalculationResult(final int maxProfit, final List<List<Integer>> combination) {
-        this.maxProfit = maxProfit;
+    public CalculationResult(final int profit, final List<List<Integer>> combination) {
+        this.maxProfit = profit;
         this.indices = combination;
     }
 
