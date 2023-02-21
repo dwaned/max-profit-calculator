@@ -43,18 +43,18 @@ public class PropertyBasedStockTests {
         assertFalse(currentPrices.stream().anyMatch(i -> i < 0));
         assertFalse(futurePrices.stream().anyMatch(i -> i < 0));
         assertNotNull(result);
-        assertNotNull(result.indices);
-        if (result.indices.size() > 0) {
+        assertNotNull(result.getIndices());
+        if (result.getIndices().size() > 0) {
             int profit;
-            for (int i = 0; i < result.indices.size(); i++) {
+            for (int i = 0; i < result.getIndices().size(); i++) {
                 profit = 0;
-                for (int j = 0; j < result.indices.get(i).size(); j++) {
-                    profit += futurePrices.get(result.indices.get(i).get(j)) - currentPrices.get(result.indices.get(i).get(j));
+                for (int j = 0; j < result.getIndices().get(i).size(); j++) {
+                    profit += futurePrices.get(result.getIndices().get(i).get(j)) - currentPrices.get(result.getIndices().get(i).get(j));
                 }
-                assertEquals(profit, result.maxProfit);
+                assertEquals(profit, result.getMaxProfit());
 
                 /*
-                      result.indices size 2
+                      result.getIndices() size 2
                       0 = size 1 [3]
                       1 = size 1 [4]
 
@@ -75,9 +75,9 @@ public class PropertyBasedStockTests {
 
         }
         else {
-            assertEquals(0, result.maxProfit);
+            assertEquals(0, result.getMaxProfit());
         }
-//        assertTrue(result.indices.size() > 0);
+//        assertTrue(result.getIndices().size() > 0);
     }
 
 //    @Property
@@ -90,8 +90,8 @@ public class PropertyBasedStockTests {
 //        assertFalse(currentPrices.stream().anyMatch(i -> i < 0));
 //        assertFalse(futurePrices.stream().anyMatch(i -> i < 0));
 //        assertNotNull(result);
-//        assertNotNull(result.indices);
-//        assertTrue(result.indices.size() > 0);
+//        assertNotNull(result.getIndices());
+//        assertTrue(result.getIndices().size() > 0);
 //    }
 
 }

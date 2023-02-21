@@ -16,13 +16,21 @@ public class CalculationResult {
   /**
    * The maximum profit obtained.
    */
-  public int maxProfit;
+  private int maxProfit;
 
   /**
    * A list of lists of indices representing the best combination of indices to
    * obtain the maximum profit.
    */
-  public List<List<Integer>> indices;
+  private List<List<Integer>> indices;
+
+  public int getMaxProfit() {
+    return maxProfit;
+  }
+
+  public List<List<Integer>> getIndices() {
+    return indices;
+  }
 
   /**
    * Constructs a new CalculationResult object with the given maximum profit and

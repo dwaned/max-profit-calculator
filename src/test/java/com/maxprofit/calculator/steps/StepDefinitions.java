@@ -5,20 +5,21 @@ stock market calculations.
 */
 package com.maxprofit.calculator.steps;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StepDefinitions {
 
@@ -89,29 +90,29 @@ public class StepDefinitions {
       futurePricesContext
     );
 
-    if (actualResult.indices.size() == 1) {
+    if (actualResult.getIndices().size() == 1) {
       assertEquals(
         resultIndices,
-        actualResult.indices.get(0),
+              actualResult.getIndices().get(0),
         "Actual Result: "
-        + actualResult.indices 
+        + actualResult.getIndices()
         + " with profit of "
-        + actualResult.maxProfit
+        + actualResult.getMaxProfit()
       );
     } else {
       logger.log(
         Level.WARNING,
         String.format(
           "Multiple combinations with same used savings: "
-          + actualResult.indices
+          + actualResult.getIndices()
         )
       );
       assertTrue(
-        actualResult.indices.contains(resultIndices),
+              actualResult.getIndices().contains(resultIndices),
         "Actual Result: "
-        + actualResult.indices
+        + actualResult.getIndices()
         + " with profit of "
-        + actualResult.maxProfit
+        + actualResult.getMaxProfit()
       );
     }
   }
@@ -147,7 +148,7 @@ public class StepDefinitions {
       currentPricesContext,
       futurePricesContext
     )
-      .maxProfit;
+      .getMaxProfit();
     assertEquals(profit, actualProfit, "Actual Profit is %s " + actualProfit);
   }
 
@@ -164,8 +165,8 @@ public class StepDefinitions {
     );
     assertEquals(
       0,
-      actualResult.indices.size(),
-      "Actual Result: " + actualResult.indices
+            actualResult.getIndices().size(),
+      "Actual Result: " + actualResult.getIndices()
     );
   }
 
@@ -180,7 +181,7 @@ public class StepDefinitions {
       currentPricesContext,
       futurePricesContext
     )
-      .maxProfit;
+      .getMaxProfit();
     assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
   }
 
