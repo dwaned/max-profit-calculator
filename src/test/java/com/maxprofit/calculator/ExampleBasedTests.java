@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * These are unit tests covering the Stock class in preparation for refactoring the functions of the class.
  */
 
-// CHECKSTYLE DISABLE MagicNumber
+// CHECKSTYLE:OFF: MagicNumber - ExampleBasedTests
 class ExampleBasedTests {
     @Test
     void shouldReturnSizeOfAllPossiblePermutationsForGivenStockPriceSize() {
