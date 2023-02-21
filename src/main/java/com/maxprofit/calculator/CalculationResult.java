@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * The {@code CalculationResult} class represents the result of a calculation
  * made by the {@link com.maxprofit.calculator.Stock} class.
  * It contains the amount of maximum profit yielded with the chosen list of

@@ -28,17 +28,17 @@ public class StepDefinitions {
         /*
          * Integer storing the amount of savings.
          */
-        int savingsContext = 0;
+        private int savingsContext = 0;
 
         /*
          * List storing the current prices.
          */
-        List<Integer> currentPricesContext;
+        private List<Integer> currentPricesContext;
 
         /*
          * List storing the future prices.
          */
-        List<Integer> futurePricesContext;
+        private List<Integer> futurePricesContext;
 
         /**
          * Sets the value of savingsContext to the given savings.
@@ -46,15 +46,15 @@ public class StepDefinitions {
          * @param savings an integer representing the amount of savings.
          */
         @Given("I have {int} Euros of savings")
-        public void IHaveEurosOfSavings(int savings) {
+        public void iHaveEurosOfSavings(int savings) {
 
                 System.out.format("Savings: %d\n", savings);
                 savingsContext = savings;
         }
 
         /**
-         * Sets the value of currentPricesContext to a List of integers parsed from the
-         * given string.
+         * Sets the value of currentPricesContext to a List of integers parsed
+         * from the given string.
          *
          * @param currentPrices a string representing a comma-separated list
          *                      of current stock prices.
