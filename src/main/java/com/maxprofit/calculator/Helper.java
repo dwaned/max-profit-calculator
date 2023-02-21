@@ -2,13 +2,11 @@ package com.maxprofit.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class Helper {
+ class Helper {
 
-    public List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
+     List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
         ArrayList<List<Integer>> perm = new ArrayList<>();
         ArrayList<Integer> temp = new ArrayList<>();
         ArrayList<Integer> allValues = new ArrayList<>();
@@ -39,12 +37,11 @@ public class Helper {
                     while (current != sizeOfList) {
 
 
-                        if (j <= sizeOfList - 1) {
-                            if (temp.size() > 1 && !perm.contains(new ArrayList<>(temp.stream().sorted().collect(Collectors.toList())))) {
+                        if (j <= sizeOfList - 1 && temp.size() > 1 && !perm.contains(new ArrayList<>(temp.stream()
+                                .sorted().collect(Collectors.toList())))) {
 
-                                perm.add(new ArrayList<>(temp.stream().sorted().collect(Collectors.toList())));
-                                temp.remove(temp.size() - 1);
-                            }
+                            perm.add(new ArrayList<>(temp.stream().sorted().collect(Collectors.toList())));
+                            temp.remove(temp.size() - 1);
                         }
                         current++;
                     }

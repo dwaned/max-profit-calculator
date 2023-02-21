@@ -11,7 +11,7 @@ package com.maxprofit.calculator;
 import java.util.Collections;
 import java.util.List;
 
-public class CalculationResult {
+ public class CalculationResult {
 
   /**
    * The maximum profit obtained.
@@ -24,10 +24,18 @@ public class CalculationResult {
    */
   private List<List<Integer>> indices;
 
+  /**
+   * MaxProfit getter
+   * @return Profit
+   */
   public int getMaxProfit() {
     return maxProfit;
   }
 
+  /**
+   * Indicides getter
+   * @return indices
+   */
   public List<List<Integer>> getIndices() {
     return indices;
   }
