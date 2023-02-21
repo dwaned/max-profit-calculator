@@ -1,6 +1,7 @@
 /**
 
-This class defines the step definitions for Cucumber scenarios related to stock market calculations.
+This class defines the step definitions for Cucumber scenarios related to
+stock market calculations.
 */
 package com.maxprofit.calculator.steps;
 
@@ -44,8 +45,8 @@ public class StepDefinitions {
      * Sets the value of currentPricesContext to a List of integers parsed from the
      * given string.
      *
-     * @param currentPrices a string representing a comma-separated list of current
-     *                      stock prices.
+     * @param currentPrices a string representing a comma-separated list
+     *                      of current stock prices.
      */
     @When("Array of current stock prices are {string}")
     public void arrayOfCurrentStockPricesAre(final String currentPrices) {
@@ -57,7 +58,8 @@ public class StepDefinitions {
     }
 
     /**
-     * Compares the expected result to the actual result of the calculation for the
+     * Compares the expected result to the actual result of the
+     * calculation for the
      * best combination of indices for maximum profit.
      *
      * @param result a string representing the expected result.
@@ -69,17 +71,21 @@ public class StepDefinitions {
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
 
-        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext,
+        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(
+                savingsContext, currentPricesContext,
                 futurePricesContext);
 
         if (actualResult.indices.size() == 1) {
             assertEquals(resultIndices, actualResult.indices.get(0),
-                    "Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit);
+                    "Actual Result: " + actualResult.indices + " with profit of "
+                            + actualResult.maxProfit);
         } else {
             logger.log(Level.WARNING,
-                    String.format("Multiple combinations with same used savings: " + actualResult.indices));
+                    String.format("Multiple combinations with same used savings: "
+                            + actualResult.indices));
             assertTrue(actualResult.indices.contains(resultIndices),
-                    "Actual Result: " + actualResult.indices + " with profit of " + actualResult.maxProfit);
+                    "Actual Result: " + actualResult.indices + " with profit of "
+                            + actualResult.maxProfit);
         }
     }
 
@@ -107,7 +113,8 @@ public class StepDefinitions {
     @Then("profit is {int} Euros")
     public void profitIsEuros(final int profit) {
         System.out.format("Profit: %d\n", profit);
-        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext,
+        int actualProfit = Stock.returnIndicesMaxProfit(savingsContext,
+                currentPricesContext,
                 futurePricesContext).maxProfit;
         assertEquals(profit, actualProfit, "Actual Profit is %s " + actualProfit);
     }
@@ -118,9 +125,12 @@ public class StepDefinitions {
      */
     @Then("there is no best combination for max profit")
     public void thereIsNoBestCombinationForMaxProfit() {
-        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext,
+        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(
+                savingsContext,
+                currentPricesContext,
                 futurePricesContext);
-        assertEquals(0, actualResult.indices.size(), "Actual Result: " + actualResult.indices);
+        assertEquals(0, actualResult.indices.size(), "Actual Result: "
+                + actualResult.indices);
     }
 
     /**
@@ -129,13 +139,15 @@ public class StepDefinitions {
      */
     @And("no profit is made")
     public void noProfitIsMade() {
-        final int actualProfit = Stock.returnIndicesMaxProfit(savingsContext, currentPricesContext,
+        final int actualProfit = Stock.returnIndicesMaxProfit(savingsContext,
+                currentPricesContext,
                 futurePricesContext).maxProfit;
         assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
     }
 
     /**
-     * Asserts that with the given indices, same profit is achieved as previously stored.
+     * Asserts that with the given indices, same profit is achieved as previously
+     * stored.
      *
      * @param indices combination representing the indices of stocks.
      */

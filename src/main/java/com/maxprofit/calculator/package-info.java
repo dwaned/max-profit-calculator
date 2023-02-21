@@ -1,9 +1,8 @@
 /**
- * Max Profit Calculator
- * </p>
+ * Max Profit Calculator.
  *
  * @since 1.0
- * @author baeldung
+ * @author dwaned
  * @version 1.1
  */
 package com.maxprofit.calculator;
