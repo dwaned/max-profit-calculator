@@ -6,7 +6,7 @@
  * indices.
  */
 
- package com.maxprofit.calculator;
+package com.maxprofit.calculator;
 
 import java.util.Collections;
 import java.util.List;
