@@ -126,8 +126,8 @@ public class PropertyBasedStockTests {
     @Property
     public void positiveScenarios(
             @ForAll @IntRange(min = 1, max = 1000) final int savings,
-            @ForAll("StockPrices") final ArrayList<Integer> currentPrices,
-            @ForAll("StockPrices") final ArrayList<Integer> futurePrices) {
+            @ForAll("stockPrices") final ArrayList<Integer> currentPrices,
+            @ForAll("stockPrices") final ArrayList<Integer> futurePrices) {
 //        Statistics.collect(savings,currentPrices,futurePrices);
         CalculationResult result = Stock.returnIndicesMaxProfit(savings,
                 currentPrices, futurePrices);
