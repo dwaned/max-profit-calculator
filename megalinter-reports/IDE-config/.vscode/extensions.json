@@ -1,8 +1,7 @@
 {
     "recommendations": [
-        "Bridgecrew.checkov",
-        "shengchen.vscode-checkstyle",
         "esbenp.prettier-vscode",
+        "Bridgecrew.checkov",
         "MS-CST-E.vscode-devskim"
     ]
 }
