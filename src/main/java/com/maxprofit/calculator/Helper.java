@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("checkstyle:LineLength")
 class Helper {
 
-  final List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
+  final List<List<Integer>> getAllPermutationsForListOfSize(final int sizeOfList) {
     final ArrayList<List<Integer>> perm = new ArrayList<>();
     final ArrayList<Integer> temp = new ArrayList<>();
     final ArrayList<Integer> allValues = new ArrayList<>();
@@ -62,8 +62,8 @@ class Helper {
         }
 
         if (
-          temp.size() > 1 &&
-          !perm.contains(temp.stream().sorted().collect(Collectors.toList()))
+          temp.size() > 1
+            && !perm.contains(temp.stream().sorted().collect(Collectors.toList()))
         ) {
           perm.add(
             new ArrayList<>(temp.stream().sorted().collect(Collectors.toList()))
@@ -73,9 +73,10 @@ class Helper {
     }
 
     //  adding the combination containing all integers
-    if (!perm.contains(new ArrayList<>(allValues))) perm.add(
-      new ArrayList<>(allValues)
-    );
+    if (!perm.contains(new ArrayList<>(allValues)))
+    {
+      perm.add(new ArrayList<>(allValues));
+    }
 
     return perm;
   }

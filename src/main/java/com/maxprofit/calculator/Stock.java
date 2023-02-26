@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings({"checkstyle:LineLength", "checkstyle:OperatorWrap"})
 public class Stock {
+    @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable"})
     static Logger logger = Logger.getLogger(Stock.class.getName());
 
     /*
@@ -41,7 +42,7 @@ public class Stock {
      * @param futureValue  - The list of future prices for stocks
      * @return A list of indices which yields the largest profit
      */
-    public static CalculationResult returnIndicesMaxProfit(int saving,
+    public static CalculationResult returnIndicesMaxProfit(final int saving,
                                                            List<Integer> currentValue, List<Integer> futureValue) {
         logger.setLevel(Level.OFF);
         int maxProfit = 0;
