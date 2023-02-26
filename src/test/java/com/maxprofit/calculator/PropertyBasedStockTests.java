@@ -23,13 +23,45 @@ public class PropertyBasedStockTests {
         profitStockPrices
      */
 
+    /**
+     * Generates an arbitrary list of integer values between 1 and 100 (inclusive) that represents the
+     * stock prices for the tests.
+     *
+     * This method is used to annotate a factory method for creating arbitrary values that will be used
+     * as parameters in the property-based tests. The factory method is annotated with the {@code @Provide}
+     * annotation and returns an {@code Arbitrary} object that generates values of the specified type.
+     *
+     * The {@code @Provide} annotation is used by the jqwik library to identify the factory methods that
+     * provide the arbitrary values for the tests.
+     *
+     * The generated list has a fixed size of 5 elements, which is determined by the {@code ofSize(5)}
+     * method call on the {@code list()} object.
+     *
+     * @return an {@code Arbitrary<List<Integer>>} object that generates lists of integer values between
+     *         1 and 100 (inclusive) for the stock prices
+     */
     @Provide
-    Arbitrary<List<Integer>> StockPrices() {
+    Arbitrary<List<Integer>> stockPrices() {
         return Arbitraries.integers().between(1, 100).list().ofSize(5);
     }
 
+
+    /**
+     * Generates an arbitrary integer value between 1 and 5 (inclusive) that represents the length of the
+     * lists of stock prices used in the tests.
+     *
+     * This method is used to annotate a factory method for creating arbitrary values that will be used
+     * as parameters in the property-based tests. The factory method is annotated with the {@code @Provide}
+     * annotation and returns an {@code Arbitrary} object that generates values of the specified type.
+     *
+     * The {@code @Provide} annotation is used by the jqwik library to identify the factory methods that
+     * provide the arbitrary values for the tests.
+     *
+     * @return an {@code Arbitrary<Integer>} object that generates values between 1 and 5 (inclusive)
+     *         for the length of the lists of stock prices
+     */
     @Provide
-    Arbitrary<Integer> PricesLength() {
+    Arbitrary<Integer> pricesLength() {
         return Arbitraries.integers().between(1, 5);
     }
 

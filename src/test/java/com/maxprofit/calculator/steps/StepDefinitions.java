@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StepDefinitions {
 
+    @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable"})
     static Logger logger = Logger.getLogger(Stock.class.getName());
 
     /**
@@ -45,7 +46,7 @@ public class StepDefinitions {
      * @param savings an integer representing the amount of savings.
      */
     @Given("I have {int} Euros of savings")
-    public void iHaveEurosOfSavings(int savings) {
+    public void iHaveEurosOfSavings(final int savings) {
         System.out.format("Savings: %d\n", savings);
         savingsContext = savings;
     }
