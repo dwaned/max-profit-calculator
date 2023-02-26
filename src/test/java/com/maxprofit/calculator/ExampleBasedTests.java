@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * refactoring the functions of the class.
  */
 
+@SuppressWarnings("checkstyle:magicnumber")
 class ExampleBasedTests {
     @Test
     void shouldReturnSizeOfAllPossiblePermutationsForGivenStockPriceSize() {
