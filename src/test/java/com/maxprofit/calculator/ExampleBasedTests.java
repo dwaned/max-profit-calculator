@@ -136,7 +136,7 @@ class ExampleBasedTests {
     }
 
     @Test
-    void shouldReturnZeroProfitAndEmptyIndicesIfSavingsNotEnoughForAnyStockPrice() {
+    void shouldReturnZeroProfitAndEmptyIndicesIfSavingsNotEnoughForAnyStock() {
         ArrayList<Integer> currentPrices = new ArrayList<>(Arrays.asList(2, 3
                 , 4));
         ArrayList<Integer> futurePrices = new ArrayList<>(Arrays.asList(0, 20

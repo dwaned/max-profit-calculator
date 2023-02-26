@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@SuppressWarnings("checkstyle:LineLength")
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:OperatorWrap"})
 public class Stock {
     static Logger logger = Logger.getLogger(Stock.class.getName());
 
