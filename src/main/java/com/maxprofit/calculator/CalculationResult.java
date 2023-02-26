@@ -16,13 +16,13 @@ import java.util.List;
   /**
    * The maximum profit obtained.
    */
-  final private int maxProfit;
+  private final int maxProfit;
 
   /**
    * A list of lists of indices representing the best combination of indices to
    * obtain the maximum profit.
    */
-  final private List<List<Integer>> indices;
+  private final List<List<Integer>> indices;
 
   /**
    * MaxProfit getter method.

@@ -73,8 +73,7 @@ class Helper {
     }
 
     //  adding the combination containing all integers
-    if (!perm.contains(new ArrayList<>(allValues)))
-    {
+    if (!perm.contains(new ArrayList<>(allValues))) {
       perm.add(new ArrayList<>(allValues));
     }
 
