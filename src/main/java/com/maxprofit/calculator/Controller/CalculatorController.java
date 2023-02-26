@@ -22,7 +22,8 @@ public class CalculatorController {
    amount is negative, prices are not in the correct range)
    */
   @PostMapping("/calculate")
-  public CalculationResult calculate(@RequestBody final CalculationRequest request) {
+  public CalculationResult calculate(
+          @RequestBody final CalculationRequest request) {
     return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
             request.getCurrentPrices(), request.getFuturePrices());
   }
