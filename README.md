@@ -1,6 +1,9 @@
-# max-profit-calculator
+# max-profit-calculator [WIP]
 This was a coding test for an interview process.
 
+TLDR - My aim is to use this repo as a playground for applying various testing tools/techniques in different levels, on top of a simple application.
+
+-----
 
 Challenge:
 - Given 2 Arrays containing the current price and the forecasted future price of a set of stocks,
