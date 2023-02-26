@@ -43,7 +43,7 @@ public class Stock {
      * @return A list of indices which yields the largest profit
      */
     public static CalculationResult returnIndicesMaxProfit(final int saving,
-                                                           List<Integer> currentValue, List<Integer> futureValue) {
+                                                           final List<Integer> currentValue, final List<Integer> futureValue) {
         logger.setLevel(Level.OFF);
         int maxProfit = 0;
         Helper helper = new Helper();
@@ -63,7 +63,7 @@ public class Stock {
         Business Requirement Restrictions
          */
 
-        final int price_list_max_size = 100;
+        final int priceListMaxSize = 100;
 
         if (currentValue.stream().anyMatch(o -> o <= 0) || futureValue.stream().anyMatch(o -> o <= 0)) {
             logger.log(Level.SEVERE, "Future or current value is 0 or " +
@@ -76,7 +76,7 @@ public class Stock {
                     " not match!");
             return new CalculationResult();
         } else {
-            if (currentValue.size() > price_list_max_size) {
+            if (currentValue.size() > priceListMaxSize) {
                 logger.log(Level.SEVERE, "Future and current prices list " +
                         "sizes are too large!");
                 return new CalculationResult();
