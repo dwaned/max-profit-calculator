@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 /**
  * This class contains property-based tests for the {@link Stock} class.
  *
@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * The tests in this class cover a range of scenarios, including both positive and negative scenarios,
  * to ensure that the {@link Stock} class is functioning correctly in all cases.
  */
-@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 public class PropertyBasedStockTests {
 
     /*
