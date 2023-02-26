@@ -8,6 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("checkstyle:magicnumber")
 /**
  * Property Based Tests
  * These are property based tests ...
