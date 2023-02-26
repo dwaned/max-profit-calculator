@@ -24,7 +24,7 @@ public class PropertyBasedStockTests {
 
     @Provide
     Arbitrary<List<Integer>> StockPrices() {
-        return Arbitraries.integers().between(1,100).list().ofSize(5);
+        return Arbitraries.integers().between(1, 100).list().ofSize(5);
     }
 
     @Provide
@@ -36,9 +36,10 @@ public class PropertyBasedStockTests {
     public void positiveScenarios(
             @ForAll @IntRange(min = 1, max = 1000) int savings,
             @ForAll("StockPrices") ArrayList<Integer> currentPrices,
-            @ForAll("StockPrices") ArrayList<Integer> futurePrices)  {
+            @ForAll("StockPrices") ArrayList<Integer> futurePrices) {
 //        Statistics.collect(savings,currentPrices,futurePrices);
-        CalculationResult result = Stock.returnIndicesMaxProfit(savings, currentPrices, futurePrices);
+        CalculationResult result = Stock.returnIndicesMaxProfit(savings,
+                currentPrices, futurePrices);
         assertEquals(currentPrices.size(), futurePrices.size());
         assertFalse(currentPrices.stream().anyMatch(i -> i < 0));
         assertFalse(futurePrices.stream().anyMatch(i -> i < 0));
@@ -49,7 +50,9 @@ public class PropertyBasedStockTests {
             for (int i = 0; i < result.getIndices().size(); i++) {
                 profit = 0;
                 for (int j = 0; j < result.getIndices().get(i).size(); j++) {
-                    profit += futurePrices.get(result.getIndices().get(i).get(j)) - currentPrices.get(result.getIndices().get(i).get(j));
+                    profit += futurePrices.get(result.getIndices().get(i)
+                            .get(j)) - currentPrices.get(result.getIndices()
+                            .get(i).get(j));
                 }
                 assertEquals(profit, result.getMaxProfit());
 
@@ -73,8 +76,7 @@ public class PropertyBasedStockTests {
                  */
             }
 
-        }
-        else {
+        } else {
             assertEquals(0, result.getMaxProfit());
         }
 //        assertTrue(result.getIndices().size() > 0);
@@ -85,7 +87,8 @@ public class PropertyBasedStockTests {
 //            @ForAll @IntRange(min = 1, max = 1000) int savings,
 //            @ForAll("StockPrices") ArrayList<Integer> currentPrices,
 //            @ForAll("StockPrices") ArrayList<Integer> futurePrices)  {
-//        Data result = Stock.returnIndicesMaxProfit(savings, currentPrices, futurePrices);
+//        Data result = Stock.returnIndicesMaxProfit(savings, currentPrices,
+//        futurePrices);
 //        assertEquals(currentPrices.size(), futurePrices.size());
 //        assertFalse(currentPrices.stream().anyMatch(i -> i < 0));
 //        assertFalse(futurePrices.stream().anyMatch(i -> i < 0));

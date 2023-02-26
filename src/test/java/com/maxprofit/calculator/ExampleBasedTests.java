@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Example Based Tests
- * These are unit tests covering the Stock class in preparation for refactoring the functions of the class.
+ * These are unit tests covering the Stock class in preparation for
+ * refactoring the functions of the class.
  */
 
-// CHECKSTYLE:OFF: MagicNumber - ExampleBasedTests
 class ExampleBasedTests {
     @Test
     void shouldReturnSizeOfAllPossiblePermutationsForGivenStockPriceSize() {
@@ -26,20 +26,24 @@ class ExampleBasedTests {
 
     @Test
     void shouldWorkWithOneIndex() {
-        int result = Stock.returnIndicesMaxProfit(1, Collections.singletonList(1), Collections.singletonList(3))
+        int result = Stock.returnIndicesMaxProfit(1,
+                        Collections.singletonList(1),
+                        Collections.singletonList(3))
                 .getMaxProfit();
         assertEquals(2, result);
     }
 
     @Test
     void shouldWorkWithTwoIndices() {
-        int result = Stock.returnIndicesMaxProfit(1, Arrays.asList(1, 1), Arrays.asList(3, 4)).getMaxProfit();
+        int result = Stock.returnIndicesMaxProfit(1, Arrays.asList(1, 1),
+                Arrays.asList(3, 4)).getMaxProfit();
         assertEquals(3, result);
     }
 
     @Test
     void shouldWorkWithThreeIndices() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(5, Arrays.asList(1, 2, 5), Arrays.asList(2, 3,
+        CalculationResult result = Stock.returnIndicesMaxProfit(5,
+                Arrays.asList(1, 2, 5), Arrays.asList(2, 3,
                 20));
 
         assertEquals(15, result.getMaxProfit());
@@ -49,7 +53,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldWorkWithLargerSet() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(50, Arrays.asList(1, 2, 5, 34, 22, 56, 34),
+        CalculationResult result = Stock.returnIndicesMaxProfit(50,
+                Arrays.asList(1, 2, 5, 34, 22, 56, 34),
                 Arrays.asList(2, 3, 20, 35, 15, 101, 20));
 
         assertEquals(18, result.getMaxProfit());
@@ -59,7 +64,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldUseAllSavings() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(6, Arrays.asList(1, 2, 5),
+        CalculationResult result = Stock.returnIndicesMaxProfit(6,
+                Arrays.asList(1, 2, 5),
                 Arrays.asList(2, 3, 20));
 
         assertEquals(16, result.getMaxProfit());
@@ -69,7 +75,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldWorkWithLowerFuturePrice() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(16, Arrays.asList(1, 2, 5, 8),
+        CalculationResult result = Stock.returnIndicesMaxProfit(16,
+                Arrays.asList(1, 2, 5, 8),
                 Arrays.asList(2, 3, 6, 1));
 
         assertEquals(3, result.getMaxProfit());
@@ -79,7 +86,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldReturnEmtyListAndZeroProfitIfOnlyLossCanBeMade() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(5, Arrays.asList(5, 2, 3),
+        CalculationResult result = Stock.returnIndicesMaxProfit(5,
+                Arrays.asList(5, 2, 3),
                 Arrays.asList(1, 0, 2));
 
         assertEquals(0, result.getMaxProfit());
@@ -88,7 +96,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldUseAllSavingsIfAllFuturePricesAreGreaterThanCurrentPrices() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(16, Arrays.asList(1, 2, 5, 8),
+        CalculationResult result = Stock.returnIndicesMaxProfit(16,
+                Arrays.asList(1, 2, 5, 8),
                 Arrays.asList(2, 3, 6, 9));
 
         assertEquals(4, result.getMaxProfit());
@@ -97,7 +106,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldChoseCheapestCombination() {
-        CalculationResult result = Stock.returnIndicesMaxProfit(7, Arrays.asList(1, 2, 5),
+        CalculationResult result = Stock.returnIndicesMaxProfit(7,
+                Arrays.asList(1, 2, 5),
                 Arrays.asList(2, 3, 20));
 
         assertEquals(16, result.getMaxProfit());
@@ -108,7 +118,8 @@ class ExampleBasedTests {
     @Test
     void shouldReturnZeroProfitAndResultIndicesIfCurrentPricesAreEmpty() {
         ArrayList<Integer> currentValue = new ArrayList<>();
-        CalculationResult actualReturnIndicesMaxProfitResult = Stock.returnIndicesMaxProfit(1, currentValue,
+        CalculationResult actualReturnIndicesMaxProfitResult =
+                Stock.returnIndicesMaxProfit(1, currentValue,
                 new ArrayList<>());
         assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
@@ -116,7 +127,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldReturnZeroProfitAndResultIndicesIfFuturePricesAreEmpty() {
-        CalculationResult actualReturnIndicesMaxProfitResult = Stock.returnIndicesMaxProfit(1, Collections.singletonList(2),
+        CalculationResult actualReturnIndicesMaxProfitResult =
+                Stock.returnIndicesMaxProfit(1, Collections.singletonList(2),
                 new ArrayList<>());
         assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
@@ -124,9 +136,12 @@ class ExampleBasedTests {
 
     @Test
     void shouldReturnZeroProfitAndEmptyIndicesIfSavingsNotEnoughForAnyStockPrice() {
-        ArrayList<Integer> currentPrices = new ArrayList<>(Arrays.asList(2, 3, 4));
-        ArrayList<Integer> futurePrices = new ArrayList<>(Arrays.asList(0, 20, 30));
-        CalculationResult actualReturnIndicesMaxProfitResult = Stock.returnIndicesMaxProfit(1, currentPrices,
+        ArrayList<Integer> currentPrices = new ArrayList<>(Arrays.asList(2, 3
+                , 4));
+        ArrayList<Integer> futurePrices = new ArrayList<>(Arrays.asList(0, 20
+                , 30));
+        CalculationResult actualReturnIndicesMaxProfitResult =
+                Stock.returnIndicesMaxProfit(1, currentPrices,
                 futurePrices);
         assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
@@ -134,7 +149,8 @@ class ExampleBasedTests {
 
     @Test
     void shouldReturnEmptyIndicesAndZeroProfitIfStockPriceIsNegative() {
-        CalculationResult actualReturnIndicesMaxProfitResult = Stock.returnIndicesMaxProfit(1,
+        CalculationResult actualReturnIndicesMaxProfitResult =
+                Stock.returnIndicesMaxProfit(1,
                 Collections.singletonList(0), Collections.singletonList(-1));
         assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
