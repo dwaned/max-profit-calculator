@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("checkstyle:magicnumber")
+@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 /**
  * Property Based Tests
  * These are property based tests ...
@@ -33,11 +33,37 @@ public class PropertyBasedStockTests {
         return Arbitraries.integers().between(1, 5);
     }
 
+    /**
+     * Property-based test that verifies the behavior of the Stock.returnIndicesMaxProfit() method
+     * under positive scenarios, that is, when the input values are within the specified constraints.
+     *
+     * The test generates three parameters:
+     * - savings: an integer between 1 and 1000 (inclusive) that represents the initial amount of money available
+     *   to invest.
+     * - currentPrices: an ArrayList of integers representing the current stock prices.
+     * - futurePrices: an ArrayList of integers representing the future stock prices.
+     *
+     * The test checks that the following conditions hold:
+     * - The sizes of the currentPrices and futurePrices lists are equal.
+     * - All elements in the currentPrices and futurePrices lists are non-negative.
+     * - The result of the Stock.returnIndicesMaxProfit() method is not null.
+     * - The indices returned by the Stock.returnIndicesMaxProfit() method are valid indices into the
+     *   currentPrices and futurePrices lists.
+     * - The profit calculated from the indices returned by the Stock.returnIndicesMaxProfit() method
+     *   equals the maximum profit returned by the method.
+     * - If the Stock.returnIndicesMaxProfit() method returns an empty list of indices, the maximum profit
+     *   returned by the method is zero.
+     *
+     * @param savings an integer between 1 and 1000 (inclusive) that represents the initial amount of money available
+     *                to invest
+     * @param currentPrices an ArrayList of integers representing the current stock prices
+     * @param futurePrices an ArrayList of integers representing the future stock prices
+     */
     @Property
     public void positiveScenarios(
-            @ForAll @IntRange(min = 1, max = 1000) int savings,
-            @ForAll("StockPrices") ArrayList<Integer> currentPrices,
-            @ForAll("StockPrices") ArrayList<Integer> futurePrices) {
+            @ForAll @IntRange(min = 1, max = 1000) final int savings,
+            @ForAll("StockPrices") final ArrayList<Integer> currentPrices,
+            @ForAll("StockPrices") final ArrayList<Integer> futurePrices) {
 //        Statistics.collect(savings,currentPrices,futurePrices);
         CalculationResult result = Stock.returnIndicesMaxProfit(savings,
                 currentPrices, futurePrices);
