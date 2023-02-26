@@ -35,7 +35,7 @@ public class Stock {
 
     /**
      * This method returns the combination of indices which yields the
-     * largest profit
+     * largest profit.
      *
      * @param saving       - The amount of savings
      * @param currentValue - The list of current prices for stocks

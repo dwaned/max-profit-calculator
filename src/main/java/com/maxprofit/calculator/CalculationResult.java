@@ -25,7 +25,7 @@ import java.util.List;
   final private List<List<Integer>> indices;
 
   /**
-   * MaxProfit getter
+   * MaxProfit getter method.
    * @return Profit
    */
   public int getMaxProfit() {
@@ -33,7 +33,7 @@ import java.util.List;
   }
 
   /**
-   * Indicides getter
+   * Indices getter method.
    * @return indices
    */
   public List<List<Integer>> getIndices() {

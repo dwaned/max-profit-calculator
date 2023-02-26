@@ -8,11 +8,29 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 /**
- * Property Based Tests
- * These are property based tests ...
+ * This class contains property-based tests for the {@link Stock} class.
+ *
+ * The tests are written using the jqwik library, which is a property-based testing framework for Java.
+ * Property-based testing is a testing methodology that involves defining properties or invariants that
+ * should hold true for a given system, and then generating random inputs to test those properties. This
+ * approach can help to uncover edge cases and corner cases that might not be caught by traditional unit
+ * tests.
+ *
+ * In these tests, we're using the {@code @Provide} annotation to define factory methods that generate
+ * arbitrary values for the parameters of the {@link Stock} methods. We're also using the {@code @ForAll}
+ * annotation to generate random values for those parameters. The {@code @IntRange} and {@code @Positive}
+ * constraints are used to restrict the range of the generated values for the {@code savings} parameter.
+ *
+ * The tests themselves are defined as methods annotated with the {@code @Property} annotation. Each
+ * property is a statement about the behavior of the system under test that should hold true for all
+ * generated inputs. The {@code assert} statements within the properties are used to verify that the
+ * properties hold true for the generated inputs.
+ *
+ * The tests in this class cover a range of scenarios, including both positive and negative scenarios,
+ * to ensure that the {@link Stock} class is functioning correctly in all cases.
  */
+@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 public class PropertyBasedStockTests {
 
     /*
