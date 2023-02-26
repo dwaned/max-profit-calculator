@@ -6,9 +6,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings({"checkstyle:LineLength", "checkstyle:OperatorWrap"})
-public class Stock {
+public final class Stock {
     @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable"})
     static Logger logger = Logger.getLogger(Stock.class.getName());
+
+    private Stock(){
+
+    }
+
 
     /*
     public static void main(String[] args) {

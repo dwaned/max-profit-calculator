@@ -13,6 +13,7 @@ public class CalculatorController {
 
   @PostMapping("/calculate")
   public CalculationResult calculate(@RequestBody CalculationRequest request) {
-    return Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
+    return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
+            request.getCurrentPrices(), request.getFuturePrices());
   }
 }
