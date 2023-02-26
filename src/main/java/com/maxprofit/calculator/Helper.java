@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("checkstyle:LineLength")
 class Helper {
 
   final List<List<Integer>> getAllPermutationsForListOfSize(int sizeOfList) {
@@ -33,9 +34,9 @@ class Helper {
 
           while (current != sizeOfList) {
             if (
-              j <= sizeOfList - 1 &&
-              temp.size() > 1 &&
-              !perm.contains(
+              j <= sizeOfList - 1
+                      && temp.size() > 1
+                      && !perm.contains(
                 new ArrayList<>(
                   temp.stream().sorted().collect(Collectors.toList())
                 )
