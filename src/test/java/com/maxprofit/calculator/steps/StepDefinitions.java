@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StepDefinitions {
 
-    @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable"})
+    @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable", "checkstyle:LineLength"})
     static Logger logger = Logger.getLogger(Stock.class.getName());
 
     /**

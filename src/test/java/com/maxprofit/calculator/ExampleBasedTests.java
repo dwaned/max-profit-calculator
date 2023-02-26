@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * refactoring the functions of the class.
  */
 
-@SuppressWarnings("checkstyle:magicnumber")
+@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 class ExampleBasedTests {
     @Test
     void shouldReturnSizeOfAllPossiblePermutationsForGivenStockPriceSize() {
@@ -137,13 +137,10 @@ class ExampleBasedTests {
 
     @Test
     void shouldReturnZeroProfitAndEmptyIndicesIfSavingsNotEnoughForAnyStock() {
-        ArrayList<Integer> currentPrices = new ArrayList<>(Arrays.asList(2, 3
-                , 4));
-        ArrayList<Integer> futurePrices = new ArrayList<>(Arrays.asList(0, 20
-                , 30));
+        ArrayList<Integer> currentPrices = new ArrayList<>(Arrays.asList(2, 3, 4));
+        ArrayList<Integer> futurePrices = new ArrayList<>(Arrays.asList(0, 20, 30));
         CalculationResult actualReturnIndicesMaxProfitResult =
-                Stock.returnIndicesMaxProfit(1, currentPrices,
-                futurePrices);
+                Stock.returnIndicesMaxProfit(1, currentPrices, futurePrices);
         assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
     }
