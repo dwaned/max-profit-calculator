@@ -117,7 +117,7 @@ public class Stock {
                                     "currentProf: %d Max Prof %d",
                                     currentProfit, maxProfit));
                             logger.log(Level.WARNING, String.format("temp:%d " +
-                                    "usedSavings %d", tempUsedSaving,
+                                            "usedSavings %d", tempUsedSaving,
                                     usedSavings));
                         }
                         if (currentProfit > maxProfit) {
