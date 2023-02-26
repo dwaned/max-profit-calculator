@@ -10,7 +10,7 @@ public final class Stock {
     @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable"})
     static Logger logger = Logger.getLogger(Stock.class.getName());
 
-    private Stock(){
+    private Stock() {
 
     }
 
