@@ -63,7 +63,7 @@ public class Stock {
         Business Requirement Restrictions
          */
 
-        final int PRICE_LIST_MAX_SIZE = 100;
+        final int price_list_max_size = 100;
 
         if (currentValue.stream().anyMatch(o -> o <= 0) || futureValue.stream().anyMatch(o -> o <= 0)) {
             logger.log(Level.SEVERE, "Future or current value is 0 or " +
@@ -76,7 +76,7 @@ public class Stock {
                     " not match!");
             return new CalculationResult();
         } else {
-            if (currentValue.size() > PRICE_LIST_MAX_SIZE) {
+            if (currentValue.size() > price_list_max_size) {
                 logger.log(Level.SEVERE, "Future and current prices list " +
                         "sizes are too large!");
                 return new CalculationResult();

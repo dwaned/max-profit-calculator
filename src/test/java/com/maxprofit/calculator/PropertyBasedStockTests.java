@@ -1,6 +1,10 @@
 package com.maxprofit.calculator;
 
-import net.jqwik.api.*;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
+import net.jqwik.api.Provide;
 import net.jqwik.api.constraints.IntRange;
 
 import java.util.ArrayList;
@@ -30,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * The tests in this class cover a range of scenarios, including both positive and negative scenarios,
  * to ensure that the {@link Stock} class is functioning correctly in all cases.
  */
-@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 public class PropertyBasedStockTests {
 
     /*
