@@ -227,6 +227,3 @@ Kept [24] files on [41] found files
 +---------------+---------------------+---------------+-------+-------+--------+--------------+
 
 [GitHub Comment Reporter] Posted summary as comment on dwaned/max-profit-calculator #PR7
-[Updated Sources Reporter] copied 3 fixed source files in folder /github/workspace/megalinter-reports/updated_sources.
-Download it from artifacts then copy-paste it in your local repo to apply linters updates
-[32m✅ Successfully linted all files without errors[0m
