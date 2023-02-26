@@ -45,7 +45,8 @@ public class Stock {
         int tempUsedSaving = 0;
         int usedSavings = saving;
 
-        int futureValueItem, currentValueItem;
+        int futureValueItem;
+        int currentValueItem;
 
 
         /*
@@ -53,7 +54,7 @@ public class Stock {
          */
 
 
-        if (currentValue.stream().anyMatch((o)-> o <= 0) || futureValue.stream().anyMatch((o)-> o <= 0)) {
+        if (currentValue.stream().anyMatch(o-> o <= 0) || futureValue.stream().anyMatch(o-> o <= 0)) {
             logger.log(Level.SEVERE, "Future or current value is 0 or negative");
             return new CalculationResult();
         }
