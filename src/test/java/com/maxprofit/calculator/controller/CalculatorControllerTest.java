@@ -1,7 +1,6 @@
 package com.maxprofit.calculator.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Controller.CalculationRequest;
 import com.maxprofit.calculator.Controller.CalculatorController;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ public class CalculatorControllerTest {
         request.setFuturePrices(Arrays.asList(15, 10, 35));
         String jsonRequest = objectMapper.writeValueAsString(request);
 
-        CalculationResult expected = new CalculationResult();
+
 
         mockMvc.perform(post("/api/calculate")
                         .contentType(MediaType.APPLICATION_JSON)
