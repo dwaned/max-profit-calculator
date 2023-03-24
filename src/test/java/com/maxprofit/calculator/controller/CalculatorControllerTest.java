@@ -21,12 +21,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * This class contains unit tests for the {@link CalculatorController} class.
  */
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CalculatorController.class)
 public class CalculatorControllerTest {
+    /**
+     * The {@link MockMvc} instance that is used to perform HTTP requests against
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * The {@link ObjectMapper} instance that is used to serialize and deserialize
+     */
     @Autowired
     private ObjectMapper objectMapper;
 
