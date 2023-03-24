@@ -19,7 +19,8 @@ on:
 permissions:
     contents: write
     pull-requests: write
-    resources: write
+    actions: write
+    checks: write
 
 jobs:
   MaxProfitCalculator:
