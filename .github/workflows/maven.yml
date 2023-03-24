@@ -50,7 +50,7 @@ jobs:
         run: mvn -Ppitest test-compile
 
       - name: Step 6 - Report jUnit Annotations
-        uses: KyleAure/junit-report-annotations-action@1.5
+        uses: mikepenz/action-junit-report@v3.7.5
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
