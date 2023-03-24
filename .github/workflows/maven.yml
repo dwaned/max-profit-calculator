@@ -16,15 +16,16 @@ on:
   pull_request:
     branches: ["main"]
 
-permissions:
-    contents: write
-    pull-requests: write
-    actions: write
-    checks: write
 
 jobs:
   MaxProfitCalculator:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+      checks: write
 
     steps:
       - name: Step 1 - Checkout the main branch
