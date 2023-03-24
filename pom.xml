@@ -225,7 +225,7 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <version>8.2.1</version>
                 <configuration>
-                    <failBuildOnCritical>true</failBuildOnCritical>
+                    <failBuildOnCVSS>9</failBuildOnCVSS>
                 </configuration>
                 <executions>
                     <execution>
