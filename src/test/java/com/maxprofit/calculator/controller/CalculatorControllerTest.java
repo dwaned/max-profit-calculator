@@ -26,17 +26,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(CalculatorController.class)
 public class CalculatorControllerTest {
     /**
-     * The {@link MockMvc} instance that is used to perform HTTP requests against
+     * The {@link MockMvc} instance that is used to perform HTTP requests against.
      */
     @Autowired
     private MockMvc mockMvc;
 
     /**
-     * The {@link ObjectMapper} instance that is used to serialize and deserialize
+     * The {@link ObjectMapper} instance that is used to serialize and deserialize.
      */
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testCalculate() throws Exception {
         CalculationRequest request = new CalculationRequest();
