@@ -11,8 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class CalculatorController {
 
+  /**
+   Calculates the maximum profit that can be made from a given set of stock
+   prices and savings amount.
+   @param request the calculation request containing the savings amount,
+   current prices, and future prices
+   @return the calculation result containing the maximum profit and the
+   indices of the stock prices that should be bought and sold
+   @throws IllegalArgumentException if the request is invalid (e.g., savings
+   amount is negative, prices are not in the correct range)
+   */
   @PostMapping("/calculate")
-  public CalculationResult calculate(@RequestBody CalculationRequest request) {
-    return Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
+  public CalculationResult calculate(
+          @RequestBody final CalculationRequest request) {
+    return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
+            request.getCurrentPrices(), request.getFuturePrices());
   }
 }
