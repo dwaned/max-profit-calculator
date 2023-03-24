@@ -9,7 +9,7 @@ import java.util.List;
 @SuppressWarnings({"checkstyle:LineLength", "checkstyle:OperatorWrap"})
 public final class Stock {
     @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable"})
-    private static final Logger logger = LoggerFactory.getLogger(Stock.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Stock.class);
 
     private Stock() {
 
@@ -72,18 +72,18 @@ public final class Stock {
         final int priceListMaxSize = 100;
 
         if (currentValue.stream().anyMatch(o -> o <= 0) || futureValue.stream().anyMatch(o -> o <= 0)) {
-            logger.debug("Future or current value is 0 or " +
+            LOGGER.debug("Future or current value is 0 or " +
                     "negative");
             return new CalculationResult();
         }
 
         if (currentValue.size() != futureValue.size()) {
-            logger.debug("Future and current prices list sizes do" +
+            LOGGER.debug("Future and current prices list sizes do" +
                     " not match!");
             return new CalculationResult();
         } else {
             if (currentValue.size() > priceListMaxSize) {
-                logger.debug("Future and current prices list " +
+                LOGGER.debug("Future and current prices list " +
                         "sizes are too large!");
                 return new CalculationResult();
             }
@@ -122,10 +122,10 @@ public final class Stock {
                             currentProfit += futureValueItem - currentValueItem;
                         }
 
-                        logger.warn(String.format(
+                        LOGGER.warn(String.format(
                                 "currentProf: %d Max Prof %d",
                                 currentProfit, maxProfit));
-                        logger.warn(String.format("temp:%d " +
+                        LOGGER.warn(String.format("temp:%d " +
                                         "usedSavings %d", tempUsedSaving,
                                 usedSavings));
 
@@ -133,17 +133,17 @@ public final class Stock {
                             chosenIndices.clear();
                             maxProfit = currentProfit;
                             usedSavings = tempUsedSaving;
-                            logger.warn("Profit is higher. " +
+                            LOGGER.warn("Profit is higher. " +
                                     "Storing combination");
                             chosenIndices.add(combination.get(0));
                         } else if ((currentProfit == maxProfit) && (tempUsedSaving < usedSavings)) {
                             chosenIndices.clear();
-                            logger.warn("Profit is same but " +
+                            LOGGER.warn("Profit is same but " +
                                     "using less savings");
                             chosenIndices.add(combination.get(0));
                             usedSavings = tempUsedSaving;
                         } else if ((currentProfit == maxProfit) && (tempUsedSaving == usedSavings)) {
-                            logger.warn("Profit and savings are" +
+                            LOGGER.warn("Profit and savings are" +
                                     " same. Storing combination");
                             chosenIndices.add(combination.get(0));
                         }
@@ -155,9 +155,9 @@ public final class Stock {
             }
         }
 
-        logger.info(String.format("Savings used: %d",
+        LOGGER.info(String.format("Savings used: %d",
                 usedSavings));
-        logger.info(String.format("Chosen Indices: %s",
+        LOGGER.info(String.format("Chosen Indices: %s",
                 chosenIndices));
 
         return new CalculationResult(maxProfit, chosenIndices);
