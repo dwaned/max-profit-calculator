@@ -34,10 +34,10 @@ jobs:
           cache: maven
 
       - name: Step 3 - Run Example Based Unit Tests
-        run: mvn test -Dtest=ExampleBasedTests
+        run: mvn clean test -Dtest=ExampleBasedTests
 
       - name: Step 4 - Run Property Based Unit Tests
-        run: mvn test -Dtest=PropertyBasedStockTests
+        run: mvn clean test -Dtest=PropertyBasedStockTests
 
       - name: Step 5 - Run Mutation Tests
         run: mvn -Ppitest test-compile
