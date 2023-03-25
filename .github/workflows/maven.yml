@@ -52,7 +52,7 @@ jobs:
       - name: Step 6 - Report Example Based Tests
         uses: mikepenz/action-junit-report@v3.7.5
         with:
-          report_paths: "**/target/surefire-reports/*.xml"
+          report_paths: "**/target/surefire-reports/ExampleBasedTests.xml"
           token: ${{ secrets.GITHUB_TOKEN }}
           include_passed: true
           summary: true
