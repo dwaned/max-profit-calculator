@@ -52,6 +52,7 @@ jobs:
       - name: Step 6 - Report jUnit Annotations
         uses: mikepenz/action-junit-report@v3.7.5
         with:
+          report_paths: "**/target/surefire-reports/*.xml"
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Step 7 - Run Cucumber Tests
