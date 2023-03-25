@@ -49,11 +49,14 @@ jobs:
       - name: Step 5 - Run Mutation Tests
         run: mvn -Ppitest test-compile
 
-      - name: Step 6 - Report jUnit Annotations
+      - name: Step 6 - Report Example Based Tests
         uses: mikepenz/action-junit-report@v3.7.5
         with:
           report_paths: "**/target/surefire-reports/*.xml"
           token: ${{ secrets.GITHUB_TOKEN }}
+          include_passed: true
+          summary: true
+          detailed_summary: true
 
       - name: Step 7 - Run Cucumber Tests
         run: mvn test -Dtest="RunCucumberTest"
