@@ -43,29 +43,20 @@ jobs:
       - name: Step 3 - Run Example Based Unit Tests
         run: mvn test -Dtest=ExampleBasedTests
 
-      - name: Step 6 - Report Example Based Tests
-        uses: mikepenz/action-junit-report@v3.7.5
-        with:
-          report_paths: "**/target/surefire-reports/ExampleBasedTests.xml"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          include_passed: true
-          summary: true
-          detailed_summary: true
-
       - name: Step 4 - Run Property Based Unit Tests
         run: mvn test -Dtest=PropertyBasedStockTests
 
-      - name: Step 6 - Report Property Based Tests
+      - name: Step 5 - Run Mutation Tests
+        run: mvn -Ppitest test-compile
+
+      - name: Step 6 - Junit Reports
         uses: mikepenz/action-junit-report@v3.7.5
         with:
-          report_paths: "**/target/surefire-reports/PropertyBasedStockTests.xml"
+          report_paths: "**/target/surefire-reports/*.xml"
           token: ${{ secrets.GITHUB_TOKEN }}
           include_passed: true
           summary: true
           detailed_summary: true
-
-      - name: Step 5 - Run Mutation Tests
-        run: mvn -Ppitest test-compile
 
       - name: Step 7 - Run Cucumber Tests
         run: mvn test -Dtest="RunCucumberTest"
