@@ -18,7 +18,7 @@
         <jqwik.version>1.7.3</jqwik.version>
         <junit.version>5.9.2</junit.version>
         <cucumber.version>7.11.2</cucumber.version>
-        <pitest.version>1.9.7</pitest.version>
+        <pitest.version>1.11.6</pitest.version>
         <pitest-junit5-plugin.version>1.1.2</pitest-junit5-plugin.version>
         <spring-boot.version>3.0.5</spring-boot.version>
         <spring-web.version>6.0.7</spring-web.version>
@@ -290,18 +290,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.9.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>6.0.7</version>
             <scope>test</scope>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-test</artifactId>-->
-<!--            <version>${spring-boot.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
 
         <dependency>
         <groupId>org.hamcrest</groupId>
