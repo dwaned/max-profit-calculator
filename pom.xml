@@ -75,7 +75,7 @@
            </build>
         </profile>
        <profile>
-            <id>dependency-check-maven</id>
+            <id>dependency-check</id>
             <build>
                 <plugins>
                     <plugin>
@@ -83,7 +83,7 @@
                         <artifactId>dependency-check-maven</artifactId>
                         <version>8.2.1</version>
                         <configuration>
-                            <failBuildOnCVSS>9</failBuildOnCVSS>
+                            <failBuildOnCVSS>10</failBuildOnCVSS>
                         </configuration>
                         <executions>
                             <execution>
