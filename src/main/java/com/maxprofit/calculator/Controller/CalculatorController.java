@@ -2,10 +2,7 @@ package com.maxprofit.calculator.Controller;
 
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -22,6 +19,7 @@ public class CalculatorController {
    amount is negative, prices are not in the correct range)
    */
   @PostMapping("/calculate")
+  @CrossOrigin(origins = "http://localhost:3000, 0.0.0.0:3000")
   public CalculationResult calculate(
           @RequestBody final CalculationRequest request) {
     return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
