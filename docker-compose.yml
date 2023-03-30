@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "9095:9095"
+  web:
+    build: ./site/LiveTerm
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
