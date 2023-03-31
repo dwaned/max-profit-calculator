@@ -12,8 +12,6 @@ permissions:
 jobs:
   Containers:
     runs-on: ubuntu-latest
-
-    container: node:10.16-jessie
     steps:
       - name: Step 1 - Checkout the main branch
         uses: actions/checkout@v3
@@ -29,9 +27,11 @@ jobs:
         run: mvn install -DskipTests
 
       - name: Step 4 - Deploy Docker containers
-        run: docker-compose up -d
+        run: |
+          docker-compose up -d
+          docker ps
 
       - name: Step 5 - Curl the app
         run: | 
-          curl -X POST 'localhost:9095/api/calculate' --header 'Content-Type: application/json' 
+          curl --location --request POST 'http://localhost:9095/api/calculate' --header 'Content-Type: application/json' 
           --data '{"savingsAmount": 6,"currentPrices": [1, 2, 5],"futurePrices":[2, 3, 20]}'
