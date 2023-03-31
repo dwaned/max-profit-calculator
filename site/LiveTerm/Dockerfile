@@ -2,7 +2,7 @@ FROM node:18-alpine as base
 
 WORKDIR /home/node/app
 COPY package.json ./
-RUN npm install -g npm-check-updates
+RUN npm install -g npm-check-updates@latest
 RUN ncu -u
 RUN npm install
 COPY . ./
