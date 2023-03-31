@@ -33,4 +33,4 @@ jobs:
 
       - name: Step 5 - Curl the app
         run: | 
-          curl http://site:3000
+          curl http://localhost:9095/health
