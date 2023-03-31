@@ -23,7 +23,7 @@ public class CalculatorController {
    amount is negative, prices are not in the correct range)
    */
   @PostMapping("/calculate")
-  @CrossOrigin(origins = "http://localhost:3000, 0.0.0.0:3000")
+  @CrossOrigin(origins = "http://localhost:3000, http://site:3000, site")
   public CalculationResult calculate(
           @RequestBody final CalculationRequest request) {
     return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),

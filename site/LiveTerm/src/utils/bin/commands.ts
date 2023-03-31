@@ -3,9 +3,9 @@
 import * as bin from './index';
 import config from '../../../config.json';
 import axios from 'axios';
-import Json from 'json5';
 import { ObjectMapper } from 'jackson-js';
-import { TypeReference } from 'typescript';
+
+
 
 // Help
 export const help = async (args: string[]): Promise<string> => {
@@ -31,16 +31,12 @@ export const date = async (args: string[]): Promise<string> => {
 
 export const calculate = async (args?: string[]): Promise<string> => {
   var mapper = new ObjectMapper();
-  const typeRef = {} as TypeReference<List<Integer>>;
-  const currentPrices = mapper.parse(args[1], typeRef);
-  const futurePrices = mapper.parse(args[2], typeRef);
+
+  // const currentPrices = mapper.parse(args[1], typeRef);
+  // const futurePrices = mapper.parse(args[2], typeRef);
 
   return axios
-      .post('http://localhost:9095/api/calculate',{
-        "savingsAmount": Json.parse(args[0]),
-        "currentPrices": currentPrices,
-        "futurePrices": futurePrices,
-      })
+      .post('http://app:9095/api/calculate', "test")
       .then((response) => {
         return JSON.stringify(response.data);
       })

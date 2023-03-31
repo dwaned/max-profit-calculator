@@ -1,7 +1,8 @@
 FROM node:18-alpine as base
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+USER root
+
+RUN apk add --no-cache curl
 
 WORKDIR /home/node/app
 COPY package.json ./
@@ -12,4 +13,4 @@ COPY . ./
 FROM base as production
 
 ENV NODE_PATH=./build
-RUN npm run build
+RUN npm run build --verbose

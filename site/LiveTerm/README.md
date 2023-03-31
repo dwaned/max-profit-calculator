@@ -12,7 +12,7 @@ LiveTerm can be used to build a variety of websites:
 - or maybe just a cool browser music player...be creative!
 
 Feel free to play with the web demo above!
-
+calculate 6 [1,2,5] [2,3,20]
 ## 📸 Showcase
 
 <p align="center">
@@ -85,7 +85,6 @@ Learn more about Docker [here](https://docs.docker.com/get-started/overview/ 'he
   "email": // your email
   "ps1_hostname": "liveterm" // hostname in prompt
   "ps1_username": "visitor", // username in prompt
-  "resume_url": "../resume.pdf", // path to your resume
   "non_terminal_url": "W",
   "colors": {
     "light": {
