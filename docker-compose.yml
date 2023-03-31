@@ -3,6 +3,7 @@ services:
   app:
     build: .
     container_name: app
+    network_mode: "host"
     ports:
       - "9095:9095"
   site:
@@ -11,6 +12,7 @@ services:
       dockerfile: Dockerfile
       target: base
     container_name: site
+    network_mode: "host"
     expose:
       - '3000'
     ports:

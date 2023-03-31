@@ -25,10 +25,12 @@ export const help = async (args: string[]): Promise<string> => {
 `;
 };
 
+// Date
 export const date = async (args: string[]): Promise<string> => {
   return new Date().toString();
 };
 
+// Calculate
 export const calculate = async (args?: string[]): Promise<string> => {
   var mapper = new ObjectMapper();
   const typeRef = { value: Array, elementTypes: [Number] };
@@ -52,14 +54,7 @@ export const calculate = async (args?: string[]): Promise<string> => {
         return JSON.stringify(response.data);
       })
       .catch((error) => {
-        if (error.response) {
-          const er1 = error.response.status.toString();
-          return er1;    
-       } else if (error.request) {
-          return "here" + error.request;
-       } else {
-         return "this" + error.message;
-       }
+        return JSON.stringify(error);
       });
 };
 
