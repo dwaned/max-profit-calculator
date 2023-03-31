@@ -29,4 +29,9 @@ jobs:
         run: mvn install -DskipTests
 
       - name: Step 4 - Deploy Docker containers
-      - run: docker-compose up -d
+        run: docker-compose up -d
+
+      - name: Step 5 - Curl the app
+        run: | 
+          curl -X POST 'localhost:9095/api/calculate' --header 'Content-Type: application/json' 
+          --data '{"savingsAmount": 6,"currentPrices": [1, 2, 5],"futurePrices":[2, 3, 20]}'
