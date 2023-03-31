@@ -5,9 +5,8 @@ USER appuser
 
 WORKDIR /home/node/app
 COPY package.json ./
-RUN npm install -g npm-check-updates@latest
-RUN ncu -u
-RUN npm install
+RUN npm install -g npm-check-updates@latest && ncu -u
+RUN ncu -u && npm install
 COPY . ./
 
 FROM base as production
