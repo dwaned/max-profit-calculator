@@ -29,19 +29,56 @@ export const date = async (args: string[]): Promise<string> => {
   return new Date().toString();
 };
 
+export const test = async (): Promise<String> => {
+  return axios
+    .get("http://app:9095")
+    .then((response) => {
+      return JSON.stringify(response.data);
+    })
+    .catch((error) => {
+      if (error.response) {
+        const er1 = error.response.status.toString();
+        return er1;    
+     } else if (error.request) {
+        return "here" + error.request;
+     } else {
+       return "this" + error.message;
+     }
+    });
+}
+
 export const calculate = async (args?: string[]): Promise<string> => {
   var mapper = new ObjectMapper();
 
   // const currentPrices = mapper.parse(args[1], typeRef);
   // const futurePrices = mapper.parse(args[2], typeRef);
 
+
+  const options = {
+    method: 'POST',
+    url: 'http://app:9095/api/calculate',
+    headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+    data: {
+      "savingsAmount": 6,
+      "currentPrices": [1, 2, 5],
+      "futurePrices": [2, 3, 20],
+    }
+  };
+  
   return axios
-      .post('http://app:9095/api/calculate', "test")
+      .request(options)
       .then((response) => {
         return JSON.stringify(response.data);
       })
       .catch((error) => {
-        return error;
+        if (error.response) {
+          const er1 = error.response.status.toString();
+          return er1;    
+       } else if (error.request) {
+          return "here" + error.request;
+       } else {
+         return "this" + error.message;
+       }
       });
 };
 

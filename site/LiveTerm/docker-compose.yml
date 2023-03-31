@@ -10,7 +10,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: base
-    container_name: site  
+    container_name: site
     expose:
       - '3000'
     ports:

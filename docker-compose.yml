@@ -1,12 +1,22 @@
-version: '3'
+version: '3.7'
 services:
   app:
     build: .
+    container_name: app
     ports:
       - "9095:9095"
-  web:
-    build: ./site/LiveTerm
+  site:
+    build:
+      context: site/LiveTerm
+      dockerfile: Dockerfile
+      target: base
+    container_name: site
+    expose:
+      - '3000'
     ports:
       - "3000:3000"
+    volumes:
+      - ./site/LiveTerm/src/:/home/node/app/src
+    command: npm run dev  
     depends_on:
       - app
