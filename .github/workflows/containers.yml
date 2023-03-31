@@ -10,8 +10,9 @@ permissions:
   contents: read
 
 jobs:
-  container:
+  Containers:
     runs-on: ubuntu-latest
+
     container: node:10.16-jessie
     steps:
       - name: Step 1 - Checkout the main branch
