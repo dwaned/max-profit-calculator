@@ -1,5 +1,8 @@
 FROM node:18-alpine as base
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 WORKDIR /home/node/app
 COPY package.json ./
 RUN npm install -g npm-check-updates@latest
