@@ -33,5 +33,4 @@ jobs:
 
       - name: Step 5 - Curl the app
         run: | 
-          curl --location --request POST 'http://localhost:9095/api/calculate' --header 'Content-Type: application/json' 
-          --data '{"savingsAmount": 6,"currentPrices": [1, 2, 5],"futurePrices":[2, 3, 20]}'
+          curl http://localhost:3000
