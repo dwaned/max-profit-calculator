@@ -1,0 +1,25 @@
+Sending build context to Docker daemon  341.9MB
+Step 1/8 : FROM openjdk:17-jdk-alpine
+ ---> 264c9bdce361
+Step 2/8 : USER root
+ ---> Using cache
+ ---> d5af12a76a53
+Step 3/8 : VOLUME /tmp
+ ---> Using cache
+ ---> 33258fc1795f
+Step 4/8 : ARG JAR_FILE=./target/max-profit-calculator-1.0-SNAPSHOT-jar-with-dependencies.jar
+ ---> Using cache
+ ---> d93c37eaa7a6
+Step 5/8 : WORKDIR /app
+ ---> Using cache
+ ---> 86fa3e6a7ba7
+Step 6/8 : RUN ls
+ ---> Using cache
+ ---> 3a386b607f25
+Step 7/8 : COPY ${JAR_FILE} app.jar
+ ---> Using cache
+ ---> f7b3c89a2476
+Step 8/8 : ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ ---> Using cache
+ ---> fad38f2a4801
+Successfully built fad38f2a4801

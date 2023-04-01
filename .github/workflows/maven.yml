@@ -84,7 +84,7 @@ jobs:
           name: "Cucumber Report"
 
       - name: Step 9 - OWASP Dependency Check
-        run: mvn dependency-check:check
+        run: mvn -Pdependency-check dependency-check:check
 
       - name: Step 10 - Maven Site
         run: mvn -B site --file pom.xml -DskipTests

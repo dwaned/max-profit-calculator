@@ -10,3 +10,6 @@ buildNumber.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 /megalinter-reports/
+/.idea/
+node_modules/
+site/LiveTerm/node_modules
