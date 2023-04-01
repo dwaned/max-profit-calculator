@@ -1,5 +1,8 @@
 FROM node:18-alpine as base
 
+RUN addgroup -S userA
+RUN echo 'userA:x:1000:1000:userA:/home/userA:/bin/bash' >> /etc/passwd
+
 USER root
 
 RUN apk add --no-cache curl
@@ -14,3 +17,5 @@ FROM base as production
 
 ENV NODE_PATH=./build
 RUN npm run build --verbose
+
+USER userA
