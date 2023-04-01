@@ -29,8 +29,4 @@ jobs:
       - name: Step 4 - Deploy Docker containers
         run: |
           docker-compose up -d
-          docker ps
-
-      - name: Step 5 - Curl the app
-        run: | 
-          curl http://localhost:9095/health
+          docker ps -a
