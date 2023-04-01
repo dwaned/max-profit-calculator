@@ -3,6 +3,7 @@ package com.maxprofit.calculator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 @SpringBootApplication
 class MyApplication {
 
