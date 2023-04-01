@@ -7,5 +7,3 @@
 tasks:
   - before: sdk install java 17.0.4.1-tem
   - init: mvn install -DskipTests=false
-
-
