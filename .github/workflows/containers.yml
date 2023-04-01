@@ -32,5 +32,5 @@ jobs:
           docker ps
 
       - name: Step 5 - Curl the app
-        run: | 
+        run: |
           curl http://localhost:9095/health
