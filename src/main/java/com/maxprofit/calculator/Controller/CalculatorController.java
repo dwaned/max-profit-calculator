@@ -4,6 +4,7 @@ import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
 import org.springframework.web.bind.annotation.*;
 
+@SuppressWarnings("checkstyle:LineLength")
 @RestController
 @RequestMapping("/api")
 public class CalculatorController {
@@ -28,7 +29,10 @@ public class CalculatorController {
                 request.getCurrentPrices(), request.getFuturePrices());
     }
 
-    @RequestMapping("/health")
+    /**
+     * @return a simple health check response
+     */
+    @GetMapping("/health")
     @ResponseStatus(org.springframework.http.HttpStatus.OK)
     public String health() {
         return "OK";
