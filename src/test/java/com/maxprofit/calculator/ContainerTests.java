@@ -22,6 +22,7 @@ public class ContainerTests {
     /**
      * Docker compose container.
      */
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     public static DockerComposeContainer environment =
             new DockerComposeContainer(Paths.get("docker-compose-test.yml")
                     .toFile())
