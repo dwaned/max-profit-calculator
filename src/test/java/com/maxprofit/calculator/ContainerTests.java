@@ -20,7 +20,7 @@ import static io.restassured.RestAssured.given;
 public class ContainerTests {
 
     public static DockerComposeContainer environment =
-            new DockerComposeContainer(Paths.get(System.getProperty("user.dir") + "\\docker-compose-test.yml")
+            new DockerComposeContainer(Paths.get("docker-compose-test.yml")
                     .toFile())
                     .withExposedService("site_1", 3000)
                     .withExposedService("app_1", 9095);
