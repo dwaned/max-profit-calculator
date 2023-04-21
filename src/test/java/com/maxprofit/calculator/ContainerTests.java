@@ -15,10 +15,13 @@ import java.time.Duration;
 
 import static io.restassured.RestAssured.given;
 
-@SuppressWarnings("checkstyle:LineLength")
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:MagicNumber"})
 @Testcontainers
 public class ContainerTests {
 
+    /**
+     * Docker compose container.
+     */
     public static DockerComposeContainer environment =
             new DockerComposeContainer(Paths.get("docker-compose-test.yml")
                     .toFile())
@@ -26,6 +29,9 @@ public class ContainerTests {
                     .withExposedService("app_1", 9095);
 
 
+    /**
+     * Set up.
+     */
     @BeforeAll
     public static void setUp() {
         environment.start();
@@ -42,11 +48,17 @@ public class ContainerTests {
 
     }
 
+    /**
+     * Tear down.
+     */
     @AfterAll
     public static void tearDown() {
         environment.stop();
     }
 
+    /**
+     * Test app and site.
+     */
     @Test
     public void testAppAndSite() {
         System.out.println("Starting docker-compose...");
