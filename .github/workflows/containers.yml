@@ -26,7 +26,5 @@ jobs:
       - name: Step 3 - Create JAR file
         run: mvn install -DskipTests
 
-      - name: Step 4 - Deploy Docker containers
-        run: |
-          docker-compose up -d
-          docker ps -a
+      - name: Step 4 - Run Container Tests
+        run: mvn test -Pcontainer-tests
