@@ -123,6 +123,11 @@
                             <includes>
                                 <include>**/ContainerTests.java</include>
                             </includes>
+                            <excludes>
+                                <exclude>**/ExampleBasedTests.java</exclude>
+                                <exclude>**/PropertyBasedStockTests.java</exclude>
+                                <exclude>**/RunCucumberTest.java</exclude>
+                            </excludes>
                         </configuration>
                         <executions>
                             <execution>

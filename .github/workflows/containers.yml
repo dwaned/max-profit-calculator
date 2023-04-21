@@ -27,4 +27,4 @@ jobs:
         run: mvn install -DskipTests
 
       - name: Step 4 - Run Container Tests
-        run: mvn verify -DskipTests -Pcontainer-tests
+        run: mvn verify -Pcontainer-tests
