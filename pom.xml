@@ -117,8 +117,8 @@
             <build>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.22.0</version>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M7</version>
                         <configuration>
                             <includes>
                                 <include>**/ContainerTests.java</include>
@@ -132,8 +132,7 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
+                                    <goal>test</goal>
                                 </goals>
                             </execution>
                         </executions>
