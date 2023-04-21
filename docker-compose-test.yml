@@ -3,12 +3,12 @@ services:
   app:
     build: .
     ports:
-      - '9095:9095'
+      - "9095:9095"
   site:
     build:
-        context: site/LiveTerm
-        dockerfile: Dockerfile
-        target: base
+      context: site/LiveTerm
+      dockerfile: Dockerfile
+      target: base
     expose:
       - "3000"
     ports:
