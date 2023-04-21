@@ -1,11 +1,10 @@
 version: "3.7"
 services:
   app:
-    image: calculator-app
+    build: .
     ports:
       - '9095:9095'
   site:
-    image: calculator-site
     build:
         context: site/LiveTerm
         dockerfile: Dockerfile
