@@ -97,7 +97,7 @@
             </build>
         </profile>
         <profile>
-            <id>container-test</id>
+            <id>container-tests</id>
             <dependencies>
                 <dependency>
                     <groupId>org.testcontainers</groupId>
