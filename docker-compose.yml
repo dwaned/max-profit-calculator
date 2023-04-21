@@ -1,20 +1,25 @@
 version: "3.7"
 services:
   app:
+    image: calculator-app:latest
     build: .
-    container_name: app
     ports:
-      - "9095:9095"
+      - '9095:9095'
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:9095/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   site:
+    image: calculator-site:latest
     build:
       context: site/LiveTerm
       dockerfile: Dockerfile
       target: base
-    container_name: site
     expose:
-      - "3000"
+      - '3000'
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./site/LiveTerm/src/:/home/node/app/src
     command: npm run dev

@@ -6,7 +6,6 @@ import axios from 'axios';
 import { ObjectMapper } from 'jackson-js';
 
 
-
 // Help
 export const help = async (args: string[]): Promise<string> => {
   const commands = Object.keys(bin).sort().join(', ');
@@ -32,10 +31,12 @@ export const date = async (args: string[]): Promise<string> => {
 
 // Calculate
 export const calculate = async (args?: string[]): Promise<string> => {
-  var mapper = new ObjectMapper();
-  const typeRef = { value: Array, elementTypes: [Number] };
-  const currentPrices = mapper.parse(args[1], typeRef);
-  const futurePrices = mapper.parse(args[2], typeRef);
+  if (args === undefined || args.length < 3) {
+    throw new Error('Insufficient arguments');
+  }
+
+  const currentPrices = JSON.parse(args[1]);
+  const futurePrices = JSON.parse(args[2]);
 
   const options = {
     method: 'POST',
@@ -54,8 +55,8 @@ export const calculate = async (args?: string[]): Promise<string> => {
         return JSON.stringify(response.data);
       })
       .catch((error) => {
-        return JSON.stringify(error);
-      });
+        return JSON.stringify(error + "Args were: " + args[0] + " " + args[1] + " " + args[2])
+       });
 };
 
 // Banner
