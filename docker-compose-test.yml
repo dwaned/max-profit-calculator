@@ -14,8 +14,6 @@ services:
       - "3000"
     ports:
       - "3000:3000"
-    volumes:
-      - ./site/LiveTerm/src/:/home/node/app/src
     command: npm run dev
     depends_on:
       - app
