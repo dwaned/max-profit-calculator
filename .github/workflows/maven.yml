@@ -84,7 +84,7 @@ jobs:
           name: "Cucumber Report"
 
       - name: Step 9 - Playwright Tests
-        run: mvn test -Pplaywright-tests"
+        run: mvn test -Pplaywright-tests
 
       - name: Step 10 - OWASP Dependency Check
         run: mvn -Pdependency-check dependency-check:check
