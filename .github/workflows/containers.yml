@@ -38,4 +38,3 @@ jobs:
       - name: Step 7 - Stop Docker-compose
         if: always()
         run: docker-compose down
-
