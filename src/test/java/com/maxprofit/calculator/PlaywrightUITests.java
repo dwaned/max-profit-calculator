@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 public class PlaywrightUITests {
     /**
      * Browser object.
@@ -24,8 +25,7 @@ public class PlaywrightUITests {
      */
     @BeforeEach
     public void setUp() {
-        int sloMo = 50;
-        browser = Playwright.create().chromium().launch(new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(sloMo));
+        browser = Playwright.create().chromium().launch(new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(50));
         page = browser.newPage();
     }
 
@@ -43,10 +43,10 @@ public class PlaywrightUITests {
     @Test
     public void testCalculateUsingUI() {
         page.navigate("http://localhost:3000");
-        Assertions.assertEquals("MAX-PROFIT-CALCULATOR", page.title());
+        Assertions.assertEquals("MAX-PROFIT-CALCULATOR", page.title(), "Did not find expected title");
         page.click("id=prompt");
         page.type("id=prompt", "calculate 1 [1] [2]");
         page.keyboard().press("Enter");
-        Assertions.assertTrue(page.isVisible("xpath=//p[contains(text(), '{\"maxProfit\":1,\"indices\":[[0]]}')]"),"Did not find expected text");
+        Assertions.assertTrue(page.isVisible("xpath=//p[contains(text(), '{\"maxProfit\":1,\"indices\":[[0]]}')]"), "Did not find expected Calculate result");
     }
 }
