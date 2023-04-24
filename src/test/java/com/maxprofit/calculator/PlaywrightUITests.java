@@ -47,6 +47,8 @@ public class PlaywrightUITests {
         page.click("id=prompt");
         page.type("id=prompt", "calculate 1 [1] [2]");
         page.keyboard().press("Enter");
-        Assertions.assertTrue(page.isVisible("xpath=//p[contains(text(), '{\"maxProfit\":1,\"indices\":[[0]]}')]"), "Did not find expected Calculate result");
+        String result = page.textContent("xpath=//p[contains(text(),\"maxProfit\")]").toString();
+        Assertions.assertTrue(page.isVisible("xpath=//p[contains(text(), '{\"maxProfit\":1,\"indices\":[[0]]}')]"),
+                "Did not find expected Calculate result. Found: " + result);
     }
 }
