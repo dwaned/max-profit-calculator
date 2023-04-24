@@ -83,13 +83,10 @@ jobs:
           # the name of the check
           name: "Cucumber Report"
 
-      - name: Step 9 - Playwright Tests
-        run: mvn test -Pplaywright-tests
-
-      - name: Step 10 - OWASP Dependency Check
+      - name: Step 9 - OWASP Dependency Check
         run: mvn -Pdependency-check dependency-check:check
 
-      - name: Step 11 - Maven Site
+      - name: Step 10 - Maven Site
         run: mvn -B site --file pom.xml -DskipTests
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive

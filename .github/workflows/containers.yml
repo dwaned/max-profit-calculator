@@ -28,3 +28,13 @@ jobs:
 
       - name: Step 4 - Run Container Tests
         run: mvn test -Pcontainer-tests
+
+      - name: Step 5 - Deploy Docker-compose
+        run: docker-compose up -d --build
+
+      - name: Step 6 - Run Playwright Tests
+        run: mvn test -Pplaywright-tests
+
+      - name: Step 7 - Stop Docker-compose
+        run: docker-compose down
+
