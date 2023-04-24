@@ -10,7 +10,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PlaywrightUITests {
+    /**
+     * Browser object.
+     */
     private Browser browser;
+    /**
+     * Page object.
+     */
     private Page page;
 
     /**
@@ -18,7 +24,8 @@ public class PlaywrightUITests {
      */
     @BeforeEach
     public void setUp() {
-        browser = Playwright.create().chromium().launch(new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(50));
+        int sloMo = 50;
+        browser = Playwright.create().chromium().launch(new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(sloMo));
         page = browser.newPage();
     }
 
