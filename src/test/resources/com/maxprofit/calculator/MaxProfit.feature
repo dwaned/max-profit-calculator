@@ -1,5 +1,9 @@
 @Cucumber
-Feature: Cucumber Tests for the Max Profit Calculator
+Feature: Max Profit Calculator Engine logic
+
+  This feature contains Regression tests that ensure the Max Profit Calculator logic is not modified unexpectedly.
+  Tests do not make use of the UI or the API, but rather test the logic of the Max Profit Calculator Engine.
+  The main usage for these tests is to present the expected behavior of the Max Profit Calculator in a readable format.
 
 Scenario: Max Profit obtained without using all savings
   Given I have 6 Euros of savings
