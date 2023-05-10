@@ -91,6 +91,9 @@ public class ContainerTests {
         System.out.println("Site is up and running");
     }
 
+    /**
+     * Test api docs.
+     */
     @Test
     public void testApiDocs() {
         System.out.println("Starting docker-compose...");
