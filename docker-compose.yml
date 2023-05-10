@@ -1,8 +1,9 @@
 version: "3.7"
 services:
   app:
-    image: calculator-app:latest
     build: .
+    expose:
+      - 9095
     ports:
       - "9095:9095"
     healthcheck:
@@ -17,7 +18,7 @@ services:
       dockerfile: Dockerfile
       target: base
     expose:
-      - "3000"
+      - 3000
     ports:
       - "3000:3000"
     volumes:
