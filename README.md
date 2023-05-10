@@ -13,7 +13,7 @@ Challenge:
 The inputs are:
  - Savings: An Integer representing a monetary value
  - Current Prices: A list of 1 or more stock prices, only identified by the index in the list
- - Future Prices: Yeah... in this fictious world, the system knows the future expected prices of the stock
+ - Future Prices: Yeah... in this fictitious world, the system knows the future expected prices of the stock
     corresponding by index to the current prices list.
 
  The outputs are:
