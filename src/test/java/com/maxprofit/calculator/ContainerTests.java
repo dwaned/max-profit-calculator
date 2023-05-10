@@ -91,4 +91,26 @@ public class ContainerTests {
         System.out.println("Site is up and running");
     }
 
+    /**
+     * Test api docs.
+     */
+    @Test
+    public void testApiDocs() {
+        System.out.println("Starting docker-compose...");
+
+        Integer appMappedPort = environment.getServicePort("app", 9095);
+
+        // Send a request to the app container
+        given().baseUri("http://localhost:" + appMappedPort).basePath("/api")
+                .when().get("/v3/api-docs")
+                .then().statusCode(200);
+        System.out.println("Api docs are available");
+
+        // Send request to Swagger UI site
+        given().baseUri("http://localhost:" + appMappedPort).basePath("/api")
+                .when().get("/swagger-ui.html")
+                .then().statusCode(200);
+        System.out.println("Swagger UI is up and running");
+    }
+
 }

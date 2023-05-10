@@ -1,22 +1,16 @@
-FROM maven:3.9.0-eclipse-temurin-17-alpine AS build
-COPY src /usr/src/app/src
-COPY pom.xml /usr/src/app
+FROM maven:3.8.3-openjdk-17-slim AS build
+WORKDIR /docker
+COPY pom.xml .
+COPY src src
+RUN mvn clean install -DskipTests
 
-RUN addgroup -S userA
-RUN echo 'userA:x:1000:1000:userA:/home/userA:/bin/bash' >> /etc/passwd
-
-USER root
-
-RUN apk add --no-cache curl
-
-RUN mvn -f /usr/src/app/pom.xml clean install -DskipTests
-
-VOLUME /tmp
-ARG JAR_FILE=./target/max-profit-calculator-1.0-SNAPSHOT-jar-with-dependencies.jar
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY ${JAR_FILE} app.jar
+COPY --from=build /docker/target/max-profit-calculator-1.0-SNAPSHOT-jar-with-dependencies.jar app.jar
+
+RUN groupadd -r userA
+RUN echo 'userA:x:1000:1000:userA:/home/userA:/bin/bash' >> /etc/passwd
 
 USER userA
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
-
+ENTRYPOINT ["java", "-jar", "app.jar"]

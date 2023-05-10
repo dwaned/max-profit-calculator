@@ -21,7 +21,7 @@
         <pitest.version>1.9.7</pitest.version>
         <pitest-junit5-plugin.version>1.1.2</pitest-junit5-plugin.version>
         <spring-boot.version>3.0.6</spring-boot.version>
-        <spring-web.version>6.0.6</spring-web.version>
+        <spring-web.version>6.0.8</spring-web.version>
         <rest-assured.version>5.3.0</rest-assured.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
     </properties>
@@ -260,25 +260,22 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.4.2</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.maxprofit.calculator.MyApplication</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
+                    <mainClass>com.maxprofit.calculator.MyApplication</mainClass>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-my-jar-with-dependencies</id>
-                        <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>repackage</goal>
                         </goals>
+                        <configuration>
+                            <classifier>jar-with-dependencies</classifier>
+                            <mainClass>com.maxprofit.calculator.MyApplication</mainClass>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -433,6 +430,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>net.jqwik</groupId>
             <artifactId>jqwik</artifactId>
             <version>${jqwik.version}</version>
@@ -510,17 +514,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>1.33.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.microsoft.playwright</groupId>
-            <artifactId>playwright</artifactId>
-            <version>1.32.0</version>
-            <scope>test</scope>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
     </dependencies>
