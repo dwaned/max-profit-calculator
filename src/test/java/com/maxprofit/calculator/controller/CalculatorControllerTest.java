@@ -50,7 +50,7 @@ public class CalculatorControllerTest {
 
 
 
-        mockMvc.perform(post("/api/calculate")
+        mockMvc.perform(post("/calculate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
