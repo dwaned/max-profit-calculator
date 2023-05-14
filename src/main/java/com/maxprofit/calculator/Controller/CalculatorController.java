@@ -2,6 +2,7 @@ package com.maxprofit.calculator.Controller;
 
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,8 @@ public class CalculatorController {
      * @throws IllegalArgumentException if the request is invalid (e.g., savings
      *                                  amount is negative, prices are not in the correct range)
      */
-    @PostMapping("/calculate")
+    @PostMapping(value = "/calculate", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(org.springframework.http.HttpStatus.OK)
     @CrossOrigin(origins = "http://localhost:3000, http://site:3000")
     public CalculationResult calculate(
@@ -37,7 +39,7 @@ public class CalculatorController {
     /**
      * @return a simple health check response
      */
-    @GetMapping("/health")
+    @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(org.springframework.http.HttpStatus.OK)
     public String health() {
         return "OK";
