@@ -1,6 +1,9 @@
 name: mvn Versions Checker
 on:
   workflow_dispatch
+
+permissions: read-all
+  
 jobs:
   npm:
     runs-on: ubuntu-latest
