@@ -1,10 +1,11 @@
 name: mvn Versions Checker
-on:
-  workflow_dispatch
+on: workflow_dispatch
+
+permissions: read-all
+
 jobs:
   npm:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - run: mvn versions:display-dependency-updates
-    
+      - uses: actions/checkout@v1
+      - run: mvn versions:display-dependency-updates
