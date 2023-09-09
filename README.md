@@ -1,27 +1,30 @@
-# max-profit-calculator [WIP]
-This was a coding test for an interview process.
+# max-profit-calculator
+_This was a coding test for an SDET interview process._
 
-TLDR - My aim is to use this repo as a playground for applying various testing tools/techniques in different levels, on top of a simple application.
+```
+TLDR: The aim is to use this repo as a playground for applying
+various testing tools/techniques in different levels, on top of a simple application.
+```
 
 -----
 
-Challenge:
+**Challenge:**
 - Given 2 Arrays containing the current price and the forecasted future price of a set of stocks,
 - When a value of savings is entered
 - Then the system should output which combination of indices from the first Array to choose so that with the available savings amount, the maximum profit is returned.
 
-The inputs are:
+**The inputs are:**
 - Savings: An Integer representing a monetary value
 - Current Prices: A list of 1 or more stock prices, only identified by the index in the list
 - Future Prices: Yeah... in this fictitious world, the system knows the future expected prices of the stock
     corresponding by index to the current prices list.
 
- The outputs are:
+**The outputs are:**
 - A list of 0 or more indices corresponding to the combination of current prices stocks that would give the
     maximum profit based on the available savings
 - An integer value of the maximum profit returned with the combination of indices
 
-Example:
+**Example:**
 
 - Savings value: 5
 - Current prices Array [4,1,3]

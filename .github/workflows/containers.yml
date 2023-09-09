@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   Containers:
@@ -35,6 +36,24 @@ jobs:
       - name: Step 6 - Run Playwright Tests
         run: mvn test -Pplaywright-tests
 
-      - name: Step 7 - Stop Docker-compose
+      - name: Step 7 - OWASP ZAP API Scan
+        # You may pin to the exact commit or the version.
+        # uses: zaproxy/action-full-scan@6eade0f93b10fad8cfb4e63b979703a2cbd0cc98
+        uses: zaproxy/action-full-scan@v0.4.0
+        with:
+          # GitHub Token to create issues in the repository
+          token: ${{ github.token }}
+          # Target URL
+          target: http://localhost:9095/api/v3/api-docs
+          # Format openapi, soap or graphql
+          format: openapi
+          # The Docker file to be executed
+          docker_name: owasp/zap2docker-stable
+          # The title for the GitHub issue to be created
+          issue_title: ZAP API Scan Report
+          # The action will file the report to the GitHub issue using the issue_title input
+          allow_issue_writing: true
+
+      - name: Step 8 - Stop Docker-compose
         if: always()
         run: docker-compose down
