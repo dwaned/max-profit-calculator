@@ -45,8 +45,6 @@ jobs:
           token: ${{ github.token }}
           # Target URL
           target: http://localhost:9095/api/v3/api-docs
-          # Format openapi, soap or graphql
-          format: openapi
           # The Docker file to be executed
           docker_name: owasp/zap2docker-stable
           # The title for the GitHub issue to be created
