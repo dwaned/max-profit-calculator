@@ -13,7 +13,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <logback.version>1.4.11</logback.version>
+        <logback.version>1.4.12</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.8</jacoco.version>
         <jqwik.version>1.7.3</jqwik.version>
