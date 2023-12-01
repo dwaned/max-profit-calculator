@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: gitboard-io/gitboard-action@main
       with:
-        username: dwaned
+        username: ${{ secrets.GITBOARD_ID }}
         key: ${{ secrets.GITBOARD_TOKEN }}
     
     - name: Step 1 - Checkout the main branch
