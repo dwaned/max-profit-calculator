@@ -13,7 +13,14 @@ permissions:
 jobs:
   Containers:
     runs-on: ubuntu-latest
+    
     steps:
+      - uses: gitboard-io/gitboard-action@main
+        with:
+          username: dwaned
+          key: ${{ secrets.GITBOARD_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Step 1 - Checkout the main branch
         uses: actions/checkout@v3
 
