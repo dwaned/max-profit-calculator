@@ -1,4 +1,6 @@
 # max-profit-calculator
+[![MegaLinter](https://github.com/dwaned/max-profit-calculator/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/dwaned/max-profit-calculator/actions/workflows/mega-linter.yml)
+
 _This was a coding test for an SDET interview process._
 
 ```
