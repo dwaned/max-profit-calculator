@@ -38,7 +38,7 @@ jobs:
       run: mvn test -Pcontainer-tests
 
     - name: Step 5 - Deploy Docker-compose
-      run: docker-compose up -d --build
+      run: docker compose up -d --build
 
     - name: Step 6 - Run Playwright Tests
       run: mvn test -Pplaywright-tests
@@ -61,4 +61,4 @@ jobs:
 
     - name: Step 8 - Stop Docker-compose
       if: always()
-      run: docker-compose down
+      run: docker compose down
