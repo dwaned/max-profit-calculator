@@ -4,9 +4,40 @@
 _This was a coding test for an SDET interview process._
 
 ```
-TLDR: The aim is to use this repo as a playground for applying
-various testing tools/techniques in different levels, on top of a simple application.
+TLDR: This repository serves as a learning project and a testing ground for exploring and implementing various software testing strategies.
+It features a simple "Max Profit Calculator" application as the subject of these tests.
+The goal is to demonstrate different testing approaches and their effectiveness in ensuring code quality and correctness.
 ```
+
+## Project Description
+
+The Max Profit Calculator determines the maximum profit that can be obtained by buying and selling a stock once, given an array of stock prices where each index represents a point in time.
+
+## Testing Strategies Employed
+
+This project showcases a range of testing strategies, including:
+
+* **Unit Testing:** Using JUnit to test individual units (classes and methods) of the application in isolation.
+* **Integration Testing:**  Verifying the interaction between different components of the application.
+* **End-to-End Testing:** Employing Cucumber to test the application's behavior from start to finish, simulating user interactions.
+* **Property-Based Testing:** Utilizing Jqwik to generate test cases based on properties and constraints, enabling broader test coverage.
+* **Mutation Testing:** Applying PITest to assess the effectiveness of the test suite by introducing small changes to the code and checking if tests can detect them.
+
+## Tools and Technologies
+
+* **Java:** The primary programming language for the application.
+* **JUnit:**  Framework for unit testing.
+* **Cucumber:** Framework for behavior-driven development and end-to-end testing.
+* **Jqwik:**  Library for property-based testing.
+* **PITest:**  Mutation testing tool.
+* **Gradle:** Build automation tool.
+* **GitHub Actions:**  Continuous integration and continuous delivery (CI/CD) platform for automating the build, test, and deployment pipeline.
+
+## Getting Started
+
+1. **Clone the repository:** `git clone https://github.com/dwaned/max-profit-calculator.git`
+2. **Build the project:**  `./gradlew build`
+3. **Run the tests:** `./gradlew test`
 
 -----
 
