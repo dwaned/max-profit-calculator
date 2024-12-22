@@ -29,12 +29,7 @@ jobs:
       actions: write
       checks: write
 
-    steps:
-      - uses: gitboard-io/gitboard-action@main
-        with:
-          username: ${{ secrets.GITBOARD_ID }}
-          key: ${{ secrets.GITBOARD_TOKEN }}
-          
+    steps:        
       - name: Step 1 - Checkout the main branch
         uses: actions/checkout@v3
 
