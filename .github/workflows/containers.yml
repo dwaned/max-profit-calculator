@@ -11,7 +11,7 @@ permissions:
   contents: read
   issues: write
   security-events: write
-  packages: read  # Added for Docker registry access
+  packages: read # Added for Docker registry access
 
 jobs:
   container-tests:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Pull OWASP ZAP Docker image
         run: docker pull owasp/zap2docker-stable
-        
+
       - name: OWASP ZAP API Scan
         uses: zaproxy/action-full-scan@v0.7.0
         env:
