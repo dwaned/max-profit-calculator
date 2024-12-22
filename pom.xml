@@ -13,19 +13,20 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <logback.version>1.4.12</logback.version>
+        <logback.version>1.4.14</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.8</jacoco.version>
+        <jackson.version>2.15.3</jackson.version> 
         <jqwik.version>1.7.3</jqwik.version>
         <junit.version>5.10.0</junit.version>
         <cucumber.version>7.14.0</cucumber.version>
         <pitest.version>1.9.7</pitest.version>
         <pitest-junit5-plugin.version>1.1.2</pitest-junit5-plugin.version>
         <playwright.version>1.37.0</playwright.version>
-        <spring-boot.version>3.1.3</spring-boot.version>
+        <spring-boot.version>3.2.2</spring-boot.version>
         <spring-web.version>6.0.8</spring-web.version>
         <rest-assured.version>5.3.2</rest-assured.version>
-        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>                
     </properties>
 
     <profiles>
@@ -108,24 +109,29 @@
        <profile>
             <id>dependency-check</id>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                        <version>8.2.1</version>
-                        <configuration>
-                            <failBuildOnCVSS>10</failBuildOnCVSS>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+                 <plugins>
+                     <plugin>
+                         <groupId>org.owasp</groupId>
+                         <artifactId>dependency-check-maven</artifactId>
+                         <version>8.2.1</version>
+                         <configuration>
+                             <failBuildOnCVSS>7</failBuildOnCVSS>
+                             <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                             <formats>
+                                 <format>HTML</format>
+                                 <format>JSON</format>
+                             </formats>
+                         </configuration>
+                         <executions>
+                             <execution>
+                                 <goals>
+                                     <goal>check</goal>
+                                 </goals>
+                             </execution>
+                         </executions>
+                     </plugin>
+                 </plugins>
+             </build>
         </profile>
         <profile>
             <id>container-tests</id>
@@ -473,7 +479,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
