@@ -47,13 +47,13 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
           cache: maven
 
       - name: Build JAR
         run: mvn install -DskipTests
-        
+
       - name: Run Container Tests
         run: mvn test -Pcontainer-tests
         env:
@@ -76,9 +76,9 @@ jobs:
         uses: zaproxy/action-full-scan@v0.7.0
         with:
           token: ${{ github.token }}
-          target: 'http://localhost:9095/api/v3/api-docs'
-          docker_name: 'owasp/zap2docker-stable'
-          issue_title: 'ZAP API Scan Report'
+          target: "http://localhost:9095/api/v3/api-docs"
+          docker_name: "owasp/zap2docker-stable"
+          issue_title: "ZAP API Scan Report"
           allow_issue_writing: true
           fail_action: false
 
@@ -90,7 +90,7 @@ jobs:
           path: |
             target/surefire-reports/
             test-results/
-            
+
       - name: Cleanup
         if: always()
         run: |
