@@ -63,9 +63,11 @@ jobs:
       - name: Run Container Tests
         run: mvn test -Pcontainer-tests
         env:
-          TESTCONTAINERS_RYUK_DISABLED: true
-          DOCKER_HOST: "unix:///var/run/docker.sock"
-          MAVEN_OPTS: "-Xmx2048m"
+          DOCKER_HOST: ${{steps.setup_docker.outputs.sock}}
+        # env:
+        #   TESTCONTAINERS_RYUK_DISABLED: true
+        #   DOCKER_HOST: "unix:///var/run/docker.sock"
+        #   MAVEN_OPTS: "-Xmx2048m"
 
       - name: Build and Start Docker Compose
         run: |
