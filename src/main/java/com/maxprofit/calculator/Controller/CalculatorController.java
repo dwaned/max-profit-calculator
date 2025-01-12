@@ -1,4 +1,4 @@
-package com.maxprofit.calculator.Controller;
+package com.maxprofit.calculator.controller;
 
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;

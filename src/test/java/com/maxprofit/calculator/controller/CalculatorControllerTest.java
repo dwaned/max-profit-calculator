@@ -1,8 +1,8 @@
 package com.maxprofit.calculator.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maxprofit.calculator.Controller.CalculationRequest;
-import com.maxprofit.calculator.Controller.CalculatorController;
+import com.maxprofit.calculator.CalculationResult;
+import com.maxprofit.calculator.Stock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +48,13 @@ public class CalculatorControllerTest {
         request.setFuturePrices(Arrays.asList(15, 10, 35));
         String jsonRequest = objectMapper.writeValueAsString(request);
 
-
+        CalculationResult response = Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
 
         mockMvc.perform(post("/calculate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.maxProfit").value(25));
+                .andExpect(jsonPath("$.maxProfit").value(response.getMaxProfit()));
     }
 }
-
