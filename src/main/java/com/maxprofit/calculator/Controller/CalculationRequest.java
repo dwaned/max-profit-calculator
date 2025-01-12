@@ -1,4 +1,4 @@
-package com.maxprofit.calculator.Controller;
+package com.maxprofit.calculator.controller;
 
 import java.util.List;
 
@@ -30,5 +30,4 @@ public class CalculationRequest {
     public void setFuturePrices(List<Integer> futurePrices) {
         this.futurePrices = futurePrices;
     }
-
 }

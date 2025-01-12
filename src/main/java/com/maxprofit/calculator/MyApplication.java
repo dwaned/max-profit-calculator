@@ -5,13 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 @SpringBootApplication
-class MyApplication {
+public class MyApplication {
 
     /**
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
-
         SpringApplication.run(MyApplication.class, args);
     }
 }
