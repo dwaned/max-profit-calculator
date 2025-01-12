@@ -1,22 +1,27 @@
 version: '3.7'
 services:
   app:
-    build: ../../
-    container_name: app
+    build: .
+    expose:
+      - 9095
     ports:
       - '9095:9095'
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:9095/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 5
   site:
+    image: calculator-site # Image name without the tag
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: base
-    container_name: site
+      context: ./site/LiveTerm # Building the frontend
+      dockerfile: Dockerfile # The frontend Dockerfile
     expose:
-      - '3000'
+      - 3000
     ports:
       - '3000:3000'
     volumes:
-      - ./src/:/home/node/app/src
+      - ./site/LiveTerm/src/:/home/node/app/src
     command: npm run dev
     depends_on:
       - app
