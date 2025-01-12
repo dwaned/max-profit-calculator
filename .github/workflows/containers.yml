@@ -22,23 +22,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          install: true
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
+      #   with:
+      #     install: true
 
-      # This is important for Testcontainers
-      - name: Set up Docker daemon
-        run: |
-          sudo mkdir -p /etc/docker
-          echo '{
-            "features": {
-              "buildkit": true
-            },
-            "experimental": true
-          }' | sudo tee /etc/docker/daemon.json
-          sudo service docker start
-          sudo chmod 666 /var/run/docker.sock
+      # # This is important for Testcontainers
+      # - name: Set up Docker daemon
+      #   run: |
+      #     sudo mkdir -p /etc/docker
+      #     echo '{
+      #       "features": {
+      #         "buildkit": true
+      #       },
+      #       "experimental": true
+      #     }' | sudo tee /etc/docker/daemon.json
+      #     sudo service docker start
+      #     sudo chmod 666 /var/run/docker.sock
+
+      - name: Install Stable Docker
+        id: setup_docker
+        uses: docker/setup-docker-action@v4
+        with:
+          channel: stable
+          rootless: true
+
+      - name: Check Docker version
+        run: docker version
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
