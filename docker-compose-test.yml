@@ -1,10 +1,21 @@
 version: "3.7"
 services:
   app:
+    platform: linux/arm64/v8  # Specify ARM64 platform
     build: .
     ports:
       - "9095:9095"
+    environment:
+      - SPRING_PROFILES_ACTIVE=test
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:9095/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   site:
+    # image: node:18-alpine
     build:
       context: site/LiveTerm
       dockerfile: Dockerfile
@@ -15,4 +26,10 @@ services:
       - "3000:3000"
     command: npm run dev
     depends_on:
-      - app
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

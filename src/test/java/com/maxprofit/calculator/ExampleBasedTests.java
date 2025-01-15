@@ -153,5 +153,14 @@ class ExampleBasedTests {
         assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
     }
+
+    @Test
+    void shouldReturnErrorCurrentAndFuturePricesAreDifferentSizes() {
+        CalculationResult actualReturnIndicesMaxProfitResult =
+                Stock.returnIndicesMaxProfit(1,
+                Collections.singletonList(1), Arrays.asList(1, 2));
+        assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
+        assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
+    }
 }
 

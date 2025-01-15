@@ -36,8 +36,8 @@ This project showcases a range of testing strategies, including:
 ## Getting Started
 
 1. **Clone the repository:** `git clone https://github.com/dwaned/max-profit-calculator.git`
-2. **Build the project:**  `./gradlew build`
-3. **Run the tests:** `./gradlew test`
+2. **Build the project:**  `mvn clean install`
+3. **Run the tests:** `mvn test -Pcontainertest`
 
 -----
 

@@ -29,34 +29,43 @@ export const date = async (args: string[]): Promise<string> => {
   return new Date().toString();
 };
 
-// Calculate
 export const calculate = async (args?: string[]): Promise<string> => {
-  if (args === undefined || args.length < 3) {
-    throw new Error('Insufficient arguments');
+  if (!args || args.length === 0) {
+    return `Please provide the savings amount as the first argument.`;
+  } else if (args.length === 1) {
+    return `You entered savings amount: ${args[0]}
+      Please provide the current prices (example: [12, 16]) as the second argument.`;
+  } else if (args.length === 2) {
+    return `You entered savings amount: ${args[0]}
+      You entered current prices: ${args[1]}
+      Please provide the future prices (example: [10,13]) as the third argument.`;
   }
 
-  const currentPrices = JSON.parse(args[1]);
-  const futurePrices = JSON.parse(args[2]);
+  try {
+    const currentPrices = JSON.parse(args[1]);
+    const futurePrices = JSON.parse(args[2]);
 
-  const options = {
-    method: 'POST',
-    url: 'http://localhost:9095/api/calculate',
-    headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-    data: {
-      "savingsAmount": args[0],
-      "currentPrices": currentPrices,
-      "futurePrices": futurePrices,
+    const response = await axios.request({
+      method: 'POST',
+      url: 'http://localhost:9095/api/calculate',
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      data: {
+        savingsAmount: args[0],
+        currentPrices,
+        futurePrices
+      }
+    });
+    const { maxProfit, indices } = response.data;
+    if (maxProfit === 0) {
+      return 'No possible profit can be done or invalid input. Ensure that the sizes of the current and future prices are the same.';
     }
-  };
-  
-  return axios
-      .request(options)
-      .then((response) => {
-        return JSON.stringify(response.data);
-      })
-      .catch((error) => {
-        return JSON.stringify(error + "Args were: " + args[0] + " " + args[1] + " " + args[2])
-       });
+    return `The max profit possible is ${maxProfit} with choosing stocks with index ${indices}`;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return 'Invalid JSON format in prices data. Please check your input.';
+    }
+    return 'An error occurred while calculating. Please check your input and try again.';
+  }
 };
 
 // Banner

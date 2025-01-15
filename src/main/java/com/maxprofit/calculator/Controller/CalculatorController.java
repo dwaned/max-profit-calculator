@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @SuppressWarnings("checkstyle:LineLength")
 @RestController
@@ -32,8 +34,12 @@ public class CalculatorController {
     @CrossOrigin(origins = "http://localhost:3000, http://site:3000")
     public CalculationResult calculate(
             @RequestBody final CalculationRequest request) {
-        return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
-                request.getCurrentPrices(), request.getFuturePrices());
+        try {
+            return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
+                    request.getCurrentPrices(), request.getFuturePrices());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: " + e.getMessage());
+        }
     }
 
     /**

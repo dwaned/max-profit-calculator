@@ -1,17 +1,15 @@
-FROM node:18-alpine as base
-
-RUN addgroup -g 1001 nodejs && \
-    adduser -D -u 1001 -G nodejs nodejs
-
+FROM node:18-alpine AS base
 
 WORKDIR /home/node/app
 COPY package.json ./
-RUN npm install -g npm-check-updates@latest && ncu -u
-RUN ncu -u && npm install
+
+# If you have a lock file
+COPY package-lock.json ./
+RUN npm install --legacy-peer-deps
 COPY . ./
 
-FROM base as production
+FROM base AS production
 
 ENV NODE_PATH=./build
-USER nodejs
+USER node
 RUN npm run build --verbose
