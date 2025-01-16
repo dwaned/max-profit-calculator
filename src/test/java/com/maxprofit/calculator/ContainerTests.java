@@ -22,7 +22,6 @@ public class ContainerTests {
      * This static field represents the Docker environment configuration used across tests.
      * The {@link DockerComposeContainer} allows for setting up and managing Docker containers
      * during test execution.
-     * 
      * Note: The checkstyle visibility modifier warning is suppressed for this field.
      */
     @SuppressWarnings("checkstyle:VisibilityModifier")
@@ -58,6 +57,19 @@ public class ContainerTests {
         }
     }
 
+    /**
+     * Tests the application and site endpoints.
+     * 
+     * This test performs the following:
+     * 1. Retrieves the service ports for the "app" and "site" services.
+     * 2. Tests the "app" service by sending a POST request to the "/calculate" endpoint with a JSON body containing:
+     *    - savingsAmount: 6
+     *    - currentPrices: [1, 2, 5]
+     *    - futurePrices: [2, 3, 20]
+     *    The response is expected to have a status code of 200 and a JSON body with "maxProfit" equal to 16.
+     * 3. Tests the "site" service by sending a GET request to the root endpoint ("/").
+     *    The response is expected to have a status code of 200.
+     */
     @Test
     public void testAppAndSite() {
         Integer appPort = environment.getServicePort("app", 9095);
