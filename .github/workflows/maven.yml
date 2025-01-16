@@ -45,11 +45,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 4 - Run Unit Tests
-        working-directory: ./max-profit-calculator
         run: mvn test -Dtest=ExampleBasedTests
 
       - name: Step 5 - Run Property Based Tests
-        working-directory: ./max-profit-calculator
         run: mvn test -Dtest=PropertyBasedStockTests
 
   MutationTests:
@@ -60,7 +58,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 7 - Run Mutation Tests
-        working-directory: ./max-profit-calculator
         run: mvn -Ppitest test-compile
 
   JUnitReports:
@@ -71,7 +68,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 9 - Generate JUnit Reports
-        working-directory: ./max-profit-calculator
         run: |
           npx action-junit-report \
             --github-token ${{ secrets.GITHUB_TOKEN }} \
@@ -88,7 +84,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 11 - Run Cucumber Tests
-        working-directory: ./max-profit-calculator
         run: mvn test -Dtest="RunCucumberTest"
 
   CucumberReportAnnotations:
@@ -99,7 +94,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 13 - Generate Cucumber Report Annotations
-        working-directory: ./max-profit-calculator
         run: |
           npx cucumber-report-annotations-action \
             --access-token ${{ secrets.GITHUB_TOKEN }} \
@@ -118,7 +112,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 15 - OWASP Dependency Check
-        working-directory: ./max-profit-calculator
         run: mvn -Pdependency-check dependency-check:check
         continue-on-error: true
 
@@ -130,7 +123,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 17 - Generate Maven Site
-        working-directory: ./max-profit-calculator
         run: mvn -B site --file pom.xml -DskipTests
 
   MavenDependencyTreeSubmission:
@@ -141,7 +133,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 19 - Submit Maven Dependency Tree
-        working-directory: ./max-profit-calculator
         run: mvn dependency:tree
 
   ParallelTests:
@@ -155,5 +146,4 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Matrix Tests
-        working-directory: ./max-profit-calculator
         run: mvn test -Dtest=${{ matrix.test }}
