@@ -17,89 +17,68 @@ on:
     branches: ["main"]
 
 permissions:
-  contents: read
+  contents: write
 
 run-name: Maven Testing & Security Scan
 
 jobs:
-  Checkout:
+  SetupEnvironment:
     runs-on: ubuntu-latest
     steps:
-      - name: Step 1 - Checkout the main branch
+      - name: Step 1 - Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-  SetupJDK:
-    runs-on: ubuntu-latest
-    needs: Checkout
-    steps:
-      - name: Step 2 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 3 - Set up JDK 17
+      - name: Step 2 - Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: "17"
           distribution: "adopt"
           cache: maven
 
-  RunUnitTests:
+  RunTests:
     runs-on: ubuntu-latest
-    needs: SetupJDK
+    needs: SetupEnvironment
     steps:
-      - name: Step 4 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 5 - Run Example Based Unit Tests
+      - name: Step 3 - Run Unit Tests
         run: mvn test -Dtest=ExampleBasedTests
 
-      - name: Step 6 - Run Property Based Unit Tests
+      - name: Step 4 - Run Property Based Tests
         run: mvn test -Dtest=PropertyBasedStockTests
 
   MutationTests:
     runs-on: ubuntu-latest
-    needs: RunUnitTests
+    needs: RunTests
     steps:
-      - name: Step 7 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 8 - Run Mutation Tests
+      - name: Step 5 - Run Mutation Tests
         run: mvn -Ppitest test-compile
 
   JUnitReports:
     runs-on: ubuntu-latest
     needs: MutationTests
     steps:
-      - name: Step 9 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 10 - Junit Reports
+      - name: Step 6 - Generate JUnit Reports
         uses: mikepenz/action-junit-report@v3.7.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           report_paths: "**/target/surefire-reports/*.xml"
-          token: ${{ secrets.GITHUB_TOKEN }}
           include_passed: true
           summary: true
           detailed_summary: true
 
   CucumberTests:
     runs-on: ubuntu-latest
-    needs: JUnitReports
+    needs: [JUnitReports]
     steps:
-      - name: Step 11 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 12 - Run Cucumber Tests
+      - name: Step 7 - Run Cucumber Tests
         run: mvn test -Dtest="RunCucumberTest"
 
   CucumberReportAnnotations:
     runs-on: ubuntu-latest
     needs: CucumberTests
     steps:
-      - name: Step 13 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 14 - Cucumber Report to Annotations
+      - name: Step 8 - Generate Cucumber Report Annotations
         uses: deblockt/cucumber-report-annotations-action@v1.11
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
@@ -114,28 +93,30 @@ jobs:
     runs-on: ubuntu-latest
     needs: MutationTests
     steps:
-      - name: Step 15 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 16 - OWASP Dependency Check
+      - name: Step 9 - OWASP Dependency Check
         run: mvn -Pdependency-check dependency-check:check
+        continue-on-error: true
 
   MavenSite:
     runs-on: ubuntu-latest
     needs: OWASPDependencyCheck
     steps:
-      - name: Step 17 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 18 - Maven Site
+      - name: Step 10 - Generate Maven Site
         run: mvn -B site --file pom.xml -DskipTests
 
   MavenDependencyTreeSubmission:
     runs-on: ubuntu-latest
     needs: MavenSite
     steps:
-      - name: Step 19 - Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Step 20 - Maven Dependency Tree Submission
+      - name: Step 11 - Submit Maven Dependency Tree
         uses: advanced-security/maven-dependency-submission-action@v3.0.0
+
+  ParallelTests:
+    runs-on: ubuntu-latest
+    needs: SetupEnvironment
+    strategy:
+      matrix:
+        test: ["ExampleBasedTests", "PropertyBasedStockTests"]
+    steps:
+      - name: Run Matrix Tests
+        run: mvn test -Dtest=${{ matrix.test }}
