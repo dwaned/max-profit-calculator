@@ -19,6 +19,8 @@ on:
 permissions:
   contents: read
 
+run-name: Maven Testing & Security Scan
+
 jobs:
   MaxProfitCalculator:
     runs-on: ubuntu-latest

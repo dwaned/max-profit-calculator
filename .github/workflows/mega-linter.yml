@@ -21,6 +21,8 @@ concurrency:
 
 permissions: read-all
 
+run-name: MegaLinter
+
 jobs:
   build:
     name: MegaLinter

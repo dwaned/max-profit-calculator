@@ -3,6 +3,8 @@ on: workflow_dispatch
 
 permissions: read-all
 
+run-name: mvn Versions Checker
+
 jobs:
   npm:
     runs-on: ubuntu-latest
