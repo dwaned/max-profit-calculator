@@ -44,30 +44,34 @@ jobs:
       - name: Step 3 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 4 - Run Unit Tests
+      - name: Step 4 - Verify Maven Compiler Plugin Configuration
+        run: |
+          cat pom.xml | grep -A 5 "maven-compiler-plugin"
+
+      - name: Step 5 - Run Unit Tests
         run: mvn test -Dtest=ExampleBasedTests
 
-      - name: Step 5 - Run Property Based Tests
+      - name: Step 6 - Run Property Based Tests
         run: mvn test -Dtest=PropertyBasedStockTests
 
   MutationTests:
     runs-on: ubuntu-22.04
     needs: RunTests
     steps:
-      - name: Step 6 - Checkout Repository
+      - name: Step 7 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 7 - Run Mutation Tests
+      - name: Step 8 - Run Mutation Tests
         run: mvn -Ppitest test-compile
 
   JUnitReports:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: MutationTests
     steps:
-      - name: Checkout Repository
+      - name: Step 9 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Generate JUnit Reports
+      - name: Step 10 - Generate JUnit Reports
         uses: mikepenz/action-junit-report@v3.7.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -78,22 +82,22 @@ jobs:
 
   CucumberTests:
     runs-on: ubuntu-22.04
-    needs: [JUnitReports]
+    needs: JUnitReports
     steps:
-      - name: Step 10 - Checkout Repository
+      - name: Step 11 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 11 - Run Cucumber Tests
+      - name: Step 12 - Run Cucumber Tests
         run: mvn test -Dtest="RunCucumberTest"
 
   CucumberReportAnnotations:
     runs-on: ubuntu-22.04
     needs: CucumberTests
     steps:
-      - name: Step 12 - Checkout Repository
+      - name: Step 13 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 13 - Generate Cucumber Report Annotations
+      - name: Step 14 - Generate Cucumber Report Annotations
         run: |
           npx cucumber-report-annotations-action \
             --access-token ${{ secrets.GITHUB_TOKEN }} \
@@ -108,10 +112,10 @@ jobs:
     runs-on: ubuntu-22.04
     needs: MutationTests
     steps:
-      - name: Step 14 - Checkout Repository
+      - name: Step 15 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 15 - OWASP Dependency Check
+      - name: Step 16 - OWASP Dependency Check
         run: mvn -Pdependency-check dependency-check:check
         continue-on-error: true
 
@@ -119,20 +123,20 @@ jobs:
     runs-on: ubuntu-22.04
     needs: OWASPDependencyCheck
     steps:
-      - name: Step 16 - Checkout Repository
+      - name: Step 17 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 17 - Generate Maven Site
+      - name: Step 18 - Generate Maven Site
         run: mvn -B site --file pom.xml -DskipTests
 
   MavenDependencyTreeSubmission:
     runs-on: ubuntu-22.04
     needs: MavenSite
     steps:
-      - name: Step 18 - Checkout Repository
+      - name: Step 19 - Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Step 19 - Submit Maven Dependency Tree
+      - name: Step 20 - Submit Maven Dependency Tree
         run: mvn dependency:tree
 
   ParallelTests:
