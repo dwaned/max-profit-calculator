@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   app:
-    platform: linux/arm64/v8  # Specify ARM64 platform
+    platform: linux/arm64/v8 # Specify ARM64 platform
     build: .
     ports:
       - "9095:9095"
