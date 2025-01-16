@@ -41,59 +41,84 @@ jobs:
     runs-on: ubuntu-latest
     needs: SetupEnvironment
     steps:
-      - name: Step 3 - Run Unit Tests
+      - name: Step 3 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 4 - Run Unit Tests
+        working-directory: ./max-profit-calculator
         run: mvn test -Dtest=ExampleBasedTests
 
-      - name: Step 4 - Run Property Based Tests
+      - name: Step 5 - Run Property Based Tests
+        working-directory: ./max-profit-calculator
         run: mvn test -Dtest=PropertyBasedStockTests
 
   MutationTests:
     runs-on: ubuntu-latest
     needs: RunTests
     steps:
-      - name: Step 5 - Run Mutation Tests
+      - name: Step 6 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 7 - Run Mutation Tests
+        working-directory: ./max-profit-calculator
         run: mvn -Ppitest test-compile
 
   JUnitReports:
     runs-on: ubuntu-latest
     needs: MutationTests
     steps:
-      - name: Step 6 - Generate JUnit Reports
-        uses: mikepenz/action-junit-report@v3.7.5
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          report_paths: "**/target/surefire-reports/*.xml"
-          include_passed: true
-          summary: true
-          detailed_summary: true
+      - name: Step 8 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 9 - Generate JUnit Reports
+        working-directory: ./max-profit-calculator
+        run: |
+          npx action-junit-report \
+            --github-token ${{ secrets.GITHUB_TOKEN }} \
+            --report-paths "**/target/surefire-reports/*.xml" \
+            --include-passed true \
+            --summary true \
+            --detailed-summary true
 
   CucumberTests:
     runs-on: ubuntu-latest
     needs: [JUnitReports]
     steps:
-      - name: Step 7 - Run Cucumber Tests
+      - name: Step 10 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 11 - Run Cucumber Tests
+        working-directory: ./max-profit-calculator
         run: mvn test -Dtest="RunCucumberTest"
 
   CucumberReportAnnotations:
     runs-on: ubuntu-latest
     needs: CucumberTests
     steps:
-      - name: Step 8 - Generate Cucumber Report Annotations
-        uses: deblockt/cucumber-report-annotations-action@v1.11
-        with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-          path: "**/cucumber-report/*.json"
-          annotation-status-on-undefined: "notice"
-          annotation-status-on-pending: "warning"
-          show-number-of-error-on-check-title: true
-          number-of-test-error-to-fail-job: 1
-          name: "Cucumber Report"
+      - name: Step 12 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 13 - Generate Cucumber Report Annotations
+        working-directory: ./max-profit-calculator
+        run: |
+          npx cucumber-report-annotations-action \
+            --access-token ${{ secrets.GITHUB_TOKEN }} \
+            --path "**/cucumber-report/*.json" \
+            --annotation-status-on-undefined "notice" \
+            --annotation-status-on-pending "warning" \
+            --show-number-of-error-on-check-title true \
+            --number-of-test-error-to-fail-job 1 \
+            --name "Cucumber Report"
 
   OWASPDependencyCheck:
     runs-on: ubuntu-latest
     needs: MutationTests
     steps:
-      - name: Step 9 - OWASP Dependency Check
+      - name: Step 14 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 15 - OWASP Dependency Check
+        working-directory: ./max-profit-calculator
         run: mvn -Pdependency-check dependency-check:check
         continue-on-error: true
 
@@ -101,15 +126,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: OWASPDependencyCheck
     steps:
-      - name: Step 10 - Generate Maven Site
+      - name: Step 16 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 17 - Generate Maven Site
+        working-directory: ./max-profit-calculator
         run: mvn -B site --file pom.xml -DskipTests
 
   MavenDependencyTreeSubmission:
     runs-on: ubuntu-latest
     needs: MavenSite
     steps:
-      - name: Step 11 - Submit Maven Dependency Tree
-        uses: advanced-security/maven-dependency-submission-action@v3.0.0
+      - name: Step 18 - Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Step 19 - Submit Maven Dependency Tree
+        working-directory: ./max-profit-calculator
+        run: mvn dependency:tree
 
   ParallelTests:
     runs-on: ubuntu-latest
@@ -118,5 +151,9 @@ jobs:
       matrix:
         test: ["ExampleBasedTests", "PropertyBasedStockTests"]
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Run Matrix Tests
+        working-directory: ./max-profit-calculator
         run: mvn test -Dtest=${{ matrix.test }}
