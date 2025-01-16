@@ -10,7 +10,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.file.Paths;
-import java.time.Duration;
 
 import static io.restassured.RestAssured.given;
 
@@ -18,6 +17,14 @@ import static io.restassured.RestAssured.given;
 @Testcontainers
 public class ContainerTests {
 
+    /**
+     * The Docker Compose container environment for testing.
+     * This static field represents the Docker environment configuration used across tests.
+     * The {@link DockerComposeContainer} allows for setting up and managing Docker containers
+     * during test execution.
+     * 
+     * Note: The checkstyle visibility modifier warning is suppressed for this field.
+     */
     @SuppressWarnings("checkstyle:VisibilityModifier")
     public static DockerComposeContainer<?> environment;
 
@@ -30,11 +37,20 @@ public class ContainerTests {
                 .waitingFor("site", Wait.forLogMessage(".*webpack compiled successfully.*\\n", 1));
     }
 
+    /**
+     * Sets up the environment before all tests are run.
+     * This method is annotated with {@code @BeforeAll}, meaning it will be executed once before any of the test methods in the current class.
+     * It starts the environment required for the tests.
+     */
     @BeforeAll
     public static void setUp() {
         environment.start();
     }
 
+    /**
+     * Stops the Docker Compose container environment after all tests have been executed.
+     * This ensures that all Docker containers are properly shut down and resources are released.
+     */
     @AfterAll
     public static void tearDown() {
         if (environment != null) {
