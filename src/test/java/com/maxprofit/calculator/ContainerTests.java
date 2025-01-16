@@ -59,7 +59,6 @@ public class ContainerTests {
 
     /**
      * Tests the application and site endpoints.
-     * 
      * This test performs the following:
      * 1. Retrieves the service ports for the "app" and "site" services.
      * 2. Tests the "app" service by sending a POST request to the "/calculate" endpoint with a JSON body containing:
