@@ -70,34 +70,69 @@ jobs:
       - name: Build JAR
         run: mvn install -DskipTests
 
+      - name: Build and Start Containers
+        run: |
+          # Build images
+          docker compose -f docker-compose-test.yml build --no-cache
+          
+          # Start containers
+          docker compose -f docker-compose-test.yml up -d
+          
+          # Wait for containers to be healthy
+          echo "Waiting for containers to be healthy..."
+          timeout 300 bash -c 'until docker compose -f docker-compose-test.yml ps | grep -q "(healthy)"; do 
+            echo "Waiting for containers to be healthy..."
+            docker compose -f docker-compose-test.yml ps
+            docker compose -f docker-compose-test.yml logs
+            sleep 10
+          done' || exit 1
+          
+          # Show final status
+          echo "Final container status:"
+          docker compose -f docker-compose-test.yml ps
+          
       - name: Run Container Tests
         run: mvn test -Pcontainer-tests
 
-      - name: Build and Start Docker Compose
-        run: |
-          docker compose version
-          docker compose ps
-        timeout-minutes: 10
-
       - name: Run Playwright Tests
+        if: success()
         run: mvn test -Pplaywright-tests
         env:
           CI: true
+
+      - name: Capture Logs
+        if: always()
+        run: |
+          echo "Docker compose ps output:"
+          docker compose -f docker-compose-test.yml ps || true
+          
+          echo "Container logs:"
+          docker compose -f docker-compose-test.yml logs --no-color > container.log || true
+          
+          echo "Container inspection:"
+          docker compose -f docker-compose-test.yml ps -q | xargs -r docker inspect > container-inspect.log || true
+
+      - name: Upload Container Logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: container-logs
+          path: |
+            container.log
+            container-inspect.log
 
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: target/surefire-reports/**/*.xml
-
-      - name: Upload Logs on Failure
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: logs
-          path: "**/*.log"
+          path: |
+            target/surefire-reports/**/*.xml
+            target/failsafe-reports/**/*.xml
 
       - name: Cleanup
         if: always()
-        run: echo "Cleaning up..."
+        run: |
+          docker compose -f docker-compose-test.yml down -v || true
+          docker compose -f docker-compose-test.yml rm -f -s -v || true
+          docker system prune -f || true

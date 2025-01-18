@@ -1,15 +1,24 @@
+# Stage 1: Build stage
 FROM node:18-alpine AS base
 
 WORKDIR /home/node/app
+
 COPY package.json ./
-
-# If you have a lock file
 COPY package-lock.json ./
+
 RUN npm install --legacy-peer-deps
-COPY . ./
 
-FROM base AS production
+COPY . .
 
-ENV NODE_PATH=./build
-USER node
-RUN npm run build --verbose
+EXPOSE 3000
+
+# Stage 2: Runtime stage
+FROM node:18-alpine
+
+WORKDIR /home/node/app
+
+COPY --from=base /home/node/app /home/node/app
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

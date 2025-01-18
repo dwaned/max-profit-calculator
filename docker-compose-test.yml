@@ -1,7 +1,8 @@
-version: "3.7"
+# filepath: /Users/dwanedebono/code/max-profit-calculator/docker-compose-test.yml
+version: '3.8'
+
 services:
   app:
-    platform: linux/arm64/v8 # Specify ARM64 platform
     build: .
     ports:
       - "9095:9095"
@@ -9,13 +10,13 @@ services:
       - SPRING_PROFILES_ACTIVE=test
       - JAVA_OPTS=-Xmx512m -Xms256m
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:9095/api/health"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:9095/api/health || exit 1"]
+      start_period: 30s
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 5      
 
   site:
-    # image: node:18-alpine
     build:
       context: site/LiveTerm
       dockerfile: Dockerfile
@@ -24,12 +25,20 @@ services:
       - "3000"
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
     command: npm run dev
     depends_on:
       app:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
