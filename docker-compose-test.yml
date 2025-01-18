@@ -1,4 +1,4 @@
-# filepath: /Users/dwanedebono/code/max-profit-calculator/docker-compose-test.yml
+---
 version: '3.8'
 
 services:
