@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   checks: write # Required for test annotations
+  pull-requests: write # Required for PR comments
 
 run-name: Maven Testing & Security Scan
 
@@ -28,65 +29,72 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
-      # Example Based Tests
+      # Example Based Tests with fixed reporting
       - name: Run Example Based Tests
         run: mvn test -Dtest=ExampleBasedTests
         
       - name: Report Example Based Tests
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4 # Updated to v4
         if: always()
         with:
-          report_paths: '**/target/surefire-reports/TEST-*.ExampleBasedTests.xml'
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
           check_name: 'Example Based Tests Results'
           detailed_summary: true
+          include_passed: true
+          annotate_notice: true
 
-      # Property Based Tests
+      # Property Based Tests with fixed reporting
       - name: Run Property Based Tests
-        run: mvn test -Dtest=PropertyBasedStockTests
         if: always()
+        run: mvn test -Dtest=PropertyBasedStockTests
         
       - name: Report Property Based Tests
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4 # Updated to v4
         if: always()
         with:
           report_paths: '**/target/surefire-reports/TEST-*.PropertyBasedStockTests.xml'
           check_name: 'Property Based Tests Results'
           detailed_summary: true
+          include_passed: true
+          annotate_notice: true
 
-      # Mutation Tests
+      # Mutation Tests with fixed reporting
       - name: Run Mutation Tests
+        if: always()
         run: mvn -Ppitest test-compile
-        if: always()
         
-      - name: Generate Mutation Test Report
+      - name: Upload Mutation Test Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Updated to v4
         with:
           name: mutation-test-report
           path: target/pit-reports
+          retention-days: 14
           
-      - name: Parse and Report Mutation Tests
+      - name: Create Mutation Test Summary
         if: always()
         run: |
-          echo "::group::Mutation Test Results"
-          echo "Running mutation test results parser..."
-          # Add a custom script here to parse PIT report and create GitHub annotations
-          find target/pit-reports -name mutations.xml -exec cat {} \; | \
-          awk '
-          /<mutation[^>]*status="KILLED"/{killed++}
-          /<mutation[^>]*status="SURVIVED"/{survived++}
-          END{
-            print "::notice::Mutation Test Summary - Killed: " killed ", Survived: " survived
-            if (survived > 0) {
-              print "::warning::Found " survived " surviving mutations"
-            }
-          }'
-          echo "::endgroup::"
+          echo "# Mutation Testing Results" >> $GITHUB_STEP_SUMMARY
+          echo "## Summary" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -d "target/pit-reports" ]; then
+            KILLED=$(find target/pit-reports -name mutations.xml -exec grep -c 'status="KILLED"' {} \;)
+            SURVIVED=$(find target/pit-reports -name mutations.xml -exec grep -c 'status="SURVIVED"' {} \;)
+            
+            echo "- Mutations Killed: ${KILLED}" >> $GITHUB_STEP_SUMMARY
+            echo "- Mutations Survived: ${SURVIVED}" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "${SURVIVED}" -gt "0" ]; then
+              echo "::warning::${SURVIVED} mutations survived testing"
+            fi
+          else
+            echo "::error::No mutation test results found"
+          fi
 
-      # Cucumber Tests
+      # Cucumber Tests with fixed reporting
       - name: Run Cucumber Tests
-        run: mvn test -Dtest="RunCucumberTest"
         if: always()
+        run: mvn test -Dtest="RunCucumberTest"
 
       - name: Generate Cucumber Report
         if: always()
@@ -95,8 +103,12 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: "**/cucumber-report/*.json"
           check-name: "Cucumber Test Results"
-          annotation-status-on-undefined: "notice"
-          annotation-status-on-pending: "warning"
+          check-status-on-error: 'failure'
+          check-status-on-undefined: 'failure'
+          check-status-on-pending: 'warning'
+          annotation-status-on-error: 'failure'
+          annotation-status-on-undefined: 'warning'
+          annotation-status-on-pending: 'notice'
           show-number-of-error-on-check-title: true
 
   security-and-docs:
@@ -116,23 +128,31 @@ jobs:
         run: mvn -Pdependency-check dependency-check:check
         continue-on-error: true
 
-      # Report OWASP findings as annotations
-      - name: Parse OWASP Report
+      - name: Create Security Report Summary
         if: always()
         run: |
+          echo "# Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "## OWASP Dependency Check" >> $GITHUB_STEP_SUMMARY
+          
           if [ -f "target/dependency-check-report.xml" ]; then
-            echo "::group::OWASP Dependency Check Results"
-            grep -B2 -A2 "<severity>HIGH</severity>" target/dependency-check-report.xml | \
-            while read -r line; do
-              if [[ $line == *"<name>"* ]]; then
-                echo "::warning::High Severity Vulnerability found in $(echo $line | sed 's/<[^>]*>//g')"
-              fi
-            done
-            echo "::endgroup::"
+            HIGH=$(grep -c "<severity>HIGH</severity>" target/dependency-check-report.xml || echo "0")
+            MEDIUM=$(grep -c "<severity>MEDIUM</severity>" target/dependency-check-report.xml || echo "0")
+            
+            echo "- High Severity: ${HIGH}" >> $GITHUB_STEP_SUMMARY
+            echo "- Medium Severity: ${MEDIUM}" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "${HIGH}" -gt "0" ]; then
+              echo "::warning::Found ${HIGH} high severity vulnerabilities"
+            fi
           fi
 
       - name: Generate Maven Site
         run: mvn -B site --file pom.xml -DskipTests
 
-      - name: Submit Maven Dependency Tree
-        run: mvn dependency:tree
+      - name: Upload Documentation
+        uses: actions/upload-artifact@v4 # Updated to v4
+        if: success()
+        with:
+          name: maven-site
+          path: target/site
+          retention-days: 14
