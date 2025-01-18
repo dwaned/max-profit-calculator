@@ -1,13 +1,3 @@
-# This workflow will build a Java project with Maven, and cache/restore any
-# dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-
-# builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Java CI with Maven
 
 on:
@@ -18,30 +8,101 @@ on:
 
 permissions:
   contents: write
+  checks: write # Required for test annotations
 
 run-name: Maven Testing & Security Scan
 
 jobs:
-  SetupEnvironment:
+  build-and-test:
     runs-on: ubuntu-22.04
     steps:
-      - name: Step 1 - Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Step 2 - Set up JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      
+      # Example Based Tests
+      - name: Run Example Based Tests
+        run: mvn test -Dtest=ExampleBasedTests
+        
+      - name: Report Example Based Tests
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.ExampleBasedTests.xml'
+          check_name: 'Example Based Tests Results'
+          detailed_summary: true
 
-  RunTests:
+      # Property Based Tests
+      - name: Run Property Based Tests
+        run: mvn test -Dtest=PropertyBasedStockTests
+        if: always()
+        
+      - name: Report Property Based Tests
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.PropertyBasedStockTests.xml'
+          check_name: 'Property Based Tests Results'
+          detailed_summary: true
+
+      # Mutation Tests
+      - name: Run Mutation Tests
+        run: mvn -Ppitest test-compile
+        if: always()
+        
+      - name: Generate Mutation Test Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: mutation-test-report
+          path: target/pit-reports
+          
+      - name: Parse and Report Mutation Tests
+        if: always()
+        run: |
+          echo "::group::Mutation Test Results"
+          echo "Running mutation test results parser..."
+          # Add a custom script here to parse PIT report and create GitHub annotations
+          find target/pit-reports -name mutations.xml -exec cat {} \; | \
+          awk '
+          /<mutation[^>]*status="KILLED"/{killed++}
+          /<mutation[^>]*status="SURVIVED"/{survived++}
+          END{
+            print "::notice::Mutation Test Summary - Killed: " killed ", Survived: " survived
+            if (survived > 0) {
+              print "::warning::Found " survived " surviving mutations"
+            }
+          }'
+          echo "::endgroup::"
+
+      # Cucumber Tests
+      - name: Run Cucumber Tests
+        run: mvn test -Dtest="RunCucumberTest"
+        if: always()
+
+      - name: Generate Cucumber Report
+        if: always()
+        uses: deblockt/cucumber-report-annotations-action@v1.7
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber-report/*.json"
+          check-name: "Cucumber Test Results"
+          annotation-status-on-undefined: "notice"
+          annotation-status-on-pending: "warning"
+          show-number-of-error-on-check-title: true
+
+  security-and-docs:
     runs-on: ubuntu-22.04
-    needs: SetupEnvironment
     steps:
-      - name: Step 3 - Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
@@ -51,106 +112,27 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Step 4 - Run Unit Tests
-        run: mvn clean test -Dtest=ExampleBasedTests
-
-      - name: Step 5 - Run Property Based Tests
-        run: mvn clean test -Dtest=PropertyBasedStockTests
-
-  MutationTests:
-    runs-on: ubuntu-22.04
-    needs: RunTests
-    steps:
-      - name: Step 6 - Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Step 7 - Run Mutation Tests
-        run: mvn clean -Ppitest test-compile
-
-  JUnitReports:
-    runs-on: ubuntu-22.04
-    needs: MutationTests
-    steps:
-      - name: Step 8 - Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Step 9 - Generate JUnit Reports
-        run: |
-          npx action-junit-report \
-            --github-token ${{ secrets.GITHUB_TOKEN }} \
-            --report-paths "**/target/surefire-reports/*.xml" \
-            --include-passed true \
-            --summary true \
-            --detailed-summary true
-
-  CucumberTests:
-    runs-on: ubuntu-22.04
-    needs: [JUnitReports]
-    steps:
-      - name: Step 10 - Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Step 11 - Run Cucumber Tests
-        run: mvn clean test -Dtest="RunCucumberTest"
-
-  CucumberReportAnnotations:
-    runs-on: ubuntu-22.04
-    needs: CucumberTests
-    steps:
-      - name: Step 12 - Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Step 13 - Generate Cucumber Report Annotations
-        run: |
-          npx cucumber-report-annotations-action \
-            --access-token ${{ secrets.GITHUB_TOKEN }} \
-            --path "**/cucumber-report/*.json" \
-            --annotation-status-on-undefined "notice" \
-            --annotation-status-on-pending "warning" \
-            --show-number-of-error-on-check-title true \
-            --number-of-test-error-to-fail-job 1 \
-            --name "Cucumber Report"
-
-  OWASPDependencyCheck:
-    runs-on: ubuntu-22.04
-    needs: MutationTests
-    steps:
-      - name: Step 14 - Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Step 15 - OWASP Dependency Check
+      - name: OWASP Dependency Check
         run: mvn -Pdependency-check dependency-check:check
         continue-on-error: true
 
-  MavenSite:
-    runs-on: ubuntu-22.04
-    needs: OWASPDependencyCheck
-    steps:
-      - name: Step 16 - Checkout Repository
-        uses: actions/checkout@v3
+      # Report OWASP findings as annotations
+      - name: Parse OWASP Report
+        if: always()
+        run: |
+          if [ -f "target/dependency-check-report.xml" ]; then
+            echo "::group::OWASP Dependency Check Results"
+            grep -B2 -A2 "<severity>HIGH</severity>" target/dependency-check-report.xml | \
+            while read -r line; do
+              if [[ $line == *"<name>"* ]]; then
+                echo "::warning::High Severity Vulnerability found in $(echo $line | sed 's/<[^>]*>//g')"
+              fi
+            done
+            echo "::endgroup::"
+          fi
 
-      - name: Step 17 - Generate Maven Site
+      - name: Generate Maven Site
         run: mvn -B site --file pom.xml -DskipTests
 
-  MavenDependencyTreeSubmission:
-    runs-on: ubuntu-22.04
-    needs: MavenSite
-    steps:
-      - name: Step 18 - Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Step 19 - Submit Maven Dependency Tree
+      - name: Submit Maven Dependency Tree
         run: mvn dependency:tree
-
-  ParallelTests:
-    runs-on: ubuntu-22.04
-    needs: SetupEnvironment
-    strategy:
-      matrix:
-        test: ["ExampleBasedTests", "PropertyBasedStockTests"]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Run Matrix Tests
-        run: mvn test -Dtest=${{ matrix.test }}
