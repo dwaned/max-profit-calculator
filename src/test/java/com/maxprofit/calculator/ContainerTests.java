@@ -36,8 +36,7 @@ public class ContainerTests {
                             .withStartupTimeout(Duration.ofMinutes(10)))
                     .withExposedService("site_1", SITE_PORT,
                         Wait.forListeningPort()
-                            .withStartupTimeout(Duration.ofMinutes(10)))
-                    .withLocalCompose(true)
+                            .withStartupTimeout(Duration.ofMinutes(10)))                    
                     .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
                     .withTailChildContainers(true)
                     .withEnv("TESTCONTAINERS_RYUK_DISABLED", "true")

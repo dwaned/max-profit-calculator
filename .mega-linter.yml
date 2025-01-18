@@ -12,3 +12,7 @@ DISABLE_LINTERS:
   - REPOSITORY_TRUFFLEHOG
   - REPOSITORY_KICS
   - REPOSITORY_GRYPE
+
+# Disable the "newline at end of file" rule
+ESLINT_RULES:
+  eol-last: "off"
