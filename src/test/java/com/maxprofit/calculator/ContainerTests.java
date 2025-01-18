@@ -19,6 +19,10 @@ import static org.hamcrest.Matchers.equalTo;
 @Testcontainers
 public class ContainerTests {
 
+    
+    /**
+     * The ports for the application and site
+     */
     private static final int APP_PORT = 9095;
     private static final int SITE_PORT = 3000;
 
