@@ -1,7 +1,6 @@
----
 # MegaLinter GitHub Action configuration file
 # More info at https://megalinter.io
-name: MegaLinter
+run-name: MegaLinter
 
 on:
   # Trigger mega-linter at every push. Action will also be visible from Pull Requests to main
@@ -20,8 +19,6 @@ concurrency:
   cancel-in-progress: true
 
 permissions: read-all
-
-run-name: MegaLinter
 
 jobs:
   build:

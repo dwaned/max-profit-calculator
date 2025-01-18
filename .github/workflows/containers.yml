@@ -1,4 +1,4 @@
-name: Container Testing & Security Scan
+run-name: Container Testing & Security Scan
 
 on:
   workflow_dispatch:
@@ -143,4 +143,3 @@ jobs:
           if ! docker system prune -f; then
             echo "Warning: 'docker system prune' failed."
           fi
-          
