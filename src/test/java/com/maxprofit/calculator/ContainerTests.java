@@ -35,16 +35,12 @@ public class ContainerTests {
     static {
         try {
             environment = new DockerComposeContainer<>(new File("docker-compose-test.yml"))
-                    .withExposedService("app_1", APP_PORT, 
+                    .withExposedService("app", APP_PORT, 
                         Wait.forListeningPort()
                             .withStartupTimeout(Duration.ofMinutes(10)))
-                    .withExposedService("site_1", SITE_PORT,
+                    .withExposedService("site", SITE_PORT,
                         Wait.forListeningPort()
-                            .withStartupTimeout(Duration.ofMinutes(10)))                    
-                    .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
-                    .withTailChildContainers(true)
-                    .withEnv("TESTCONTAINERS_RYUK_DISABLED", "true")
-                    .withEnv("TESTCONTAINERS_SOCIAT_IMAGE", "alpine/socat:1.7.4.3-r0");
+                            .withStartupTimeout(Duration.ofMinutes(10)));
         } catch (Exception e) {
             System.err.println("Error initializing Docker environment: " + e.getMessage());
             throw e;
@@ -86,8 +82,8 @@ public class ContainerTests {
      */
     @Test
     public void testAppAndSite() {
-        Integer appPort = environment.getServicePort("app_1", APP_PORT);
-        Integer sitePort = environment.getServicePort("site_1", SITE_PORT);
+        Integer appPort = environment.getServicePort("app", APP_PORT);
+        Integer sitePort = environment.getServicePort("site", SITE_PORT);
 
         System.out.println("App port: " + appPort);
         System.out.println("Site port: " + sitePort);
