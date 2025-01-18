@@ -8,8 +8,8 @@ on:
 
 permissions:
   contents: write
-  checks: write # Required for test annotations
-  pull-requests: write # Required for PR comments
+  checks: write
+  pull-requests: write
 
 run-name: Maven Testing & Security Scan
 
@@ -29,72 +29,85 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
-      # Example Based Tests with fixed reporting
-      - name: Run Example Based Tests
-        run: mvn test -Dtest=ExampleBasedTests
-        
-      - name: Report Example Based Tests
-        uses: mikepenz/action-junit-report@v4 # Updated to v4
+      - name: Run All Tests
+        id: test
+        run: |
+          mvn clean test -Dtest="ExampleBasedTests,PropertyBasedStockTests"
+          echo "### Test Execution Complete" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Report Test Results
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
-          check_name: 'Example Based Tests Results'
+          check_name: 'Unit Test Results'
           detailed_summary: true
           include_passed: true
-          annotate_notice: true
+          annotate_notice: false
+          require_tests: true
+          fail_on_failure: true
+          summary_title_pattern: '{totalCount} tests run, {successCount} passed, {failureCount} failed'
+          test_file_pattern: '.*/TEST-(.+)\\.xml$'
+          class_pattern: '^(?:.*\\.)?([^.]+)$'
 
-      # Property Based Tests with fixed reporting
-      - name: Run Property Based Tests
-        if: always()
-        run: mvn test -Dtest=PropertyBasedStockTests
-        
-      - name: Report Property Based Tests
-        uses: mikepenz/action-junit-report@v4 # Updated to v4
-        if: always()
-        with:
-          report_paths: '**/target/surefire-reports/TEST-*.PropertyBasedStockTests.xml'
-          check_name: 'Property Based Tests Results'
-          detailed_summary: true
-          include_passed: true
-          annotate_notice: true
-
-      # Mutation Tests with fixed reporting
       - name: Run Mutation Tests
-        if: always()
-        run: mvn -Ppitest test-compile
-        
-      - name: Upload Mutation Test Report
-        if: always()
-        uses: actions/upload-artifact@v4 # Updated to v4
-        with:
-          name: mutation-test-report
-          path: target/pit-reports
-          retention-days: 14
-          
-      - name: Create Mutation Test Summary
+        id: mutation
         if: always()
         run: |
-          echo "# Mutation Testing Results" >> $GITHUB_STEP_SUMMARY
-          echo "## Summary" >> $GITHUB_STEP_SUMMARY
+          mvn -Ppitest test-compile 2>&1 | tee mutation_output.txt
           
-          if [ -d "target/pit-reports" ]; then
-            KILLED=$(find target/pit-reports -name mutations.xml -exec grep -c 'status="KILLED"' {} \;)
-            SURVIVED=$(find target/pit-reports -name mutations.xml -exec grep -c 'status="SURVIVED"' {} \;)
-            
-            echo "- Mutations Killed: ${KILLED}" >> $GITHUB_STEP_SUMMARY
-            echo "- Mutations Survived: ${SURVIVED}" >> $GITHUB_STEP_SUMMARY
-            
-            if [ "${SURVIVED}" -gt "0" ]; then
-              echo "::warning::${SURVIVED} mutations survived testing"
-            fi
+          echo "### Mutation Testing Results" >> $GITHUB_STEP_SUMMARY
+          echo "#### Details" >> $GITHUB_STEP_SUMMARY
+          
+          TOTAL_MUTATIONS=$(grep "Generated.*mutations" mutation_output.txt | sed -E 's/.*Generated ([0-9]+) mutations.*/\1/')
+          KILLED_MUTATIONS=$(grep "Generated.*mutations.*Killed" mutation_output.txt | sed -E 's/.*Killed ([0-9]+).*/\1/')
+          LINE_COVERAGE=$(grep "Line Coverage:" mutation_output.txt | sed -E 's/.*Line Coverage: ([0-9]+\/[0-9]+) \(([0-9]+%)\).*/\2/')
+          NO_COVERAGE=$(grep "Mutations with no coverage" mutation_output.txt | sed -E 's/.*Mutations with no coverage ([0-9]+).*/\1/')
+          TEST_STRENGTH=$(grep "Test strength" mutation_output.txt | sed -E 's/.*Test strength ([0-9]+%).*/\1/')
+          TESTS_PER_MUTATION=$(grep "tests per mutation" mutation_output.txt | sed -E 's/.*Ran [0-9]+ tests \(([0-9.]+) tests per mutation\).*/\1/')
+          
+          SURVIVED=$((TOTAL_MUTATIONS - KILLED_MUTATIONS))
+          KILL_PERCENTAGE=$((KILLED_MUTATIONS * 100 / TOTAL_MUTATIONS))
+          
+          echo "- Total Mutations: ${TOTAL_MUTATIONS}" >> $GITHUB_STEP_SUMMARY
+          echo "- Mutations Killed: ${KILLED_MUTATIONS}" >> $GITHUB_STEP_SUMMARY
+          echo "- Mutations Survived: ${SURVIVED}" >> $GITHUB_STEP_SUMMARY
+          echo "- Kill Percentage: ${KILL_PERCENTAGE}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Line Coverage: ${LINE_COVERAGE}" >> $GITHUB_STEP_SUMMARY
+          echo "- Mutations with No Coverage: ${NO_COVERAGE}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Strength: ${TEST_STRENGTH}" >> $GITHUB_STEP_SUMMARY
+          echo "- Tests per Mutation: ${TESTS_PER_MUTATION}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$SURVIVED" -gt "0" ]; then
+            echo "::warning::${SURVIVED}/${TOTAL_MUTATIONS} mutations survived (${KILL_PERCENTAGE}% killed)"
           else
-            echo "::error::No mutation test results found"
+            echo "::notice::All ${TOTAL_MUTATIONS} mutations killed (100% success)"
           fi
+          
+          if [ "$NO_COVERAGE" -gt "0" ]; then
+            echo "::warning::${NO_COVERAGE} mutations have no test coverage"
+          fi
+          
+          echo "total_mutations=${TOTAL_MUTATIONS}" >> $GITHUB_OUTPUT
+          echo "killed_mutations=${KILLED_MUTATIONS}" >> $GITHUB_OUTPUT
+          echo "survived_mutations=${SURVIVED}" >> $GITHUB_OUTPUT
+          echo "kill_percentage=${KILL_PERCENTAGE}" >> $GITHUB_OUTPUT
 
-      # Cucumber Tests with fixed reporting
+      - name: Upload Mutation Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-test-results
+          path: |
+            target/pit-reports/**/*
+            mutation_output.txt
+          retention-days: 30
+
       - name: Run Cucumber Tests
         if: always()
-        run: mvn test -Dtest="RunCucumberTest"
+        run: |
+          mvn test -Dtest="RunCucumberTest"
+          echo "### Cucumber Test Results" >> $GITHUB_STEP_SUMMARY
 
       - name: Generate Cucumber Report
         if: always()
@@ -109,10 +122,10 @@ jobs:
           annotation-status-on-error: 'failure'
           annotation-status-on-undefined: 'warning'
           annotation-status-on-pending: 'notice'
-          show-number-of-error-on-check-title: true
 
-  security-and-docs:
+  security-scan:
     runs-on: ubuntu-22.04
+    needs: build-and-test
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -125,34 +138,44 @@ jobs:
           cache: maven
 
       - name: OWASP Dependency Check
-        run: mvn -Pdependency-check dependency-check:check
+        run: |
+          mvn -Pdependency-check dependency-check:check
+          echo "### Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "#### OWASP Dependency Check" >> $GITHUB_STEP_SUMMARY
         continue-on-error: true
 
-      - name: Create Security Report Summary
+      - name: Process OWASP Results
         if: always()
         run: |
-          echo "# Security Scan Results" >> $GITHUB_STEP_SUMMARY
-          echo "## OWASP Dependency Check" >> $GITHUB_STEP_SUMMARY
-          
           if [ -f "target/dependency-check-report.xml" ]; then
+            echo "#### Vulnerability Summary" >> $GITHUB_STEP_SUMMARY
+            
             HIGH=$(grep -c "<severity>HIGH</severity>" target/dependency-check-report.xml || echo "0")
             MEDIUM=$(grep -c "<severity>MEDIUM</severity>" target/dependency-check-report.xml || echo "0")
+            LOW=$(grep -c "<severity>LOW</severity>" target/dependency-check-report.xml || echo "0")
             
-            echo "- High Severity: ${HIGH}" >> $GITHUB_STEP_SUMMARY
-            echo "- Medium Severity: ${MEDIUM}" >> $GITHUB_STEP_SUMMARY
+            echo "- High: $HIGH" >> $GITHUB_STEP_SUMMARY
+            echo "- Medium: $MEDIUM" >> $GITHUB_STEP_SUMMARY
+            echo "- Low: $LOW" >> $GITHUB_STEP_SUMMARY
             
-            if [ "${HIGH}" -gt "0" ]; then
-              echo "::warning::Found ${HIGH} high severity vulnerabilities"
+            if [ "$HIGH" -gt "0" ]; then
+              echo "::warning::Found $HIGH high severity vulnerabilities"
+              grep -B2 -A2 "<severity>HIGH</severity>" target/dependency-check-report.xml | \
+              while read -r line; do
+                if [[ $line == *"<name>"* ]]; then
+                  DEPENDENCY=$(echo "$line" | sed -E 's/.*<name>(.*)<\/name>.*/\1/')
+                  echo "::warning file=pom.xml::High severity vulnerability in $DEPENDENCY"
+                fi
+              done
             fi
+          else
+            echo "::warning::OWASP dependency check report not found"
           fi
 
-      - name: Generate Maven Site
-        run: mvn -B site --file pom.xml -DskipTests
-
-      - name: Upload Documentation
-        uses: actions/upload-artifact@v4 # Updated to v4
-        if: success()
+      - name: Upload Security Report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: maven-site
-          path: target/site
-          retention-days: 14
+          name: security-reports
+          path: target/dependency-check-report.*
+          retention-days: 30
