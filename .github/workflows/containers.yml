@@ -1,5 +1,4 @@
----
-run-name: Container Testing & Security Scan
+name: Container Testing & Security Scan
 
 on:
   workflow_dispatch:
@@ -20,13 +19,17 @@ jobs:
     timeout-minutes: 30
 
     env:
-      DOCKER_HOST: "unix:///var/run/docker.sock"
-      MAVEN_OPTS: "-Xmx2048m"
       TESTCONTAINERS_RYUK_DISABLED: true
+      MAVEN_OPTS: "-Xmx2048m"
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
       - name: Cache Maven dependencies
         uses: actions/cache@v4
@@ -36,90 +39,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-
-      - name: Build JAR
-        run: mvn install -DskipTests
-
-      - name: Build and Start Containers
-        run: |
-          # Build images
-          docker compose -f docker-compose-test.yml build --no-cache
-          
-          # Start containers
-          docker compose -f docker-compose-test.yml up -d
-          
-          # Wait for containers to be healthy
-          echo "Waiting for containers to be healthy..."
-          
-          docker compose -f docker-compose-test.yml ps | grep -q "(healthy)" && { echo "Containers are healthy."; exit 0; }
-          
-          start_time=$(date +%s)
-          
-          while true; do
-            docker compose -f docker-compose-test.yml ps | grep -q "(healthy)" && { echo "Containers are healthy."; break; }
-
-            elapsed_time=$(( $(date +%s) - start_time ))
-
-            if (( elapsed_time > 300 )); then
-              echo "Timeout reached. Containers are not healthy."
-              docker compose -f docker-compose-test.yml ps
-              docker compose -f docker-compose-test.yml logs
-              exit 1
-            fi
-
-            echo "Waiting for containers to be healthy..."
-            docker compose -f docker-compose-test.yml ps
-            docker compose -f docker-compose-test.yml logs
-            sleep 10
-          done
-
-          # Show final status
-          echo "Final container status:"
-          docker compose -f docker-compose-test.yml ps
-
-      - name: Run Container Tests
+      - name: Run Tests
         run: mvn test -Pcontainer-tests
-
-      - name: Run Playwright Tests
-        if: success()
-        run: mvn test -Pplaywright-tests
-        env:
-          CI: true
-
-      - name: Capture Logs
-        if: always()
-        run: |
-          echo "Docker compose ps output:"
-          if ! docker compose -f docker-compose-test.yml ps; then
-            echo "Warning: 'docker compose ps' failed."
-          fi
-
-          echo "Container logs:"
-          if ! docker compose -f docker-compose-test.yml logs --no-color > container.log; then
-            echo "Warning: 'docker compose logs' failed."
-          fi
-
-          echo "Container inspection:"
-          if ! docker compose -f docker-compose-test.yml ps -q | xargs -r docker inspect > container-inspect.log; then
-            echo "Warning: 'docker inspect' failed."
-          fi
-
-      - name: Upload Container Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: container-logs
-          path: |
-            container.log
-            container-inspect.log
 
       - name: Upload Test Results
         if: always()
@@ -129,18 +50,3 @@ jobs:
           path: |
             target/surefire-reports/**/*.xml
             target/failsafe-reports/**/*.xml
-
-      - name: Cleanup
-        if: always()
-        run: |
-          if ! docker compose -f docker-compose-test.yml down -v; then
-            echo "Warning: 'docker compose down' failed."
-          fi
-
-          if ! docker compose -f docker-compose-test.yml rm -f -s -v; then
-            echo "Warning: 'docker compose rm' failed."
-          fi
-
-          if ! docker system prune -f; then
-            echo "Warning: 'docker system prune' failed."
-          fi

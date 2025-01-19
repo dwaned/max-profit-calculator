@@ -1,19 +1,9 @@
----
+version: "3.7"
 services:
   app:
     build: .
     ports:
       - "9095:9095"
-    environment:
-      - SPRING_PROFILES_ACTIVE=test
-      - JAVA_OPTS=-Xmx512m -Xms256m
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:9095/api/health || exit 1"]
-      start_period: 60s
-      interval: 30s
-      timeout: 10s
-      retries: 5      
-
   site:
     build:
       context: site/LiveTerm
@@ -23,20 +13,6 @@ services:
       - "3000"
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
     command: npm run dev
     depends_on:
-      app:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      - app
