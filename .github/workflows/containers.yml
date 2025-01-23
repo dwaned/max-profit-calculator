@@ -53,8 +53,8 @@ jobs:
             libgles2 \
             gstreamer1.0-libav
     
-      - name: Install Playwright browsers # consider adding this.
-        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
+      # - name: Install Playwright browsers # consider adding this.
+      #   run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
 
       - name: Cache Maven dependencies
         uses: actions/cache@v4
