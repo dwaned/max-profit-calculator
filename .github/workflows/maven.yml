@@ -1,5 +1,10 @@
 ---
-name: Java CI with Maven
+name: Tests
+# This workflow builds service, and runs:
+# - Unit tests (Example and Property Based)
+# - Mutation tests
+# - Cucumber tests (BDD scenarios)
+# - OWASP Dependency Check
 
 on:
   push:
@@ -119,10 +124,8 @@ jobs:
           path: "**/cucumber-report/*.json"
           check-status-on-error: 'failure'
           check-status-on-undefined: 'failure'
-          check-status-on-pending: 'warning'
           annotation-status-on-error: 'failure'
           annotation-status-on-undefined: 'warning'
-          annotation-status-on-pending: 'notice'
 
   security-scan:
     runs-on: ubuntu-22.04
