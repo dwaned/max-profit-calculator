@@ -1,4 +1,4 @@
-name: Container Testing & Security Scan
+run-name: Container Testing & Security Scan
 
 # This workflow builds images and deploys the application and the site using docker-compose-test.yml
 # It also runs tests and scans the images for vulnerabilities
@@ -33,6 +33,29 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
+      - name: Install Playwright dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwoff1 \
+            libvpx9 \
+            libevent-2.1-7t64 \
+            libopus0 \
+            libgstreamer-plugins-base1.0-0 \
+            libgstreamer-gl1.0-0 \
+            libgstreamer-plugins-bad1.0-0 \
+            libflite1 \
+            libavif16 \
+            libharfbuzz-icu0 \
+            libsecret-1-0 \
+            libhyphen0 \
+            libmanette-0.2-0 \
+            libgles2 \
+            gstreamer1.0-libav
+    
+      - name: Install Playwright browsers # consider adding this.
+        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
+
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
@@ -48,9 +71,6 @@ jobs:
           
       - name: Maven Build & Install
         run: mvn -B install -D skipTests --no-transfer-progress
-      
-      # - name: Ensure browsers are installed
-      #   run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
     
       - name: Run tests
         run: mvn test -Dskiptests -Pplaywright-tests
