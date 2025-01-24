@@ -79,11 +79,11 @@ jobs:
         run: sudo apt-get install -y jq
           
       - name: Security Scan
-        run: |
-          if docker scout cves | grep -q .; then
-            echo "Critical vulnerabilities found!"
-            exit 1
-          fi
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          only-severities: critical
+          exit-code: 1
 
       - name: Upload Test Results
         if: always()
