@@ -1,5 +1,5 @@
 ---
-name: Tests
+name: Tests & Security Scan
 # This workflow builds service, and runs:
 # - Unit tests (Example and Property Based)
 # - Mutation tests
@@ -17,7 +17,7 @@ permissions:
   checks: write
   pull-requests: write
 
-run-name: Maven Testing & Security Scan
+run-name: Multiple Tests & Security Scan
 
 jobs:
   build-and-test:

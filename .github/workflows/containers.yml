@@ -1,3 +1,4 @@
+name: Container Testing & Security Scan
 run-name: Container Testing & Security Scan
 
 # This workflow builds images and deploys the application and the site using docker-compose-test.yml
@@ -95,6 +96,7 @@ jobs:
           command: cves
           sarif-file: sarif.output.json
           summary: true
+          exit-code: true
 
       - name: Upload Test Results
         if: always()
