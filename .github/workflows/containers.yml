@@ -80,7 +80,7 @@ jobs:
           
       - name: Security Scan
         run: |
-          if docker scout cves --only-severity=critical | grep -q .; then
+          if docker scout cves | grep -q .; then
             echo "Critical vulnerabilities found!"
             exit 1
           fi
