@@ -1,3 +1,4 @@
+---
 # Configuration file for MegaLinter
 # See all available variables at https://megalinter.io/configuration/ and in linters documentation
 
@@ -12,3 +13,7 @@ DISABLE_LINTERS:
   - REPOSITORY_TRUFFLEHOG
   - REPOSITORY_KICS
   - REPOSITORY_GRYPE
+
+# Disable the "newline at end of file" rule
+ESLINT_RULES:
+  eol-last: "off"
