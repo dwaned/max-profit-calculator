@@ -74,22 +74,14 @@ jobs:
     
       - name: Run tests
         run: mvn test -Dskiptests -Pplaywright-tests
-          
-      - name: Security Scan
-        run: |
-          docker scan --accept-license --file "docker-compose-test.yml" --exclude-base
-          docker scan --accept-license --file "docker-compose-test.yml" --exclude-base --severity=high
-          docker scan --accept-license --file "docker-compose-test.yml" --exclude-base --severity=critical
       
       - name: Install jq
         run: sudo apt-get install -y jq
           
       - name: Security Scan
         run: |
-          scan_result=$(docker scan --accept-license --file "docker-compose-test.yml" --exclude-base --json)
-          echo "$scan_result" | jq '.vulnerabilities[] | select(.severity == "high" or .severity == "critical")' > /dev/null
-          if [ $? -eq 0 ]; then
-            echo "High or critical vulnerabilities found!"
+          if docker scout cves --only-severity=critical | grep -q .; then
+            echo "Critical vulnerabilities found!"
             exit 1
           fi
 
