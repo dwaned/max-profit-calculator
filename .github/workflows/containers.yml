@@ -84,7 +84,7 @@ jobs:
         run: mvn -B install -DskipTests --no-transfer-progress
     
       - name: Run Playwright Browser tests
-        run: mvn test -DskipTests -Pplaywright-tests
+        run: mvn test -Pplaywright-tests
       
       - name: Install jq
         run: sudo apt-get install -y jq
