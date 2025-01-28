@@ -16,6 +16,7 @@ EXPOSE 3000
 FROM node:18-alpine
 
 WORKDIR /home/node/app
+USER node
 
 COPY --from=base /home/node/app /home/node/app
 

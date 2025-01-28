@@ -22,18 +22,18 @@ public class ContainerTests {
 
     
     /**
-     * The ports for the application and site
+     * The ports for the application and site.
      */
     private static final int APP_PORT = 9095;
+    /**
+     * The site port number.
+     */
     private static final int SITE_PORT = 3000;
 
-    /**
-     * The Docker Compose container environment for testing.
-     */
-    @SuppressWarnings("checkstyle:VisibilityModifier")
+    @SuppressWarnings("resource")
     @Container
     public static final DockerComposeContainer<?> ENVIRONMENT;
-
+    
     static {
         try {
             ENVIRONMENT = new DockerComposeContainer<>(new File("docker-compose-test.yml"))
