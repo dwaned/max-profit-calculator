@@ -45,7 +45,7 @@ public class PlaywrightUITests {
         page.navigate("http://localhost:3000");
         Assertions.assertEquals("MAX-PROFIT-CALCULATOR", page.title(), "Did not find expected title");
         page.click("id=prompt");
-        page.type("id=prompt", "calculate 1 [1] [2]");
+        page.fill("id=prompt", "calculate 1 [1] [2]");
         page.keyboard().press("Enter");
         String result = page.textContent("xpath=//p[contains(text(),\"max profit\")]").toString();
         Assertions.assertTrue(page.isVisible("xpath=//p[contains(text(), 'The max profit possible is 1 with choosing stocks with index 0')]"),

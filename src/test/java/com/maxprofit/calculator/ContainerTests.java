@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
@@ -30,7 +31,8 @@ public class ContainerTests {
      * The Docker Compose container environment for testing.
      */
     @SuppressWarnings("checkstyle:VisibilityModifier")
-    public static DockerComposeContainer<?> environment;
+    @Container
+    public static final DockerComposeContainer<?> environment;
 
     static {
         try {

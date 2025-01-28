@@ -24,12 +24,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -114,7 +114,7 @@ jobs:
         if: always()
         run: |
           mvn test -Dtest="RunCucumberTest"
-          echo "### Cucumber Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "### Cucumber Test Results" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Generate Cucumber Report
         if: always()
@@ -144,23 +144,23 @@ jobs:
       - name: OWASP Dependency Check
         run: |
           mvn -Pdependency-check dependency-check:check
-          echo "### Security Scan Results" >> $GITHUB_STEP_SUMMARY
-          echo "#### OWASP Dependency Check" >> $GITHUB_STEP_SUMMARY
+          echo "### Security Scan Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "#### OWASP Dependency Check" >> "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
 
       - name: Process OWASP Results
         if: always()
         run: |
           if [ -f "target/dependency-check-report.xml" ]; then
-            echo "#### Vulnerability Summary" >> $GITHUB_STEP_SUMMARY
+            echo "#### Vulnerability Summary" >> "$GITHUB_STEP_SUMMARY"
             
             HIGH=$(grep -c "<severity>HIGH</severity>" target/dependency-check-report.xml || echo "0")
             MEDIUM=$(grep -c "<severity>MEDIUM</severity>" target/dependency-check-report.xml || echo "0")
             LOW=$(grep -c "<severity>LOW</severity>" target/dependency-check-report.xml || echo "0")
             
-            echo "- High: $HIGH" >> $GITHUB_STEP_SUMMARY
-            echo "- Medium: $MEDIUM" >> $GITHUB_STEP_SUMMARY
-            echo "- Low: $LOW" >> $GITHUB_STEP_SUMMARY
+            echo "- High: $HIGH" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Medium: $MEDIUM" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Low: $LOW" >> "$GITHUB_STEP_SUMMARY"
             
             if [ "$HIGH" -gt "0" ]; then
               echo "::warning::Found $HIGH high severity vulnerabilities"

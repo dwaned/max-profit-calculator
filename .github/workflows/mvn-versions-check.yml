@@ -1,3 +1,4 @@
+---
 name: mvn Versions Checker
 on: workflow_dispatch
 
