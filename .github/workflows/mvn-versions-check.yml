@@ -2,8 +2,6 @@
 name: mvn Versions Checker
 on: workflow_dispatch
 
-permissions: read-all
-
 run-name: mvn Versions Checker
 
 jobs:

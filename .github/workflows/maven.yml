@@ -13,8 +13,8 @@ on:
     branches: ["main"]
 
 permissions:
-  contents: write
-  checks: write
+  contents: read
+  checks: read
   pull-requests: write
 
 run-name: Multiple Tests & Security Scan
@@ -152,15 +152,12 @@ jobs:
         if: always()
         run: |
           if [ -f "target/dependency-check-report.xml" ]; then
-            echo "#### Vulnerability Summary" >> "$GITHUB_STEP_SUMMARY"
-            
-            HIGH=$(grep -c "<severity>HIGH</severity>" target/dependency-check-report.xml || echo "0")
-            MEDIUM=$(grep -c "<severity>MEDIUM</severity>" target/dependency-check-report.xml || echo "0")
-            LOW=$(grep -c "<severity>LOW</severity>" target/dependency-check-report.xml || echo "0")
-            
-            echo "- High: $HIGH" >> "$GITHUB_STEP_SUMMARY"
-            echo "- Medium: $MEDIUM" >> "$GITHUB_STEP_SUMMARY"
-            echo "- Low: $LOW" >> "$GITHUB_STEP_SUMMARY"
+            {
+              echo "#### Vulnerability Summary"
+              echo "- High: $HIGH"
+              echo "- Medium: $MEDIUM"
+              echo "- Low: $LOW"
+            } >> "$GITHUB_STEP_SUMMARY"
             
             if [ "$HIGH" -gt "0" ]; then
               echo "::warning::Found $HIGH high severity vulnerabilities"
