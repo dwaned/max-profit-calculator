@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 @Testcontainers
 public class ContainerTests {
 
-    
+
     /**
      * The ports for the application and site.
      */
@@ -30,10 +30,13 @@ public class ContainerTests {
      */
     private static final int SITE_PORT = 3000;
 
+    /**
+     * The Docker Compose container environment.
+     */
     @SuppressWarnings("resource")
     @Container
     public static final DockerComposeContainer<?> ENVIRONMENT;
-    
+
     static {
         try {
             ENVIRONMENT = new DockerComposeContainer<>(new File("docker-compose-test.yml"))
