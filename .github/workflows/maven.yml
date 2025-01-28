@@ -62,17 +62,17 @@ jobs:
           {
             echo "### Mutation Testing Results"
             echo "#### Details"
-            
+
             TOTAL_MUTATIONS="$(grep "Generated.*mutations" mutation_output.txt | sed -E 's/.*Generated ([0-9]+) mutations.*/\1/')"
             KILLED_MUTATIONS="$(grep "Generated.*mutations.*Killed" mutation_output.txt | sed -E 's/.*Killed ([0-9]+).*/\1/')"
             LINE_COVERAGE="$(grep "Line Coverage:" mutation_output.txt | sed -E 's/.*Line Coverage: ([0-9]+\/[0-9]+) \(([0-9]+%)\).*/\2/')"
             NO_COVERAGE="$(grep "Mutations with no coverage" mutation_output.txt | sed -E 's/.*Mutations with no coverage ([0-9]+).*/\1/')"
             TEST_STRENGTH="$(grep "Test strength" mutation_output.txt | sed -E 's/.*Test strength ([0-9]+%).*/\1/')"
             TESTS_PER_MUTATION="$(grep "tests per mutation" mutation_output.txt | sed -E 's/.*Ran [0-9]+ tests \(([0-9.]+) tests per mutation\).*/\1/')"
-            
+
             SURVIVED=$((TOTAL_MUTATIONS - KILLED_MUTATIONS))
             KILL_PERCENTAGE=$((KILLED_MUTATIONS * 100 / TOTAL_MUTATIONS))
-            
+
             echo "- Total Mutations: ${TOTAL_MUTATIONS}"
             echo "- Mutations Killed: ${KILLED_MUTATIONS}"
             echo "- Mutations Survived: ${SURVIVED}"
@@ -158,7 +158,7 @@ jobs:
               echo "- Medium: $MEDIUM"
               echo "- Low: $LOW"
             } >> "$GITHUB_STEP_SUMMARY"
-            
+
             if [ "$HIGH" -gt "0" ]; then
               echo "::warning::Found $HIGH high severity vulnerabilities"
               grep -B2 -A2 "<severity>HIGH</severity>" target/dependency-check-report.xml | \

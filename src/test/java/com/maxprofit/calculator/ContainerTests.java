@@ -32,11 +32,11 @@ public class ContainerTests {
      */
     @SuppressWarnings("checkstyle:VisibilityModifier")
     @Container
-    public static final DockerComposeContainer<?> environment;
+    public static final DockerComposeContainer<?> ENVIRONMENT;
 
     static {
         try {
-            environment = new DockerComposeContainer<>(new File("docker-compose-test.yml"))
+            ENVIRONMENT = new DockerComposeContainer<>(new File("docker-compose-test.yml"))
                     .withExposedService("app", APP_PORT, 
                         Wait.forListeningPort()
                             .withStartupTimeout(Duration.ofMinutes(10)))
@@ -56,7 +56,7 @@ public class ContainerTests {
     public static void setUp() {
         try {
             System.out.println("Starting Docker environment...");
-            environment.start();
+            ENVIRONMENT.start();
             System.out.println("Docker environment started successfully");
         } catch (Exception e) {
             System.err.println("Failed to start containers: " + e.getMessage());
@@ -70,9 +70,9 @@ public class ContainerTests {
      */
     @AfterAll
     public static void tearDown() {
-        if (environment != null) {
+        if (ENVIRONMENT != null) {
             try {
-                environment.stop();
+                ENVIRONMENT.stop();
             } catch (Exception e) {
                 System.err.println("Error during container cleanup: " + e.getMessage());
             }
@@ -84,8 +84,8 @@ public class ContainerTests {
      */
     @Test
     public void testAppAndSite() {
-        Integer appPort = environment.getServicePort("app", APP_PORT);
-        Integer sitePort = environment.getServicePort("site", SITE_PORT);
+        Integer appPort = ENVIRONMENT.getServicePort("app", APP_PORT);
+        Integer sitePort = ENVIRONMENT.getServicePort("site", SITE_PORT);
 
         System.out.println("App port: " + appPort);
         System.out.println("Site port: " + sitePort);
