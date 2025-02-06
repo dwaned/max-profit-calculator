@@ -116,16 +116,13 @@ jobs:
           mvn test -Dtest="RunCucumberTest"
           echo "### Cucumber Test Results" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Generate Cucumber Report
+      - name: Upload Cucumber Report
         if: always()
-        uses: deblockt/cucumber-report-annotations-action@v1.6
+        uses: actions/upload-artifact@v4
         with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-          path: "**/cucumber-report/*.json"
-          check-status-on-error: 'failure'
-          check-status-on-undefined: 'failure'
-          annotation-status-on-error: 'failure'
-          annotation-status-on-undefined: 'warning'
+          name: cucumber-report
+          path: target/cucumber-report/report.html
+          retention-days: 30
 
   security-scan:
     runs-on: ubuntu-22.04
