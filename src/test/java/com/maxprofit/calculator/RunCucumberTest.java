@@ -11,8 +11,7 @@ import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("com/maxprofit/calculator")
-@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
-@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "json:target/cucumber-report/report.json, html:target/cucumber-report/report.html")
+@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, json:target/cucumber-report/report.json, html:target/cucumber-report/report.html")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.maxprofit.calculator")
 public class RunCucumberTest {
 }
