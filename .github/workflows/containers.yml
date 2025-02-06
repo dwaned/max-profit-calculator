@@ -1,7 +1,7 @@
+---
 name: Container Testing & Security Scan
 run-name: Container Testing & Security Scan
 
-# This workflow builds images and deploys the application and the site using docker-compose-test.yml
 # It also runs tests and scans the images for vulnerabilities
 on:
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-      
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -63,7 +63,7 @@ jobs:
             libmanette-0.2-0 \
             libgles2 \
             gstreamer1.0-libav
-    
+
       # - name: Install Playwright browsers # consider adding this.
       #   run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
 
@@ -79,18 +79,18 @@ jobs:
         run: |
           docker compose -f "docker-compose-test.yml" build --no-cache
           docker compose -f "docker-compose-test.yml" up -d
-          
+
       - name: Maven Build & Install
         run: mvn -B install -DskipTests --no-transfer-progress
-    
+
       - name: Run Playwright Browser tests
         run: mvn test -Pplaywright-tests
-      
+
       - name: Install jq
         run: sudo apt-get install -y jq
-          
+
       - name: Analyze for critical and high CVEs
-        id: docker-scout-cves        
+        id: docker-scout-cves
         uses: docker/scout-action@v1
         with:
           command: cves
@@ -105,4 +105,4 @@ jobs:
           name: test-results
           path: |
             target/surefire-reports/**/*.xml
-            target/failsafe-reports/**/*.xml                    
+            target/failsafe-reports/**/*.xml

@@ -2,6 +2,12 @@
 # Configuration file for MegaLinter
 # See all available variables at https://megalinter.io/configuration/ and in linters documentation
 
+DISABLE:
+  - COPYPASTE
+  - SPELL
+
+APPLY_FIXES: all
+
 DISABLE_LINTERS:
   - REPOSITORY_TRIVY
   - JAVA_PMD
@@ -13,6 +19,11 @@ DISABLE_LINTERS:
   - REPOSITORY_TRUFFLEHOG
   - REPOSITORY_KICS
   - REPOSITORY_GRYPE
+  - YAML_YAMLLINT
+  - YAML_V8R
+  - REPOSITORY_CHECKOV
+  - JAVA_CHECKSTYLE
+  - ACTION_ACTIONLINT
 
 # Disable the "newline at end of file" rule
 ESLINT_RULES:

@@ -31,8 +31,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
           cache: maven
 
       - name: Run All Tests
@@ -42,13 +42,13 @@ jobs:
             mvn clean test -Dtest="ExampleBasedTests,PropertyBasedStockTests"
             echo "### Test Execution Complete"
           } >> "$GITHUB_STEP_SUMMARY"
-          
+
       - name: Report Test Results
         uses: mikepenz/action-junit-report@v3
         if: always()
         with:
-          report_paths: '**/target/surefire-reports/TEST-*.xml'
-          check_name: 'Unit Test Results'
+          report_paths: "**/target/surefire-reports/TEST-*.xml"
+          check_name: "Unit Test Results"
           detailed_summary: true
           include_passed: true
           annotate_notice: false
@@ -88,11 +88,11 @@ jobs:
           else
             echo "::notice::All ${TOTAL_MUTATIONS} mutations killed (100% success)"
           fi
-      
+
           if [ "$NO_COVERAGE" -gt "0" ]; then
             echo "::warning::${NO_COVERAGE} mutations have no test coverage"
           fi
-      
+
           {
             echo "total_mutations=${TOTAL_MUTATIONS}"
             echo "killed_mutations=${KILLED_MUTATIONS}"
@@ -134,8 +134,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
           cache: maven
 
       - name: OWASP Dependency Check
