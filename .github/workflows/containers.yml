@@ -94,6 +94,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves
+          only-severities: critical
           sarif-file: sarif.output.json
           summary: true
           exit-code: true
