@@ -83,13 +83,23 @@ jobs:
       - name: Maven Build & Install
         run: mvn -B install -DskipTests --no-transfer-progress
 
-      - name: Run Playwright Browser tests
+      - name: Run Playwright Browser tests against Deployed Container
         run: mvn test -Pplaywright-tests
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            target/surefire-reports/**/*.xml
+            target/failsafe-reports/**/*.xml
+          report_individual_runs: true
+          check_name: "Playwright Test Results"
 
       - name: Install jq
         run: sudo apt-get install -y jq
 
-      - name: Analyze for critical and high CVEs
+      - name: Analyze for critical CVEs
         id: docker-scout-cves
         uses: docker/scout-action@v1
         with:
