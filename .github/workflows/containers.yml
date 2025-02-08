@@ -18,11 +18,15 @@ permissions:
   pull-requests: write
 
 jobs:
-  build-and-deploy:
+  build-deploy-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
       image-tag: ${{ steps.build.outputs.image-tag }}
+    env:
+      TESTCONTAINERS_RYUK_DISABLED: true
+      MAVEN_OPTS: "-Xmx2048m"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -37,22 +41,6 @@ jobs:
         run: |
           docker compose -f "docker-compose-test.yml" build --no-cache
           docker compose -f "docker-compose-test.yml" up -d
-
-  browser-tests:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      TESTCONTAINERS_RYUK_DISABLED: true
-      MAVEN_OPTS: "-Xmx2048m"
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
 
       - name: Install Playwright dependencies
         run: |
@@ -98,7 +86,7 @@ jobs:
             target/failsafe-reports/**/*.xml
 
   security-scan:
-    needs: build-and-deploy
+    needs: build-deploy-test
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
