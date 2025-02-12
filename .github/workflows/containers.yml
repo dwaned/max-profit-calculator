@@ -108,6 +108,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves
+          image: ${{ secrets.DOCKER_HUB_USERNAME }}/app:latest
           only-severities: critical
           sarif-file: sarif.output.json
           summary: true
