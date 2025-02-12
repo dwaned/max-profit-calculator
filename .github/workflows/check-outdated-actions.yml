@@ -22,13 +22,13 @@ jobs:
         id: check
         run: |
           outdated=()
-          
+
           for file in $(echo '${{ steps.workflows.outputs.files }}' | jq -r '.[]'); do
             while IFS= read -r line; do
               if [[ $line =~ uses:\ ([^@]+)@([^\ ]+) ]]; then
                 action="${BASH_REMATCH[1]}"
                 current="${BASH_REMATCH[2]}"
-          
+
                 if [[ $action == actions/* ]]; then
                   latest=$(curl -s "https://api.github.com/repos/$action/releases/latest" | jq -r '.tag_name')
                   if [[ $current != $latest && $latest != "null" ]]; then
@@ -38,7 +38,7 @@ jobs:
               fi
             done < "$file"
           done
-          
+
           if [ ${#outdated[@]} -eq 0 ]; then
             echo "No outdated actions found!"
             echo "has_updates=false" >> $GITHUB_OUTPUT
