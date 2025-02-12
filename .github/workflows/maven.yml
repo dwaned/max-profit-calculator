@@ -143,7 +143,6 @@ jobs:
           fi
         continue-on-error: true
 
-
       - name: Process OWASP Results
         if: always()
         run: |
