@@ -131,7 +131,7 @@ jobs:
 
       - name: OWASP Dependency Check
         run: |
-          mvn org.owasp:dependency-check-maven:8.4.3:check
+          mvn org.owasp:dependency-check-maven:8.4.3:aggregate
           echo "### Security Scan Results" >> "$GITHUB_STEP_SUMMARY"
           echo "#### OWASP Dependency Check" >> "$GITHUB_STEP_SUMMARY"
           if [ -f "target/dependency-check-report.json" ]; then
@@ -139,19 +139,18 @@ jobs:
             echo "- Found $VULNS potential vulnerabilities" >> "$GITHUB_STEP_SUMMARY"
             echo "- See detailed report in artifacts for complete analysis" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "- No dependency-check-report.json found" >> "$GITHUB_STEP_SUMMARY"
+          echo "- No dependency-check-report.json found" >> "$GITHUB_STEP_SUMMARY"
           fi
         continue-on-error: true
-
 
       - name: Process OWASP Results
         if: always()
         run: |
           if [ -f "target/dependency-check-report.xml" ]; then
             echo "Processing XML report..." >> "$GITHUB_STEP_SUMMARY"
-            HIGH=$(xmllint --xpath 'count(//vulnerability[severity="HIGH"])' target/dependency-check-report.xml 2>/dev/null || echo 0)
-            MEDIUM=$(xmllint --xpath 'count(//vulnerability[severity="MEDIUM"])' target/dependency-check-report.xml 2>/dev/null || echo 0)
-            LOW=$(xmllint --xpath 'count(//vulnerability[severity="LOW"])' target/dependency-check-report.xml 2>/dev/null || echo 0)
+            HIGH=$(grep -c '<severity>HIGH</severity>' target/dependency-check-report.xml || echo 0)
+            MEDIUM=$(grep -c '<severity>MEDIUM</severity>' target/dependency-check-report.xml || echo 0)
+            LOW=$(grep -c '<severity>LOW</severity>' target/dependency-check-report.xml || echo 0)
             echo "### Security Scan Summary" >> "$GITHUB_STEP_SUMMARY"
             echo "- High Risk: $HIGH" >> "$GITHUB_STEP_SUMMARY"
             echo "- Medium Risk: $MEDIUM" >> "$GITHUB_STEP_SUMMARY"
