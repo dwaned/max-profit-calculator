@@ -51,7 +51,7 @@ jobs:
           command: cve, quickview
           image: max-profit-calculator-app:latest
           only-severities: critical
-          sarif-file: sarif.output.json          
+          sarif-file: sarif.output.json
           summary: true
           exit-code: true
 
