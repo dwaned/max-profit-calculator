@@ -131,7 +131,7 @@ jobs:
 
       - name: OWASP Dependency Check
         run: |
-          mvn -Pdependency-check dependency-check:check
+          mvn org.owasp:dependency-check-maven:8.4.3:check
           echo "### Security Scan Results" >> "$GITHUB_STEP_SUMMARY"
           echo "#### OWASP Dependency Check" >> "$GITHUB_STEP_SUMMARY"
           if [ -f "target/dependency-check-report.json" ]; then
@@ -142,6 +142,7 @@ jobs:
             echo "- No dependency-check-report.json found" >> "$GITHUB_STEP_SUMMARY"
           fi
         continue-on-error: true
+
 
       - name: Process OWASP Results
         if: always()

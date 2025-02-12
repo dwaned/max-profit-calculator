@@ -48,7 +48,7 @@ jobs:
       - name: Analyze for critical CVEs with Docker Scout
         uses: docker/scout-action@v1
         with:
-          command: cve, quickview
+          command: cves,quickview
           image: max-profit-calculator-app:latest
           only-severities: critical
           sarif-file: sarif.output.json          
