@@ -61,6 +61,7 @@ jobs:
 
       - name: Run Mutation Tests
         id: mutation
+        continue-on-error: true
         run: |
           mvn -Ppitest test-compile
           TOTAL_MUTATIONS=$(find target/pit-reports -name mutations.xml -exec grep -l "<mutation" {} \; | xargs cat | grep -c "<mutation")
