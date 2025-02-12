@@ -39,8 +39,8 @@ jobs:
         id: test
         run: |
           mvn clean test -Dtest="ExampleBasedTests,PropertyBasedStockTests"
-          TESTS_TOTAL=$(grep "Tests run:" target/surefire-reports/TEST-*.xml | awk '{sum += $3} END {print sum}')
-          TESTS_FAILED=$(grep "Tests run:" target/surefire-reports/TEST-*.xml | awk '{sum += $5} END {print sum}')
+          TESTS_TOTAL=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          TESTS_FAILED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           {
             echo "### Unit Test Results"
             echo "- Total Tests: $TESTS_TOTAL"
@@ -63,23 +63,21 @@ jobs:
         id: mutation
         continue-on-error: true
         run: |
-          mvn -Ppitest test-compile
-          TOTAL_MUTATIONS=$(find target/pit-reports -name mutations.xml -exec grep -l "<mutation" {} \; | xargs cat | grep -c "<mutation")
-          KILLED_MUTATIONS=$(find target/pit-reports -name mutations.xml -exec grep -l "status=\"KILLED\"" {} \; | xargs cat | grep -c "status=\"KILLED\"")
-          SURVIVED=$((TOTAL_MUTATIONS - KILLED_MUTATIONS))
-          KILL_PERCENTAGE=$((KILLED_MUTATIONS * 100 / TOTAL_MUTATIONS))
+          mvn -Ppitest test-compile 2>&1 | tee mutation_output.txt
           {
-            echo "### Mutation Test Results"
-            echo "- Killed: $KILLED_MUTATIONS/$TOTAL_MUTATIONS ($KILL_PERCENTAGE%)"
-            echo "- Survived: $SURVIVED"
+            echo "### Mutation Testing Results"
+            echo "#### Summary"
+            TOTAL_MUTATIONS="$(grep "Generated.*mutations" mutation_output.txt | sed -E 's/.*Generated ([0-9]+) mutations.*/\1/')"
+            KILLED_MUTATIONS="$(grep "Generated.*mutations.*Killed" mutation_output.txt | sed -E 's/.*Killed ([0-9]+).*/\1/')"
+            SURVIVED=$((TOTAL_MUTATIONS - KILLED_MUTATIONS))
+            KILL_PERCENTAGE=$((KILLED_MUTATIONS * 100 / TOTAL_MUTATIONS))
+            echo "- Mutations: ${KILLED_MUTATIONS}/${TOTAL_MUTATIONS} killed (${KILL_PERCENTAGE}%)"
           } >> "$GITHUB_STEP_SUMMARY"
-
           if [ "$SURVIVED" -gt "0" ]; then
             echo "::warning::${SURVIVED}/${TOTAL_MUTATIONS} mutations survived (${KILL_PERCENTAGE}% killed)"
           else
             echo "::notice::All ${TOTAL_MUTATIONS} mutations killed (100% success)"
           fi
-
           if [ "$NO_COVERAGE" -gt "0" ]; then
             echo "::warning::${NO_COVERAGE} mutations have no test coverage"
           fi
@@ -89,7 +87,7 @@ jobs:
             echo "killed_mutations=${KILLED_MUTATIONS}"
             echo "survived_mutations=${SURVIVED}"
             echo "kill_percentage=${KILL_PERCENTAGE}"
-          } >> "$GITHUB_OUTPUT"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Mutation Test Results
         if: always()

@@ -41,7 +41,7 @@ jobs:
         id: build
         run: |
           docker compose -f "docker-compose-test.yml" build
-          docker tag app:latest ${{ secrets.DOCKER_HUB_USERNAME }}/app:latest
+          docker tag max-profit-calculator-app:latest ${{ secrets.DOCKER_HUB_USERNAME }}/app:latest
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/app:latest
           docker compose -f "docker-compose-test.yml" up -d
           sleep 30
