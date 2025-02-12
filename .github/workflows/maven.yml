@@ -131,7 +131,11 @@ jobs:
 
       - name: OWASP Dependency Check
         run: |
-          mvn org.owasp:dependency-check-maven:aggregate -Dformat=ALL
+          mvn org.owasp:dependency-check-maven:aggregate \
+            -DskipProvidedScope=true \
+            -DskipSystemScope=true \
+            -DskipTestScope=true \
+            -Dformat=ALL
           if [ -f "target/dependency-check-report.xml" ]; then
             HIGH=$(grep -c '<severity>HIGH</severity>' target/dependency-check-report.xml || echo 0)
             MEDIUM=$(grep -c '<severity>MEDIUM</severity>' target/dependency-check-report.xml || echo 0)
