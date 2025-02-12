@@ -66,27 +66,23 @@ jobs:
           mvn -Ppitest test-compile 2>&1 | tee mutation_output.txt
           {
             echo "### Mutation Testing Results"
-            echo "#### Summary"
+            echo "#### Details"
             TOTAL_MUTATIONS="$(grep "Generated.*mutations" mutation_output.txt | sed -E 's/.*Generated ([0-9]+) mutations.*/\1/')"
             KILLED_MUTATIONS="$(grep "Generated.*mutations.*Killed" mutation_output.txt | sed -E 's/.*Killed ([0-9]+).*/\1/')"
+            LINE_COVERAGE="$(grep "Line Coverage:" mutation_output.txt | sed -E 's/.*Line Coverage: ([0-9]+\/[0-9]+) \(([0-9]+%)\).*/\2/')"
+            NO_COVERAGE="$(grep "Mutations with no coverage" mutation_output.txt | sed -E 's/.*Mutations with no coverage ([0-9]+).*/\1/')"
+            TEST_STRENGTH="$(grep "Test strength" mutation_output.txt | sed -E 's/.*Test strength ([0-9]+%).*/\1/')"
+            TESTS_PER_MUTATION="$(grep "tests per mutation" mutation_output.txt | sed -E 's/.*Ran [0-9]+ tests \(([0-9.]+) tests per mutation\).*/\1/')"
             SURVIVED=$((TOTAL_MUTATIONS - KILLED_MUTATIONS))
             KILL_PERCENTAGE=$((KILLED_MUTATIONS * 100 / TOTAL_MUTATIONS))
-            echo "- Mutations: ${KILLED_MUTATIONS}/${TOTAL_MUTATIONS} killed (${KILL_PERCENTAGE}%)"
-          } >> "$GITHUB_STEP_SUMMARY"
-          if [ "$SURVIVED" -gt "0" ]; then
-            echo "::warning::${SURVIVED}/${TOTAL_MUTATIONS} mutations survived (${KILL_PERCENTAGE}% killed)"
-          else
-            echo "::notice::All ${TOTAL_MUTATIONS} mutations killed (100% success)"
-          fi
-          if [ "$NO_COVERAGE" -gt "0" ]; then
-            echo "::warning::${NO_COVERAGE} mutations have no test coverage"
-          fi
-
-          {
-            echo "total_mutations=${TOTAL_MUTATIONS}"
-            echo "killed_mutations=${KILLED_MUTATIONS}"
-            echo "survived_mutations=${SURVIVED}"
-            echo "kill_percentage=${KILL_PERCENTAGE}"
+            echo "- Total Mutations: ${TOTAL_MUTATIONS}"
+            echo "- Mutations Killed: ${KILLED_MUTATIONS}"
+            echo "- Mutations Survived: ${SURVIVED}"
+            echo "- Kill Percentage: ${KILL_PERCENTAGE}%"
+            echo "- Line Coverage: ${LINE_COVERAGE}"
+            echo "- Mutations with No Coverage: ${NO_COVERAGE}"
+            echo "- Test Strength: ${TEST_STRENGTH}"
+            echo "- Tests per Mutation: ${TESTS_PER_MUTATION}"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Mutation Test Results
@@ -103,7 +99,13 @@ jobs:
         if: always()
         run: |
           mvn test -Dtest="RunCucumberTest"
-          echo "### Cucumber Test Results" >> "$GITHUB_STEP_SUMMARY"
+          CUCUMBER_TOTAL=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          CUCUMBER_FAILED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          {
+            echo "### Cucumber Test Results"
+            echo "- Total Scenarios: $CUCUMBER_TOTAL"
+            echo "- Failed Scenarios: $CUCUMBER_FAILED"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Cucumber Report
         if: always()
@@ -132,6 +134,11 @@ jobs:
           mvn -Pdependency-check dependency-check:check
           echo "### Security Scan Results" >> "$GITHUB_STEP_SUMMARY"
           echo "#### OWASP Dependency Check" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "target/dependency-check-report.json" ]; then
+            VULNS=$(cat target/dependency-check-report.json | grep -c '"severity":' || echo 0)
+            echo "- Found $VULNS potential vulnerabilities" >> "$GITHUB_STEP_SUMMARY"
+            echo "- See detailed report in artifacts for complete analysis" >> "$GITHUB_STEP_SUMMARY"
+          fi
         continue-on-error: true
 
       - name: Process OWASP Results

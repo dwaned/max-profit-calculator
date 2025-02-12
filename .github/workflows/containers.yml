@@ -36,15 +36,22 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Image Build, Push and Start Docker Compose
+          
+      - name: Build Docker Image
         id: build
         run: |
           docker compose -f "docker-compose-test.yml" build
           docker tag max-profit-calculator-app:latest ${{ secrets.DOCKER_HUB_USERNAME }}/app:latest
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/app:latest
           docker compose -f "docker-compose-test.yml" up -d
           sleep 30
+
+      - name: Scan local image with Docker Scout
+        uses: docker/scout-action@v1
+        with:
+          command: quickview
+          image: max-profit-calculator-app:latest
+          only-severities: critical
+          sarif-file: sarif.output.json
 
       - name: Install Playwright dependencies
         run: |
