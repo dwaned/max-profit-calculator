@@ -102,7 +102,7 @@ jobs:
           CUCUMBER_TOTAL=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           CUCUMBER_FAILED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           {
-            echo "### Cucumber Test Results"
+            echo "### Cucumber BDD Scenarios Results"
             echo "- Total Scenarios: $CUCUMBER_TOTAL"
             echo "- Failed Scenarios: $CUCUMBER_FAILED"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -135,9 +135,11 @@ jobs:
           echo "### Security Scan Results" >> "$GITHUB_STEP_SUMMARY"
           echo "#### OWASP Dependency Check" >> "$GITHUB_STEP_SUMMARY"
           if [ -f "target/dependency-check-report.json" ]; then
-            VULNS=$(cat target/dependency-check-report.json | grep -c '"severity":' || echo 0)
+            VULNS=$(jq '.dependencies | map(.vulnerabilities) | flatten | length' target/dependency-check-report.json || echo 0)
             echo "- Found $VULNS potential vulnerabilities" >> "$GITHUB_STEP_SUMMARY"
             echo "- See detailed report in artifacts for complete analysis" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- No dependency-check-report.json found" >> "$GITHUB_STEP_SUMMARY"
           fi
         continue-on-error: true
 
@@ -145,15 +147,16 @@ jobs:
         if: always()
         run: |
           if [ -f "target/dependency-check-report.xml" ]; then
-            HIGH=$(grep -c '<severity>HIGH</severity>' target/dependency-check-report.xml || echo 0)
-            MEDIUM=$(grep -c '<severity>MEDIUM</severity>' target/dependency-check-report.xml || echo 0)
-            LOW=$(grep -c '<severity>LOW</severity>' target/dependency-check-report.xml || echo 0)
-            {
-              echo "### Security Scan Summary"
-              echo "- High Risk: $HIGH"
-              echo "- Medium Risk: $MEDIUM"
-              echo "- Low Risk: $LOW"
-            } >> "$GITHUB_STEP_SUMMARY"
+            echo "Processing XML report..." >> "$GITHUB_STEP_SUMMARY"
+            HIGH=$(xmllint --xpath 'count(//vulnerability[severity="HIGH"])' target/dependency-check-report.xml 2>/dev/null || echo 0)
+            MEDIUM=$(xmllint --xpath 'count(//vulnerability[severity="MEDIUM"])' target/dependency-check-report.xml 2>/dev/null || echo 0)
+            LOW=$(xmllint --xpath 'count(//vulnerability[severity="LOW"])' target/dependency-check-report.xml 2>/dev/null || echo 0)
+            echo "### Security Scan Summary" >> "$GITHUB_STEP_SUMMARY"
+            echo "- High Risk: $HIGH" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Medium Risk: $MEDIUM" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Low Risk: $LOW" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- No dependency-check-report.xml found" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Upload Security Report
