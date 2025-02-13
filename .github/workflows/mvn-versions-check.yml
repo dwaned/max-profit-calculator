@@ -9,4 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: mvn versions:display-dependency-updates
+      - name: Check dependency updates
+        run: mvn versions:display-dependency-updates > dependency-updates.txt
+      - name: Create summary
+        run: |
+          echo "## Maven Dependency Updates" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat dependency-updates.txt >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
