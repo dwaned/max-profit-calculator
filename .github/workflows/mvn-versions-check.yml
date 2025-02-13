@@ -1,11 +1,19 @@
+---
 name: mvn Versions Checker
 on: workflow_dispatch
 
-permissions: read-all
+run-name: mvn Versions Checker
 
 jobs:
   npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - run: mvn versions:display-dependency-updates
+      - uses: actions/checkout@v4
+      - name: Check dependency updates
+        run: mvn versions:display-dependency-updates > dependency-updates.txt
+      - name: Create summary
+        run: |
+          echo "## Maven Dependency Updates" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat dependency-updates.txt >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
