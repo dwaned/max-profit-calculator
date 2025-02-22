@@ -4,6 +4,10 @@
 # - Cucumber tests (BDD scenarios)
 # - OWASP Dependency Check
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: ["main"]
