@@ -1,17 +1,25 @@
-FROM node:18-alpine as base
-
-RUN addgroup -g 1001 nodejs && \
-    adduser -D -u 1001 -G nodejs nodejs
-
+# Stage 1: Build stage
+FROM node:18-alpine AS base
 
 WORKDIR /home/node/app
+
 COPY package.json ./
-RUN npm install -g npm-check-updates@latest && ncu -u
-RUN ncu -u && npm install
-COPY . ./
+COPY package-lock.json ./
 
-FROM base as production
+RUN npm install --legacy-peer-deps
 
-ENV NODE_PATH=./build
-USER nodejs
-RUN npm run build --verbose
+COPY . .
+
+EXPOSE 3000
+
+# Stage 2: Runtime stage
+FROM node:18-alpine
+
+WORKDIR /home/node/app
+USER node
+
+COPY --from=base /home/node/app /home/node/app
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

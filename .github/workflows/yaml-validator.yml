@@ -1,0 +1,25 @@
+---
+name: Yaml Lint
+on: [push] # yamllint disable-line rule:truthy
+
+run-name: Yaml Lint
+
+jobs:
+  lintAllTheThings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: yaml-lint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_data: |
+            extends: default
+            rules:
+              line-length:
+                level: warning
+                max: 150
+              new-line-at-end-of-file:
+                level: warning
+              trailing-spaces:
+                level: warning
