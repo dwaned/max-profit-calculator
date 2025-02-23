@@ -13,7 +13,7 @@ The goal is to demonstrate different testing approaches and their effectiveness 
 
 The Max Profit Calculator determines the maximum profit that can be obtained by buying and selling a stock once, given an array of stock prices where each index represents a point in time.
 
-## Testing Strategies Employed
+## Testing Strategies
 
 This project showcases a range of testing strategies, including:
 
