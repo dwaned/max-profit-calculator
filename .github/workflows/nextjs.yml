@@ -75,13 +75,10 @@ jobs:
       - name: Build with Next.js
         run: yarn next build
         working-directory: site/LiveTerm
-      - name: Static HTML export with Next.js
-        run: yarn next export
-        working-directory: site/LiveTerm
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
-          path: ./out
+          path: site/LiveTerm/out
 
   # Deployment job
   deploy:
