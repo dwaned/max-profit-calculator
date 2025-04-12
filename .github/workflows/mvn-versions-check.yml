@@ -8,7 +8,7 @@ jobs:
   npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
       - name: Check dependency updates
         run: mvn versions:display-dependency-updates > dependency-updates.txt
       - name: Create summary

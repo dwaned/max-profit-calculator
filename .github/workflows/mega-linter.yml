@@ -34,7 +34,7 @@ jobs:
     steps:
       # Git Checkout
       - name: Checkout Code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
@@ -60,7 +60,7 @@ jobs:
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: MegaLinter reports
           path: |

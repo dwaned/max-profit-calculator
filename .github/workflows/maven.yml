@@ -28,12 +28,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.7.1
         with:
           java-version: "17"
           distribution: "temurin"
@@ -91,7 +91,7 @@ jobs:
 
       - name: Upload Mutation Test Results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: mutation-test-results
           path: |
@@ -113,7 +113,7 @@ jobs:
 
       - name: Upload Cucumber Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: cucumber-report
           path: target/cucumber-report/report.html
@@ -124,10 +124,10 @@ jobs:
     needs: build-and-test
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.7.1
         with:
           java-version: "17"
           distribution: "temurin"
@@ -171,7 +171,7 @@ jobs:
 
       - name: Upload Security Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: security-reports
           path: target/dependency-check-report.*
