@@ -70,11 +70,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+        run: yarn install
+        working-directory: site/LiveTerm
       - name: Build with Next.js
-        run: |
-          cd ${{ github.workspace }}/site/LiveTerm 
-          ${{ steps.detect-package-manager.outputs.runner }} next build
+        run: yarn next build
+        working-directory: site/LiveTerm
       - name: Static HTML export with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next export
       - name: Upload artifact
