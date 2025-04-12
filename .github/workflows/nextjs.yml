@@ -76,7 +76,8 @@ jobs:
         run: yarn next build
         working-directory: site/LiveTerm
       - name: Static HTML export with Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next export
+        run: yarn next export
+        working-directory: site/LiveTerm
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
