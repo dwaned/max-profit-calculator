@@ -39,10 +39,9 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Run All Tests
-        id: test
+      - name: Run All Unit Tests (including API HTTP Status)
         run: |
-          mvn clean test -Dtest="ExampleBasedTests,PropertyBasedStockTests"
+          mvn clean test -Dtest="ExampleBasedTests,PropertyBasedStockTests,CalculatorControllerTest,CalculatorControllerHttpStatusTest"
           TESTS_TOTAL=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           TESTS_FAILED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           {
