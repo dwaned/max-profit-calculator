@@ -47,7 +47,7 @@ export const calculate = async (args?: string[]): Promise<string> => {
 
     const response = await axios.request({
       method: 'POST',
-      url: 'http://localhost:9095/api/calculate',
+      url: 'http://localhost:9095/calculate',
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       data: {
         savingsAmount: args[0],

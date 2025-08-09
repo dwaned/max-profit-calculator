@@ -2,8 +2,6 @@ package com.maxprofit.calculator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -20,75 +18,19 @@ import static org.hamcrest.Matchers.equalTo;
 @Testcontainers
 public class ContainerTests {
 
-
-    /**
-     * The ports for the application and site.
-     */
     private static final int APP_PORT = 9095;
-    /**
-     * The site port number.
-     */
     private static final int SITE_PORT = 3000;
 
-    /**
-     * The Docker Compose container environment.
-     */
-    @SuppressWarnings("resource")
     @Container
-    public static final DockerComposeContainer<?> ENVIRONMENT;
+    private final DockerComposeContainer<?> environment = new DockerComposeContainer<>(
+            new File("docker-compose-test.yml"))
+        .withExposedService("app", APP_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)))
+        .withExposedService("site", SITE_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)));
 
-    static {
-        try {
-            ENVIRONMENT = new DockerComposeContainer<>(new File("docker-compose-test.yml"))
-                    .withExposedService("app", APP_PORT, 
-                        Wait.forListeningPort()
-                            .withStartupTimeout(Duration.ofMinutes(10)))
-                    .withExposedService("site", SITE_PORT,
-                        Wait.forListeningPort()
-                            .withStartupTimeout(Duration.ofMinutes(10)));
-        } catch (Exception e) {
-            System.err.println("Error initializing Docker environment: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
-     * Sets up the environment before all tests are run.
-     */
-    @BeforeAll
-    public static void setUp() {
-        try {
-            System.out.println("Starting Docker environment...");
-            ENVIRONMENT.start();
-            System.out.println("Docker environment started successfully");
-        } catch (Exception e) {
-            System.err.println("Failed to start containers: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    /**
-     * Stops the Docker Compose container environment after all tests.
-     */
-    @AfterAll
-    public static void tearDown() {
-        if (ENVIRONMENT != null) {
-            try {
-                ENVIRONMENT.stop();
-            } catch (Exception e) {
-                System.err.println("Error during container cleanup: " + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Tests the application and site endpoints.
-     */
     @Test
     public void testAppAndSite() {
-        Integer appPort = ENVIRONMENT.getServicePort("app", APP_PORT);
-        Integer sitePort = ENVIRONMENT.getServicePort("site", SITE_PORT);
+        Integer appPort = environment.getServicePort("app", APP_PORT);
+        Integer sitePort = environment.getServicePort("site", SITE_PORT);
 
         System.out.println("App port: " + appPort);
         System.out.println("Site port: " + sitePort);

@@ -15,6 +15,7 @@ Unit tests focus on individual components or functions in isolation.
 
 - **Property-based Tests**: Implemented in `PropertyBasedStockTests.java` using the jqwik library. These tests generate random inputs to verify properties of the `Stock` class.
 - **Example-based Tests**: Implemented in `ExampleBasedTests.java` and `CalculatorControllerTest.java` using JUnit. These tests use specific input values and check expected outputs.
+- **API HTTP Status Tests**: Implemented in `CalculatorControllerHttpStatusTest.java` using MockMvc and JUnit. These tests verify correct HTTP status codes (e.g., 200, 400, 405, 415) for the `/api/calculate` endpoint.
 - **Mutation Tests**: Configured via PIT (pitest) in `pom.xml`. Mutation testing checks the effectiveness of the test suite by introducing code mutations and verifying that tests fail as expected.
 
 ## 3. Integration Tests

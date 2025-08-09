@@ -1,54 +1,45 @@
 package com.maxprofit.calculator;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
-@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@ExtendWith(SpringExtension.class)
+@WebMvcTest
 public class PlaywrightUITests {
-    /**
-     * Browser object.
-     */
-    private Browser browser;
-    /**
-     * Page object.
-     */
-    private Page page;
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
-     * Setup the browser and page.
-     */
-    @BeforeEach
-    public void setUp() {
-        browser = Playwright.create().chromium().launch(new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(50));
-        page = browser.newPage();
-    }
-
-    /**
-     * Close the browser.
-     */
-    @AfterEach
-    public void tearDown() {
-        browser.close();
-    }
-
-    /**
-     * Test the UI.
+     * Test the calculator endpoint.
      */
     @Test
-    public void testCalculateUsingUI() {
-        page.navigate("http://localhost:3000");
-        Assertions.assertEquals("MAX-PROFIT-CALCULATOR", page.title(), "Did not find expected title");
-        page.click("id=prompt");
-        page.fill("id=prompt", "calculate 1 [1] [2]");
-        page.keyboard().press("Enter");
-        String result = page.textContent("xpath=//p[contains(text(),\"max profit\")]").toString();
-        Assertions.assertTrue(page.isVisible("xpath=//p[contains(text(), 'The max profit possible is 1 with choosing stocks with index 0')]"),
-                "Did not find expected Calculate result. Found: " + result);
+    public void testCalculateEndpoint() throws Exception {
+        String request = """
+            {
+                "savingsAmount": "1",
+                "currentPrices": [1],
+                "futurePrices": [2]
+            }
+            """;
+
+        mockMvc.perform(post("/api/calculate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.maxProfit").value(1))
+                .andExpect(jsonPath("$.indices[0]").value(0));
     }
 }
