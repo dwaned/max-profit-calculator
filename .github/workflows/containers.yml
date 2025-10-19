@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -70,7 +70,7 @@ jobs:
             libmanette-0.2-0 libgles2 gstreamer1.0-libav
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v4.2.3
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.m2/repository
           key: "${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}"
