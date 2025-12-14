@@ -8,9 +8,11 @@ jobs:
   npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5.0.0
+
       - name: Check dependency updates
         run: mvn versions:display-dependency-updates > dependency-updates.txt
+
       - name: Create summary
         run: |
           echo "## Maven Dependency Updates" >> $GITHUB_STEP_SUMMARY
