@@ -2,7 +2,7 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /docker
 COPY pom.xml .
 COPY src src
-RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get upgrade -y && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 RUN mvn clean install -DskipTests
 
 FROM eclipse-temurin:17-jdk
@@ -11,6 +11,7 @@ COPY --from=build /docker/target/max-profit-calculator-1.0-SNAPSHOT.jar app.jar
 
 # Install curl and create user with proper permissions
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y curl && \
     rm -rf /var/lib/apt/lists/* && \
     groupadd -r userA && \
