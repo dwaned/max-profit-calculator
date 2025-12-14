@@ -50,6 +50,11 @@ public final class Stock {
      */
     public static CalculationResult returnIndicesMaxProfit(final int saving,
                                                            final List<Integer> currentValue, final List<Integer> futureValue) {
+        // Null checks for input lists
+        if (currentValue == null || futureValue == null) {
+            LOGGER.debug("currentValue or futureValue is null");
+            return new CalculationResult();
+        }
         // logger.setLevel(Level.OFF);
         int maxProfit = 0;
         Helper helper = new Helper();
