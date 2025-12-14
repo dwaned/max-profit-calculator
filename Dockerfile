@@ -1,11 +1,11 @@
-FROM openjdk:25-jdk-slim AS build
+FROM openjdk:21-jdk-slim AS build
 WORKDIR /docker
 COPY pom.xml .
 COPY src src
-RUN apt-get update && apt-get install -y maven
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 RUN mvn clean install -DskipTests
 
-FROM openjdk:25-jdk-slim
+FROM openjdk:21-jdk-slim
 WORKDIR /app
 COPY --from=build /docker/target/max-profit-calculator-1.0-SNAPSHOT.jar app.jar
 
