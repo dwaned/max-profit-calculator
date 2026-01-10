@@ -50,7 +50,7 @@ public class CalculatorControllerTest {
 
         CalculationResult response = Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
 
-        mockMvc.perform(post("/calculate")
+        mockMvc.perform(post("/api/calculate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
