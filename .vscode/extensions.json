@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "ms-vscode.extension-pack-for-java",
+    "vscjava.vscode-maven",
+    "vscjava.vscode-spring-boot",
+    "github.copilot",
+    "ms-vscode.makefile-tools"
+  ]
+}
