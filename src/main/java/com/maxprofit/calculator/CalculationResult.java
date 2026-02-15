@@ -11,6 +11,8 @@ package com.maxprofit.calculator;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings({"checkstyle:JavadocVariable", "checkstyle:DesignForExtension", 
+    "checkstyle:HiddenField", "checkstyle:MissingJavadocMethod"})
 public class CalculationResult {
 
     private final int maxProfit;

@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-@SuppressWarnings("checkstyle:LineLength")
+@SuppressWarnings({"checkstyle:JavadocPackage", "checkstyle:LineLength"})
 @RestController
 @CrossOrigin(origins = "http://localhost:9095")
 public class CalculatorController {

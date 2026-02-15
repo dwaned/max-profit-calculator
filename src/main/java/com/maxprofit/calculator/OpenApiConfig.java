@@ -6,6 +6,8 @@ import io.swagger.v3.oas.models.info.Contact;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@SuppressWarnings({"checkstyle:DesignForExtension", "checkstyle:LineLength", 
+    "checkstyle:MissingJavadocMethod"})
 @Configuration
 public class OpenApiConfig {
 

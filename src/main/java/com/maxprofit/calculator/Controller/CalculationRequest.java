@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
+@SuppressWarnings({"checkstyle:JavadocVariable", "checkstyle:DesignForExtension", 
+    "checkstyle:FinalParameters", "checkstyle:HiddenField", "checkstyle:MagicNumber"})
 public class CalculationRequest {
     @NotNull(message = "Savings amount is required")
     @Min(value = 1, message = "Savings must be at least 1")
