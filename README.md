@@ -52,7 +52,8 @@ The service runs on port **9095** with context path `/api`.
 ### API Documentation
 
 Once running, access the Swagger UI at:
-- **http://localhost:9095/api/swagger-ui.html**
+
+- **`http://localhost:9095/api/swagger-ui.html`**
 
 ### Example API Call
 
