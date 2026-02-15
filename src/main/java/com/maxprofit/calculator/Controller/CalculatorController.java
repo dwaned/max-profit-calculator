@@ -2,6 +2,8 @@ package com.maxprofit.calculator.controller;
 
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
+import jakarta.validation.Valid;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +37,10 @@ public class CalculatorController {
     @ResponseStatus(org.springframework.http.HttpStatus.OK)
     @CrossOrigin(origins = "http://localhost:3000, http://site:3000")
     public CalculationResult calculate(
-            @RequestBody final CalculationRequest request) {
+            @Valid @RequestBody final CalculationRequest request) {
         try {
-            return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
-                    request.getCurrentPrices(), request.getFuturePrices());
+            return Stock.returnIndicesMaxProfit(request.getSavings(),
+                    request.getBuyPrices(), request.getSellPrices());
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: " + e.getMessage());
         }

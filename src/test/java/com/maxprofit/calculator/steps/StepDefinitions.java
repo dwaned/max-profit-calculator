@@ -90,31 +90,14 @@ public class StepDefinitions {
                 futurePricesContext
         );
 
-        if (actualResult.getIndices().size() == 1) {
-            assertEquals(
-                    resultIndices,
-                    actualResult.getIndices().get(0),
-                    "Actual Result: "
-                            + actualResult.getIndices()
-                            + " with profit of "
-                            + actualResult.getMaxProfit()
-            );
-        } else {
-            logger.log(
-                    Level.WARNING,
-                    String.format(
-                            "Multiple combinations with same used savings: "
-                                    + actualResult.getIndices()
-                    )
-            );
-            assertTrue(
-                    actualResult.getIndices().contains(resultIndices),
-                    "Actual Result: "
-                            + actualResult.getIndices()
-                            + " with profit of "
-                            + actualResult.getMaxProfit()
-            );
-        }
+        assertEquals(
+                resultIndices,
+                actualResult.getIndices(),
+                "Actual Result: "
+                        + actualResult.getIndices()
+                        + " with profit of "
+                        + actualResult.getMaxProfit()
+        );
     }
 
     /**

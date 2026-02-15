@@ -30,7 +30,8 @@ This project showcases a range of testing strategies, including:
 * **Cucumber:** Framework for behavior-driven development and end-to-end testing.
 * **Jqwik:**  Library for property-based testing.
 * **PITest:**  Mutation testing tool.
-* **Gradle:** Build automation tool.
+* **Maven:** Build automation tool.
+* **Swagger/OpenAPI:** API documentation.
 * **GitHub Actions:**  Continuous integration and continuous delivery (CI/CD) platform for automating the build, test, and deployment pipeline.
 
 ## Getting Started
@@ -38,6 +39,35 @@ This project showcases a range of testing strategies, including:
 1. **Clone the repository:** `git clone https://github.com/dwaned/max-profit-calculator.git`
 2. **Build the project:**  `mvn clean install`
 3. **Run the tests:** `mvn test -Pcontainertest`
+
+## Running the Application
+
+```bash
+# Start the service
+mvn spring-boot:run
+```
+
+The service runs on port **9095** with context path `/api`.
+
+### API Documentation
+
+Once running, access the Swagger UI at:
+- **http://localhost:9095/api/swagger-ui.html**
+
+### Example API Call
+
+```bash
+curl -X POST http://localhost:9095/api/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"savingsAmount":5,"currentPrices":[1,2,5],"futurePrices":[2,3,20]}'
+```
+
+### Health Check
+
+```bash
+curl http://localhost:9095/api/health
+# Returns: OK
+```
 
 -----
 

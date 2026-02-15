@@ -1,33 +1,47 @@
 package com.maxprofit.calculator.controller;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public class CalculationRequest {
-    private int savingsAmount;
-    private List<Integer> currentPrices;
-    private List<Integer> futurePrices;
+    @NotNull(message = "Savings amount is required")
+    @Min(value = 1, message = "Savings must be at least 1")
+    @Max(value = 1000, message = "Savings must not exceed 1000")
+    private int savings;
 
-    public int getSavingsAmount() {
-        return savingsAmount;
+    @NotNull(message = "Buy prices are required")
+    @NotEmpty(message = "Buy prices cannot be empty")
+    private List<Integer> buyPrices;
+
+    @NotNull(message = "Sell prices are required")
+    @NotEmpty(message = "Sell prices cannot be empty")
+    private List<Integer> sellPrices;
+
+    public int getSavings() {
+        return savings;
     }
 
-    public void setSavingsAmount(int savingsAmount) {
-        this.savingsAmount = savingsAmount;
+    public void setSavings(int savings) {
+        this.savings = savings;
     }
 
-    public List<Integer> getCurrentPrices() {
-        return currentPrices;
+    public List<Integer> getBuyPrices() {
+        return buyPrices;
     }
 
-    public void setCurrentPrices(List<Integer> currentPrices) {
-        this.currentPrices = currentPrices;
+    public void setBuyPrices(List<Integer> buyPrices) {
+        this.buyPrices = buyPrices;
     }
 
-    public List<Integer> getFuturePrices() {
-        return futurePrices;
+    public List<Integer> getSellPrices() {
+        return sellPrices;
     }
 
-    public void setFuturePrices(List<Integer> futurePrices) {
-        this.futurePrices = futurePrices;
+    public void setSellPrices(List<Integer> sellPrices) {
+        this.sellPrices = sellPrices;
     }
 }
