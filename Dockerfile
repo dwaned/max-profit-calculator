@@ -2,6 +2,8 @@ FROM eclipse-temurin:25-jdk AS build
 WORKDIR /docker
 COPY pom.xml .
 COPY src src
+COPY checkstyle.xml .
+COPY checkstyle_suppressions.xml .
 RUN apt-get update && apt-get upgrade -y && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 RUN mvn clean install -DskipTests
 
@@ -21,7 +23,7 @@ RUN apt-get update && \
 USER userA
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:9095/api/health || exit 1
+    CMD curl -f http://localhost:9095/health || exit 1
 
 EXPOSE 9095
 
