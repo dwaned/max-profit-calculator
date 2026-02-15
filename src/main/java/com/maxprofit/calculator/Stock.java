@@ -53,7 +53,7 @@ public final class Stock {
         // Null checks for input lists
         if (currentValue == null || futureValue == null) {
             LOGGER.debug("currentValue or futureValue is null");
-            return new CalculationResult();
+            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
         }
         // logger.setLevel(Level.OFF);
         int maxProfit = 0;
@@ -79,18 +79,18 @@ public final class Stock {
         if (currentValue.stream().anyMatch(o -> o <= 0) || futureValue.stream().anyMatch(o -> o <= 0)) {
             LOGGER.debug("Future or current value is 0 or " +
                     "negative");
-            return new CalculationResult();
+            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
         }
 
         if (currentValue.size() != futureValue.size()) {
             LOGGER.debug("Future and current prices list sizes do" +
                     " not match!");
-            return new CalculationResult();
+            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
         } else {
             if (currentValue.size() > priceListMaxSize) {
                 LOGGER.debug("Future and current prices list " +
                         "sizes are too large!");
-                return new CalculationResult();
+                return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
             }
         }
 
@@ -165,7 +165,11 @@ public final class Stock {
         LOGGER.info(String.format("Chosen Indices: %s",
                 chosenIndices));
 
-        return new CalculationResult(maxProfit, chosenIndices);
+        List<Integer> flatIndices = chosenIndices.isEmpty() 
+                ? new java.util.ArrayList<>() 
+                : chosenIndices.get(0);
+        int remaining = saving - usedSavings;
+        return new CalculationResult(maxProfit, flatIndices, usedSavings, remaining);
     }
 
 }

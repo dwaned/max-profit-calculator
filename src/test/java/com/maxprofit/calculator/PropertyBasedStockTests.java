@@ -136,37 +136,14 @@ public class PropertyBasedStockTests {
         assertFalse(futurePrices.stream().anyMatch(i -> i < 0));
         assertNotNull(result);
         assertNotNull(result.getIndices());
-        if (result.getIndices().size() > 0) {
-            int profit;
-            for (int i = 0; i < result.getIndices().size(); i++) {
-                profit = 0;
-                for (int j = 0; j < result.getIndices().get(i).size(); j++) {
-                    profit += futurePrices.get(result.getIndices().get(i)
-                            .get(j)) - currentPrices.get(result.getIndices()
-                            .get(i).get(j));
-                }
-                assertEquals(profit, result.getMaxProfit());
-
-                /*
-                      result.getIndices() size 2
-                      0 = size 1 [3]
-                      1 = size 1 [4]
-
-
-                      Original Sample
-                        ---------------
-                          arg0: 145
-                          arg1: [11, 87, 7, 28, 79]
-                          arg2: [2, 10, 11, 97, 6]
-
-                          Original Error
-                          --------------
-                          java.lang.AssertionError:
-                            expected:<69> but was:<73>
-
-                 */
+        if (!result.getIndices().isEmpty()) {
+            int profit = 0;
+            for (int idx : result.getIndices()) {
+                profit += futurePrices.get(idx) - currentPrices.get(idx);
             }
-
+            assertEquals(profit, result.getMaxProfit());
+            assertEquals(result.getSavingsUsed(), result.getIndices().stream()
+                    .mapToInt(currentPrices::get).sum());
         } else {
             assertEquals(0, result.getMaxProfit());
         }

@@ -48,7 +48,7 @@ class ExampleBasedTests {
                 20));
 
         assertEquals(15, result.getMaxProfit());
-        assertEquals(Collections.singletonList(2), result.getIndices().get(0));
+        assertEquals(Collections.singletonList(2), result.getIndices());
 
     }
 
@@ -59,7 +59,7 @@ class ExampleBasedTests {
                 Arrays.asList(2, 3, 20, 35, 15, 101, 20));
 
         assertEquals(18, result.getMaxProfit());
-        assertEquals(Arrays.asList(0, 1, 2, 3), result.getIndices().get(0));
+        assertEquals(Arrays.asList(0, 1, 2, 3), result.getIndices());
 
     }
 
@@ -70,7 +70,9 @@ class ExampleBasedTests {
                 Arrays.asList(2, 3, 20));
 
         assertEquals(16, result.getMaxProfit());
-        assertEquals(Arrays.asList(0, 2), result.getIndices().get(0));
+        assertEquals(Arrays.asList(0, 2), result.getIndices());
+        assertEquals(6, result.getSavingsUsed());
+        assertEquals(0, result.getRemainingSavings());
 
     }
 
@@ -81,7 +83,7 @@ class ExampleBasedTests {
                 Arrays.asList(2, 3, 6, 1));
 
         assertEquals(3, result.getMaxProfit());
-        assertEquals(Arrays.asList(0, 1, 2), result.getIndices().get(0));
+        assertEquals(Arrays.asList(0, 1, 2), result.getIndices());
 
     }
 
@@ -102,7 +104,7 @@ class ExampleBasedTests {
                 Arrays.asList(2, 3, 6, 9));
 
         assertEquals(4, result.getMaxProfit());
-        assertEquals(Arrays.asList(0, 1, 2, 3), result.getIndices().get(0));
+        assertEquals(Arrays.asList(0, 1, 2, 3), result.getIndices());
     }
 
     @Test
@@ -112,7 +114,7 @@ class ExampleBasedTests {
                 Arrays.asList(2, 3, 20));
 
         assertEquals(16, result.getMaxProfit());
-        assertEquals(Arrays.asList(0, 2), result.getIndices().get(0));
+        assertEquals(Arrays.asList(0, 2), result.getIndices());
 
     }
 
@@ -163,4 +165,3 @@ class ExampleBasedTests {
         assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
     }
 }
-

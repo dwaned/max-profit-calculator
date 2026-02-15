@@ -2,6 +2,8 @@ package com.maxprofit.calculator.controller;
 
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
+import jakarta.validation.Valid;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +13,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-@SuppressWarnings("checkstyle:LineLength")
+@SuppressWarnings({"checkstyle:JavadocPackage", "checkstyle:LineLength"})
 @RestController
-@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:9095")
 public class CalculatorController {
 
@@ -35,10 +35,10 @@ public class CalculatorController {
     @ResponseStatus(org.springframework.http.HttpStatus.OK)
     @CrossOrigin(origins = "http://localhost:3000, http://site:3000")
     public CalculationResult calculate(
-            @RequestBody final CalculationRequest request) {
+            @Valid @RequestBody final CalculationRequest request) {
         try {
-            return Stock.returnIndicesMaxProfit(request.getSavingsAmount(),
-                    request.getCurrentPrices(), request.getFuturePrices());
+            return Stock.returnIndicesMaxProfit(request.getSavings(),
+                    request.getBuyPrices(), request.getSellPrices());
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: " + e.getMessage());
         }

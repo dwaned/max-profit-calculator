@@ -11,57 +11,46 @@ package com.maxprofit.calculator;
 import java.util.Collections;
 import java.util.List;
 
- public class CalculationResult {
+@SuppressWarnings({"checkstyle:JavadocVariable", "checkstyle:DesignForExtension", 
+    "checkstyle:HiddenField", "checkstyle:MissingJavadocMethod"})
+public class CalculationResult {
 
-  /**
-   * The maximum profit obtained.
-   */
-  private final int maxProfit;
+    private final int maxProfit;
+    private final List<Integer> indices;
+    private final int savingsUsed;
+    private final int remainingSavings;
 
-  /**
-   * A list of lists of indices representing the best combination of indices to
-   * obtain the maximum profit.
-   */
-  private final List<List<Integer>> indices;
+    public int getMaxProfit() {
+        return maxProfit;
+    }
 
-  /**
-   * MaxProfit getter method.
-   * @return Profit
-   */
-  public int getMaxProfit() {
-    return maxProfit;
-  }
+    public List<Integer> getIndices() {
+        return indices;
+    }
 
-  /**
-   * Indices getter method.
-   * @return indices
-   */
-  public List<List<Integer>> getIndices() {
-    return indices;
-  }
+    public int getSavingsUsed() {
+        return savingsUsed;
+    }
 
-  /**
-   * Constructs a new CalculationResult object with the given maximum profit and
-   * list of indices.
-   *
-   * @param profit      the maximum profit obtained
-   * @param combination a list of lists of indices representing the best
-   *                    combination of indices to obtain the maximum profit
-   */
-  public CalculationResult(
-    final int profit,
-    final List<List<Integer>> combination
-  ) {
-    this.maxProfit = profit;
-    this.indices = combination;
-  }
+    public int getRemainingSavings() {
+        return remainingSavings;
+    }
 
-  /**
-   * Constructs a new CalculationResult object with a maximum profit of 0 and an
-   * empty list of indices.
-   */
-  public CalculationResult() {
-    this.maxProfit = 0;
-    this.indices = Collections.emptyList();
-  }
+    public CalculationResult(
+            final int profit,
+            final List<Integer> combination,
+            final int savingsUsed,
+            final int remainingSavings) {
+        this.maxProfit = profit;
+        this.indices = combination;
+        this.savingsUsed = savingsUsed;
+        this.remainingSavings = remainingSavings;
+    }
+
+    public CalculationResult() {
+        this.maxProfit = 0;
+        this.indices = Collections.emptyList();
+        this.savingsUsed = 0;
+        this.remainingSavings = 0;
+    }
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,14 +44,14 @@ public class CalculatorControllerTest {
     @Test
     public void testCalculate() throws Exception {
         CalculationRequest request = new CalculationRequest();
-        request.setSavingsAmount(10);
-        request.setCurrentPrices(Arrays.asList(5, 5, 10));
-        request.setFuturePrices(Arrays.asList(15, 10, 35));
+        request.setSavings(10);
+        request.setBuyPrices(Arrays.asList(5, 5, 10));
+        request.setSellPrices(Arrays.asList(15, 10, 35));
         String jsonRequest = objectMapper.writeValueAsString(request);
 
-        CalculationResult response = Stock.returnIndicesMaxProfit(request.getSavingsAmount(), request.getCurrentPrices(), request.getFuturePrices());
+        CalculationResult response = Stock.returnIndicesMaxProfit(request.getSavings(), request.getBuyPrices(), request.getSellPrices());
 
-        mockMvc.perform(post("/api/calculate")
+        mockMvc.perform(post("/calculate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())

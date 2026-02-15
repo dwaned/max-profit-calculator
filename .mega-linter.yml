@@ -29,3 +29,5 @@ DISABLE_LINTERS:
 # Disable the "newline at end of file" rule
 ESLINT_RULES:
   eol-last: "off"
+
+MARKDOWN_MARKDOWN_LINK_CHECK_CONFIG_JSON: ".markdown-link-check.json"

@@ -3,17 +3,22 @@ version: "3.8"
 services:
   app:
     build: .
+    image: max-profit-calculator-app:latest
     ports:
       - "9095:9095"
-  site:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9095/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  frontend:
     build:
-      context: site/LiveTerm
+      context: site/frontend
       dockerfile: Dockerfile
-      target: base
-    expose:
-      - "3000"
     ports:
-      - "3000:3000"
-    command: npm run dev
+      - "3000:80"
     depends_on:
-      - app
+      app:
+        condition: service_healthy
