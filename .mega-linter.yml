@@ -30,4 +30,4 @@ DISABLE_LINTERS:
 ESLINT_RULES:
   eol-last: "off"
 
-MARKDOWN_MARKDOWN_LINK_CHECK_CONFIG_JSON: '.markdown-link-check.json'
+MARKDOWN_MARKDOWN_LINK_CHECK_CONFIG_JSON: ".markdown-link-check.json"
