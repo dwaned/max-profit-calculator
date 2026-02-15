@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @SuppressWarnings("checkstyle:LineLength")
 @RestController
-@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:9095")
 public class CalculatorController {
 
