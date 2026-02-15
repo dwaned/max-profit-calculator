@@ -1,0 +1,12 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^http://localhost",
+      "comment": "Ignore localhost URLs - not accessible in CI"
+    },
+    {
+      "pattern": "^http://127\\.0\\.0\\.1",
+      "comment": "Ignore localhost URLs - not accessible in CI"
+    }
+  ]
+}
