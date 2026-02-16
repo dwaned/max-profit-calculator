@@ -28,13 +28,13 @@ public class PlaywrightUITests {
     public void testCalculateEndpoint() throws Exception {
         String request = """
             {
-                "savingsAmount": "1",
-                "currentPrices": [1],
-                "futurePrices": [2]
+                "savings": 1,
+                "buyPrices": [1],
+                "sellPrices": [2]
             }
             """;
 
-        mockMvc.perform(post("/api/calculate")
+        mockMvc.perform(post("/calculate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request))
                 .andExpect(status().isOk())
