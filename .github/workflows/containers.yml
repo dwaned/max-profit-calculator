@@ -37,9 +37,18 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and start containers
+      - name: Build containers
         run: |
-          docker compose -f "docker-compose-test.yml" build
+          set -e
+          echo "Building app..."
+          docker compose -f "docker-compose-test.yml" build app
+          echo "Building frontend..."
+          docker compose -f "docker-compose-test.yml" build frontend
+          echo "Listing images..."
+          docker images
+
+      - name: Start containers
+        run: |
           docker compose -f "docker-compose-test.yml" up -d
           sleep 30
 
