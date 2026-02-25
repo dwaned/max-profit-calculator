@@ -19,6 +19,7 @@ public class CalculationResult {
     private final List<Integer> indices;
     private final int savingsUsed;
     private final int remainingSavings;
+    private final List<String> companyNames;
 
     public int getMaxProfit() {
         return maxProfit;
@@ -36,15 +37,29 @@ public class CalculationResult {
         return remainingSavings;
     }
 
+    public List<String> getCompanyNames() {
+        return companyNames;
+    }
+
+    public CalculationResult(
+            final int profit,
+            final List<Integer> combination,
+            final int savingsUsed,
+            final int remainingSavings,
+            final List<String> companyNames) {
+        this.maxProfit = profit;
+        this.indices = combination;
+        this.savingsUsed = savingsUsed;
+        this.remainingSavings = remainingSavings;
+        this.companyNames = companyNames;
+    }
+
     public CalculationResult(
             final int profit,
             final List<Integer> combination,
             final int savingsUsed,
             final int remainingSavings) {
-        this.maxProfit = profit;
-        this.indices = combination;
-        this.savingsUsed = savingsUsed;
-        this.remainingSavings = remainingSavings;
+        this(profit, combination, savingsUsed, remainingSavings, null);
     }
 
     public CalculationResult() {
@@ -52,5 +67,6 @@ public class CalculationResult {
         this.indices = Collections.emptyList();
         this.savingsUsed = 0;
         this.remainingSavings = 0;
+        this.companyNames = null;
     }
 }

@@ -7,6 +7,7 @@ import HistoryPanel from './components/HistoryPanel';
 import TestingStrategies from './pages/TestingStrategies';
 import TestingTechniquesPage from './pages/TestingTechniquesPage';
 import HomePage from './pages/HomePage';
+import ReportsPage from './pages/ReportsPage';
 
 function Navigation() {
   const location = useLocation();
@@ -16,6 +17,7 @@ function Navigation() {
     { path: '/calculator', label: 'Calculator' },
     { path: '/testing-techniques', label: 'Testing Techniques' },
     { path: '/testing-pyramid', label: 'Testing Pyramid' },
+    { path: '/reports', label: 'Reports' },
   ];
   
   return (
@@ -54,7 +56,7 @@ function CalculatorPage() {
   const [error, setError] = useState(null);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
 
-  const calculate = async ({ savings, buyPrices, sellPrices }) => {
+  const calculate = async ({ savings, buyPrices, sellPrices, companyNames }) => {
     setIsLoading(true);
     setError(null);
 
@@ -66,19 +68,25 @@ function CalculatorPage() {
           savings,
           buyPrices,
           sellPrices,
+          companyNames,
         }),
       });
 
       if (!response.ok) {
-        let errorMessage = 'Something went wrong. Please check your input values and try again.';
-        try {
-          const text = await response.text();
-          if (text) {
-            const errorData = JSON.parse(text);
-            errorMessage = errorData.message || errorMessage;
+        let errorMessage;
+        if (response.status === 500) {
+          errorMessage = 'Service is currently unavailable. Please ensure the backend is running.';
+        } else {
+          errorMessage = 'Something went wrong. Please check your input values and try again.';
+          try {
+            const text = await response.text();
+            if (text) {
+              const errorData = JSON.parse(text);
+              errorMessage = errorData.message || errorMessage;
+            }
+          } catch {
+            errorMessage = 'Unable to connect to the server. Please make sure the backend is running.';
           }
-        } catch {
-          errorMessage = 'Unable to connect to the server. Please make sure the backend is running.';
         }
         throw new Error(errorMessage);
       }
@@ -87,7 +95,7 @@ function CalculatorPage() {
       setResult(data);
 
       setHistory((prev) => [
-        { request: { savings, buyPrices, sellPrices }, result: data },
+        { request: { savings, buyPrices, sellPrices, companyNames }, result: data },
         ...prev.slice(0, 9),
       ]);
     } catch (err) {
@@ -194,6 +202,7 @@ function App() {
           <Route path="/calculator" element={<CalculatorPage />} />
           <Route path="/testing-techniques" element={<TestingTechniquesPage />} />
           <Route path="/testing-pyramid" element={<TestingStrategies />} />
+          <Route path="/reports" element={<ReportsPage />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -13,6 +13,21 @@ mvn clean package
 mvn spring-boot:run
 ```
 
+## Report Commands
+
+```bash
+# Generate site reports and copy to frontend
+mvn site
+mkdir -p site/frontend/public/reports/css site/frontend/public/reports/xref site/frontend/public/reports/xref-test site/frontend/public/reports/images
+cp target/site/*.html site/frontend/public/reports/
+cp -r target/site/css site/frontend/public/reports/
+cp -r target/site/xref site/frontend/public/reports/
+cp -r target/site/xref-test site/frontend/public/reports/
+cp -r target/site/images site/frontend/public/reports/
+```
+
+Then open http://localhost:5173/reports in the browser.
+
 ## Test Commands
 
 ```bash

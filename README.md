@@ -22,6 +22,50 @@ This project showcases a range of testing strategies, including:
 * **End-to-End Testing:** Employing Cucumber to test the application's behavior from start to finish, simulating user interactions.
 * **Property-Based Testing:** Utilizing Jqwik to generate test cases based on properties and constraints, enabling broader test coverage.
 * **Mutation Testing:** Applying PITest to assess the effectiveness of the test suite by introducing small changes to the code and checking if tests can detect them.
+* **Performance Testing:** Verifying algorithm execution time, API response time, and memory usage under load.
+
+## Performance Testing
+
+## Performance Testing
+
+This project includes comprehensive performance tests to verify the algorithm meets its performance requirements.
+
+### Test Types
+
+#### Algorithm Performance Tests (`PerformanceTests.java`)
+- **5 items**: < 10ms
+- **10 items**: < 100ms
+- **50 items**: < 500ms (primary requirement)
+- **100 items (boundary)**: < 10s
+- **Memory usage**: < 512MB for max input
+- **No OutOfMemoryError** for maximum input
+
+#### API Performance Tests (`ApiPerformanceTests.java`)
+- **API response time**: < 500ms for 50 stocks (end-to-end requirement)
+- Uses Testcontainers to test the full application stack
+
+### Running Performance Tests
+
+```bash
+# Run algorithm & memory tests (no Docker required)
+mvn test -Dtest=PerformanceTests
+
+# Run API performance tests (requires Docker)
+mvn test -Dtest=ApiPerformanceTests -Pcontainer-tests
+
+# Run all tests including performance
+mvn test
+```
+
+### Performance Thresholds
+
+| Input Size | Threshold | Test Type |
+|-----------|-----------|-----------|
+| 5 items | < 10ms | Algorithm |
+| 10 items | < 100ms | Algorithm |
+| 50 items | < 500ms | Algorithm & API |
+| 100 items | < 10s | Algorithm |
+| Memory (100 items) | < 512MB | Memory |
 
 ## Tools and Technologies
 
@@ -33,6 +77,8 @@ This project showcases a range of testing strategies, including:
 * **Maven:** Build automation tool.
 * **Swagger/OpenAPI:** API documentation.
 * **GitHub Actions:**  Continuous integration and continuous delivery (CI/CD) platform for automating the build, test, and deployment pipeline.
+* **Testcontainers:** Docker-based integration testing.
+* **Checkstyle:** Code style enforcement.
 
 ## Getting Started
 
