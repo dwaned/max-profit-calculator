@@ -26,7 +26,7 @@ cp -r target/site/xref-test site/frontend/public/reports/
 cp -r target/site/images site/frontend/public/reports/
 ```
 
-Then open http://localhost:5173/reports in the browser.
+Then open <http://localhost:5173/reports> in the browser.
 
 ## Test Commands
 

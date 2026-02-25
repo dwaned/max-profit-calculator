@@ -59,13 +59,13 @@ mvn test
 
 ### Performance Thresholds
 
-| Input Size | Threshold | Test Type |
-|-----------|-----------|-----------|
-| 5 items | < 10ms | Algorithm |
-| 10 items | < 100ms | Algorithm |
-| 50 items | < 500ms | Algorithm & API |
-| 100 items | < 10s | Algorithm |
-| Memory (100 items) | < 512MB | Memory |
+| Input Size         | Threshold | Test Type       |
+|--------------------|-----------|-----------------|
+| 5 items            | < 10ms    | Algorithm       |
+| 10 items           | < 100ms   | Algorithm       |
+| 50 items           | < 500ms   | Algorithm & API |
+| 100 items          | < 10s     | Algorithm       |
+| Memory (100 items) | < 512MB   | Memory          |
 
 ## Tools and Technologies
 
