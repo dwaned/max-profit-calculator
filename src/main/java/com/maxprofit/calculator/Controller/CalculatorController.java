@@ -19,7 +19,7 @@ import java.util.List;
 
 @SuppressWarnings({"checkstyle:JavadocPackage", "checkstyle:LineLength"})
 @RestController
-@CrossOrigin(origins = {"http://localhost:9095", "http://localhost:5173", "http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:9095", "http://localhost:5173", "http://localhost:3000", "https://max-profit-frontend.onrender.com"})
 public class CalculatorController {
 
     /**
