@@ -61,7 +61,7 @@ function CalculatorPage() {
     setError(null);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://max-profit-calculator.onrender.com/api';
       const response = await fetch(`${apiUrl}/calculate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
