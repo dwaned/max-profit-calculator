@@ -13,3 +13,6 @@ buildNumber.properties
 /.idea/
 node_modules/
 site/LiveTerm/node_modules
+.env
+opencode.json
+site/frontend/public/reports/

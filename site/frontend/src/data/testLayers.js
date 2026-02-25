@@ -145,10 +145,88 @@ void shouldCalculateProfit() {
       'Full stack from UI to DB',
       'Slowest but most realistic'
     ]
+  },
+  {
+    id: 'performance',
+    name: 'Performance Tests',
+    color: 'bg-purple-500',
+    borderColor: 'border-purple-400',
+    textColor: 'text-purple-400',
+    description: 'Verify algorithm execution time, API response time, and memory usage under load. Ensures the system meets performance requirements under various input sizes.',
+    framework: 'JUnit 5',
+    testCount: 7,
+    testClasses: ['PerformanceTests', 'ApiPerformanceTests'],
+    codeExample: `@Test
+void algorithmShouldCompleteInUnder500msFor50Items() {
+    List<Integer> prices = generateRandomPrices(50);
+    long executionTime = measureExecution(prices);
+    
+    assertTrue(executionTime < 500, 
+        "API must respond < 500ms for 50 stocks");
+}
+
+@Test  
+void memoryUsageShouldNotExceed512MBFor100Items() {
+    MemoryUsage heapBefore = getHeapMemoryUsage();
+    // Run algorithm with max input
+    Stock.returnIndicesMaxProfit(1000, maxPrices, maxPrices);
+    MemoryUsage heapAfter = getHeapMemoryUsage();
+    
+    assertTrue(heapAfter.getUsed() - heapBefore.getUsed() < 512 * 1024 * 1024);
+}`,
+    properties: [
+      'Algorithm execution time',
+      'API response time < 500ms',
+      'Memory usage profiling',
+      'No OutOfMemoryError tests',
+      'Warmup + averaging for accuracy'
+    ],
+    subTests: [
+      {
+        name: 'Algorithm Performance',
+        description: 'Tests algorithm execution time for various input sizes (5, 10, 50, 100 items).',
+        codeExample: `// 5 items: < 10ms
+// 10 items: < 100ms  
+// 50 items: < 500ms
+// 100 items: < 10s
+@Test
+void algorithmShouldCompleteInUnder500msFor50Items() {
+    assertTrue(executionTime < 500);
+}`
+      },
+      {
+        name: 'API Performance',
+        description: 'Tests end-to-end API response time with full application stack using Testcontainers.',
+        codeExample: `@Test
+void apiShouldRespondInUnder500msFor50Stocks() {
+    given()
+        .body(requestWith50Stocks)
+    .when()
+        .post("/api/calculate")
+    .then()
+        .time(lessThan(500)); // Must be < 500ms
+}`
+      },
+      {
+        name: 'Memory Profiling',
+        description: 'Tests memory usage and verifies no OutOfMemoryError for maximum input size.',
+        codeExample: `@Test
+void memoryUsageShouldNotExceed512MB() {
+    // Measure heap before/after
+    assertTrue(usedMemory < MAX_MEMORY_MB);
+}
+
+@Test
+void noOutOfMemoryErrorForMaxInput() {
+    // Should not throw OOM for 100 items
+    assertDoesNotThrow(() -> algorithm.run(100));
+}`
+      }
+    ]
   }
 ];
 
-export const layerOrder = ['ui', 'integration', 'controller', 'unit'];
+export const layerOrder = ['ui', 'performance', 'integration', 'controller', 'unit'];
 
 export const bddInfo = {
   name: 'BDD',
@@ -214,5 +292,21 @@ Kill rate: 85% (good), 95% (excellent)`
   Given account has $100
   When I withdraw $50
   Then balance should be $50`
+  },
+  {
+    id: 'performance',
+    name: 'Performance Testing',
+    icon: '⚡',
+    color: 'bg-violet-500',
+    description: 'Verifies system performance characteristics including execution time, throughput, and resource usage under various load conditions. Tests ensure requirements like "API responds in < 500ms" are met.',
+    whenToUse: 'When there are performance requirements (response time, memory, CPU). Essential for identifying bottlenecks and ensuring scalability.',
+    example: `@Test
+void apiMustRespondUnder500ms() {
+    long start = System.currentTimeMillis();
+    response = callApi();
+    assertTrue(
+        System.currentTimeMillis() - start < 500
+    );
+}`
   }
 ];

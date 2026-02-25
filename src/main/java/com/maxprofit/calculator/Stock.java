@@ -50,10 +50,27 @@ public final class Stock {
      */
     public static CalculationResult returnIndicesMaxProfit(final int saving,
                                                            final List<Integer> currentValue, final List<Integer> futureValue) {
+        return returnIndicesMaxProfit(saving, currentValue, futureValue, null);
+    }
+
+    /**
+     * This method returns the combination of indices which yields the
+     * largest profit.
+     *
+     * @param saving       - The amount of savings
+     * @param currentValue - The list of current prices for stocks
+     * @param futureValue  - The list of future prices for stocks
+     * @param companyNames - Optional list of company names for each stock
+     * @return A list of indices which yields the largest profit
+     */
+    public static CalculationResult returnIndicesMaxProfit(final int saving,
+                                                           final List<Integer> currentValue, 
+                                                           final List<Integer> futureValue,
+                                                           final List<String> companyNames) {
         // Null checks for input lists
         if (currentValue == null || futureValue == null) {
             LOGGER.debug("currentValue or futureValue is null");
-            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
+            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving, companyNames);
         }
         // logger.setLevel(Level.OFF);
         int maxProfit = 0;
@@ -79,18 +96,18 @@ public final class Stock {
         if (currentValue.stream().anyMatch(o -> o <= 0) || futureValue.stream().anyMatch(o -> o <= 0)) {
             LOGGER.debug("Future or current value is 0 or " +
                     "negative");
-            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
+            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving, companyNames);
         }
 
         if (currentValue.size() != futureValue.size()) {
             LOGGER.debug("Future and current prices list sizes do" +
                     " not match!");
-            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
+            return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving, companyNames);
         } else {
             if (currentValue.size() > priceListMaxSize) {
                 LOGGER.debug("Future and current prices list " +
                         "sizes are too large!");
-                return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving);
+                return new CalculationResult(0, new java.util.ArrayList<>(), 0, saving, companyNames);
             }
         }
 
@@ -169,7 +186,7 @@ public final class Stock {
                 ? new java.util.ArrayList<>() 
                 : chosenIndices.get(0);
         int remaining = saving - usedSavings;
-        return new CalculationResult(maxProfit, flatIndices, usedSavings, remaining);
+        return new CalculationResult(maxProfit, flatIndices, usedSavings, remaining, companyNames);
     }
 
 }

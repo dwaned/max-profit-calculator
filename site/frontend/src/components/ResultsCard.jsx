@@ -1,7 +1,9 @@
 export default function ResultsCard({ result }) {
   if (!result) return null;
 
-  const { maxProfit, indices, savingsUsed, remainingSavings } = result;
+  const { maxProfit, indices, savingsUsed, remainingSavings, companyNames } = result;
+
+  const selectedCompanies = indices?.map(idx => companyNames?.[idx]).filter(Boolean) || [];
 
   return (
     <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
@@ -36,6 +38,22 @@ export default function ResultsCard({ result }) {
           </div>
         </div>
       </div>
+
+      {selectedCompanies.length > 0 && (
+        <div className="mt-4 bg-slate-900 rounded-lg p-4">
+          <div className="text-sm text-slate-400 mb-2">Companies</div>
+          <div className="flex flex-wrap gap-2">
+            {selectedCompanies.map((company, idx) => (
+              <span
+                key={idx}
+                className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium"
+              >
+                {company}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {indices?.length > 0 && (
         <div className="mt-4 bg-slate-900 rounded-lg p-4">
