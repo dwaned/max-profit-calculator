@@ -23,7 +23,7 @@ RUN apt-get update && \
 USER userA
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:9095/health || exit 1
+    CMD curl -f http://localhost:9095/api/health || exit 1
 
 EXPOSE 9095
 
