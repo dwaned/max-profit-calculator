@@ -1,0 +1,48 @@
+# Contract Tests Workflow
+# Runs Pact contract tests - can-i-deploy runs separately on deployment
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+name: Contract Tests
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5.1.0
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Run Contract Tests (Pact)
+        run: |
+          mvn test -Pcontract-tests
+
+      - name: Report Contract Test Results
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: "**/target/surefire-reports/TEST-*.xml"
+          check_name: "Contract Test Results"
+          detailed_summary: true
+          include_passed: true
+          annotate_notice: false
+          fail_on_failure: true
