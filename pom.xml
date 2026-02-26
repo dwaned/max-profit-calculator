@@ -285,6 +285,10 @@
                             </excludes>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                             <printSummary>true</printSummary>
+                            <systemPropertyVariables>
+                                <pactbroker.url>${pactbroker.url}</pactbroker.url>
+                                <pactbroker.token>${pactbroker.auth.token}</pactbroker.token>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -303,12 +307,12 @@
                                     <port>9095</port>
                                 </serviceProvider>
                             </serviceProviders>
-                            <verificationTimeout>30000</verificationTimeout>
+                            <verificationTimeout>60000</verificationTimeout>
                             <publishVerificationResults>true</publishVerificationResults>
                         </configuration>
                         <executions>
                             <execution>
-                                <phase>verify</phase>
+                                <phase>integration-test</phase>
                                 <goals>
                                     <goal>verify</goal>
                                 </goals>
