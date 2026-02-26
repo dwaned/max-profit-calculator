@@ -48,11 +48,17 @@ mvn test -Pcontainer-tests
 # Run Playwright UI tests
 mvn test -Pplaywright-tests
 
-# Run contract tests (Pact)
+# Run contract tests (Pact) - Backend provider verification
 mvn test -Pcontract-tests
 
 # Run contract tests with Pact Broker publishing
 mvn test -Pcontract-tests -Dpactbroker.url=https://your-broker-url -Dpactbroker.auth.token=your-token
+
+# Run frontend contract tests (Pact consumer)
+cd site/frontend && npm run test:pact
+
+# Publish frontend contracts to broker
+cd site/frontend && npx pact-broker publish pacts/ --broker-base-url=https://no-company-399294d1.pactflow.io --broker-token=your-token
 
 # Run mutation testing with PITest
 mvn test -Ppitest
