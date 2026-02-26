@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.7</version>
+        <version>3.3.11</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -23,7 +23,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <logback.version>1.5.16</logback.version>
+        <logback.version>1.5.26</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.8</jacoco.version>
         <jqwik.version>1.7.3</jqwik.version>
@@ -36,48 +36,23 @@
         <jamm.version>0.3.3</jamm.version>
         <jamm2.version>0.4.0</jamm2.version>
         <pact.version>4.6.7</pact.version>
-        <spring-boot.version>3.3.7</spring-boot.version>
-        <spring-web.version>6.2.10</spring-web.version>
+        <spring-boot.version>3.3.11</spring-boot.version>
         <rest-assured.version>5.3.2</rest-assured.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <webjars-locator-core.version>0.59</webjars-locator-core.version>
         <json.version>20250107</json.version>
-        <jackson.version>2.17.2</jackson.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Force Tomcat embed to patched version to address CVE-2025-24813 -->
             <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>10.1.49</version>
+                <groupId>com.github.javafaker</groupId>
+                <artifactId>javafaker</artifactId>
+                <version>1.0.2</version>
             </dependency>
-            <!-- Force Jackson versions for Swagger compatibility -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-    </dependencies>
-     </dependencyManagement>
+        </dependencies>
+    </dependencyManagement>
 
     <profiles>
         <profile>
