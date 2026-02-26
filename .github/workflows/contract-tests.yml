@@ -51,11 +51,10 @@ jobs:
           fail_on_failure: true
 
       - name: Can I Deploy
-        uses: pact-foundation/pact-can-i-deploy-action@v1
         if: github.event_name == 'pull_request'
-        with:
-          provider: max-profit-calculator-backend
-          consumer: frontend
-          broker_base_url: https://no-company-399294d1.pactflow.io
-          broker_token: ${{ secrets.PACT_BROKER_TOKEN }}
-          to: production
+        run: |
+          curl -s -X GET "https://no-company-399294d1.pactflow.io/can-i-deploy" \
+            -H "Authorization: Bearer ${{ secrets.PACT_BROKER_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"provider":"max-profit-calculator-backend","consumer":"frontend","version":"${{ github.sha }}","to":"production"}' | tee response.json
+          grep -q '"ready":true' response.json && echo "✅ Can deploy!" || (echo "❌ Cannot deploy!" && exit 1)
