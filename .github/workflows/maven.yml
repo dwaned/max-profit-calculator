@@ -120,10 +120,15 @@ jobs:
 
   security-scan:
     runs-on: ubuntu-22.04
-    needs: build-and-test
+    if: github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6.0.1
+        with:
+          sparse-checkout: |
+            pom.xml
+            src
+          sparse-checkout-cone-mode: false
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5.1.0
@@ -132,9 +137,20 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+      - name: Cache OWASP Database
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: owasp-nvd-db-${{ hashFiles('pom.xml') }}
+          restore-keys: |
+            owasp-nvd-db-
+
       - name: OWASP Dependency Check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           mvn org.owasp:dependency-check-maven:aggregate \
+            -Ddependency-check.nvd.api.key=${NVD_API_KEY} \
             -DskipProvidedScope=true \
             -DskipSystemScope=true \
             -DskipTestScope=true \
@@ -151,22 +167,6 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
         continue-on-error: true
-
-      - name: Process OWASP Results
-        if: always()
-        run: |
-          if [ -f "target/dependency-check-report.xml" ]; then
-            echo "Processing XML report..." >> "$GITHUB_STEP_SUMMARY"
-            HIGH=$(grep -c '<severity>HIGH</severity>' target/dependency-check-report.xml || echo 0)
-            MEDIUM=$(grep -c '<severity>MEDIUM</severity>' target/dependency-check-report.xml || echo 0)
-            LOW=$(grep -c '<severity>LOW</severity>' target/dependency-check-report.xml || echo 0)
-            echo "### Security Scan Summary" >> "$GITHUB_STEP_SUMMARY"
-            echo "- High Risk: $HIGH" >> "$GITHUB_STEP_SUMMARY"
-            echo "- Medium Risk: $MEDIUM" >> "$GITHUB_STEP_SUMMARY"
-            echo "- Low Risk: $LOW" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "- No dependency-check-report.xml found" >> "$GITHUB_STEP_SUMMARY"
-          fi
 
       - name: Upload Security Report
         if: always()

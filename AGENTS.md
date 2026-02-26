@@ -48,6 +48,12 @@ mvn test -Pcontainer-tests
 # Run Playwright UI tests
 mvn test -Pplaywright-tests
 
+# Run contract tests (Pact)
+mvn test -Pcontract-tests
+
+# Run contract tests with Pact Broker publishing
+mvn test -Pcontract-tests -Dpactbroker.url=https://your-broker-url -Dpactbroker.auth.token=your-token
+
 # Run mutation testing with PITest
 mvn test -Ppitest
 
