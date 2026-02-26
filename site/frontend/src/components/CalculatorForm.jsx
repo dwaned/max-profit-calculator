@@ -1,13 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const SAMPLE_COMPANIES = [
+  'Acme Corp',
+  'Globex Inc',
+  'Initech',
+  'Umbrella Corp',
+  'Stark Industries',
+  'Wayne Enterprises',
+  'Cyberdyne',
+  'Soylent Corp',
+  'Tyrell Corp',
+  'Weyland-Yutani'
+];
 
 export default function CalculatorForm({ onCalculate, isLoading }) {
   const [savings, setSavings] = useState(10);
   const [buyPrices, setBuyPrices] = useState([5, 5, 10]);
   const [sellPrices, setSellPrices] = useState([15, 10, 35]);
+  const [companyNames, setCompanyNames] = useState([]);
+
+  useEffect(() => {
+    setCompanyNames(SAMPLE_COMPANIES.slice(0, buyPrices.length));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onCalculate({ savings, buyPrices, sellPrices });
+    onCalculate({ savings, buyPrices, sellPrices, companyNames });
   };
 
   const updatePrice = (index, type, value) => {
@@ -18,6 +36,8 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
   };
 
   const addRow = () => {
+    const newCompanies = [...companyNames, SAMPLE_COMPANIES[companyNames.length] || `Company ${companyNames.length + 1}`];
+    setCompanyNames(newCompanies);
     setBuyPrices([...buyPrices, 0]);
     setSellPrices([...sellPrices, 0]);
   };
@@ -26,6 +46,7 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
     if (buyPrices.length > 1) {
       setBuyPrices(buyPrices.filter((_, i) => i !== index));
       setSellPrices(sellPrices.filter((_, i) => i !== index));
+      setCompanyNames(companyNames.filter((_, i) => i !== index));
     }
   };
 
@@ -69,6 +90,9 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
                   Index
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  Company
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Buy Price
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
@@ -81,6 +105,7 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
               {Array.from({ length: maxIndex }).map((_, index) => (
                 <tr key={index} className="hover:bg-slate-750 transition-colors">
                   <td className="px-4 py-3 text-slate-500 font-mono">{index}</td>
+                  <td className="px-4 py-3 text-purple-400 text-sm">{companyNames[index] || '-'}</td>
                   <td className="px-4 py-3">
                     <input
                       type="number"

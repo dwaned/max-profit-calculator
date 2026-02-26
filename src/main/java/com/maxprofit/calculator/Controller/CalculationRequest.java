@@ -23,6 +23,8 @@ public class CalculationRequest {
     @NotEmpty(message = "Sell prices cannot be empty")
     private List<Integer> sellPrices;
 
+    private List<String> companyNames;
+
     public int getSavings() {
         return savings;
     }
@@ -45,5 +47,13 @@ public class CalculationRequest {
 
     public void setSellPrices(List<Integer> sellPrices) {
         this.sellPrices = sellPrices;
+    }
+
+    public List<String> getCompanyNames() {
+        return companyNames;
+    }
+
+    public void setCompanyNames(List<String> companyNames) {
+        this.companyNames = companyNames;
     }
 }

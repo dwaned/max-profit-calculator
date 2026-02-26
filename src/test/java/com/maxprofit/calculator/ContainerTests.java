@@ -28,7 +28,7 @@ public class ContainerTests {
         .withExposedService("site", SITE_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)));
 
     @Test
-    public void testAppAndSite() {
+    public void testAppAndSite() throws org.json.JSONException {
         Integer appPort = environment.getServicePort("app", APP_PORT);
         Integer sitePort = environment.getServicePort("site", SITE_PORT);
 

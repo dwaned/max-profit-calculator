@@ -17,6 +17,8 @@
 
     <packaging>jar</packaging>
 
+    <url>https://github.com/dwaned/max-profit-calculator</url>
+
     <properties>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
@@ -29,6 +31,10 @@
         <pitest.version>1.9.7</pitest.version>
         <pitest-junit5-plugin.version>1.1.2</pitest-junit5-plugin.version>
         <playwright.version>1.49.0</playwright.version>
+        <gatling.version>3.13.5</gatling.version>
+        <javafaker.version>1.0.2</javafaker.version>
+        <jamm.version>0.3.3</jamm.version>
+        <jamm2.version>0.4.0</jamm2.version>
         <spring-boot.version>3.3.7</spring-boot.version>
         <spring-web.version>6.2.10</spring-web.version>
         <rest-assured.version>5.3.2</rest-assured.version>
@@ -62,9 +68,15 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
+     </dependencyManagement>
 
     <profiles>
         <profile>
@@ -139,9 +151,15 @@
                            </excludedTestClasses>
                             <withHistory>true</withHistory>
                         </configuration>                        
-                   </plugin>                                      
-               </plugins>
-           </build>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>generate-reports</id>
+            <build>
+                <defaultGoal>site</defaultGoal>
+            </build>
         </profile>
        <profile>
             <id>dependency-check</id>
@@ -191,12 +209,14 @@
                         <configuration>
                             <includes>
                                 <include>**/ContainerTests.java</include>
+                                <include>**/ApiPerformanceTests.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/ExampleBasedTests.java</exclude>
                                 <exclude>**/PropertyBasedStockTests.java</exclude>
                                 <exclude>**/RunCucumberTest.java</exclude>
                                 <exclude>**/PlaywrightUITests.java</exclude>
+                                <exclude>**/PerformanceTests.java</exclude>
                             </excludes>
                         </configuration>
                         <executions>
@@ -239,6 +259,32 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>performance-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M7</version>
+                        <configuration>
+                            <includes>
+                                <include>**/PerformanceTests.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/ExampleBasedTests.java</exclude>
+                                <exclude>**/PropertyBasedStockTests.java</exclude>
+                                <exclude>**/RunCucumberTest.java</exclude>
+                                <exclude>**/PlaywrightUITests.java</exclude>
+                                <exclude>**/ContainerTests.java</exclude>
+                                <exclude>**/ApiPerformanceTests.java</exclude>
+                            </excludes>
+                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                            <printSummary>true</printSummary>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <reporting>
@@ -263,15 +309,15 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <!-- select non-aggregate reports -->
                             <report>report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
             </plugin>
-            <!-- <plugin>
+            <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
+                <version>1.15.8</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -279,7 +325,7 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin> -->
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -375,6 +421,31 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.15.8</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>com.maxprofit.calculator.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>com.maxprofit.calculator.ExampleBasedTests</param>
+                        <param>com.maxprofit.calculator.PropertyBasedStockTests</param>
+                    </targetTests>
+                    <outputFormats>
+                        <outputFormat>XML</outputFormat>
+                        <outputFormat>HTML</outputFormat>
+                    </outputFormats>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.9.1</version>
@@ -428,6 +499,7 @@
                     </properties>
                     <excludes>
                         <exclude>**/ContainerTests.java</exclude>
+                        <exclude>**/ApiPerformanceTests.java</exclude>
                         <exclude>**/PlaywrightUITests.java</exclude>
                     </excludes>
                 </configuration>
@@ -584,6 +656,20 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-api</artifactId>
+            <version>3.3.6</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jbellis</groupId>
+            <artifactId>jamm</artifactId>
+            <version>${jamm2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
 
         <dependency>
@@ -608,6 +694,12 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
         </dependency>
 
     </dependencies>
