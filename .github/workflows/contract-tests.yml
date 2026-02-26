@@ -71,7 +71,7 @@ jobs:
           VITE_API_URL: http://localhost:3000
 
       - name: Publish Pacts to Broker
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         working-directory: site/frontend
         run: |
           npm install -g @pact-foundation/pact-cli
