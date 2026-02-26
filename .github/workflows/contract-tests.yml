@@ -19,7 +19,7 @@ permissions:
 name: Contract Tests
 
 jobs:
-  contract-tests:
+  backend-contract-tests:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
@@ -46,3 +46,39 @@ jobs:
           include_passed: true
           annotate_notice: false
           fail_on_failure: true
+
+  frontend-contract-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: site/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: site/frontend
+        run: npm ci
+
+      - name: Run Frontend Pact Tests
+        working-directory: site/frontend
+        run: npm run test:pact
+        env:
+          VITE_API_URL: http://localhost:3000
+
+      - name: Publish Pacts to Broker
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: site/frontend
+        run: |
+          npm install -g @pact-foundation/pact-cli
+          pact-broker publish pacts/ \
+            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
+            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            --consumer-app-version=${{ github.sha }}
+        env:
+          PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
+          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
