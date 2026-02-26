@@ -293,7 +293,7 @@ void noOutOfMemoryErrorForMaxInput() {
   }
 ];
 
-export const layerOrder = ['ui', 'performance', 'integration', 'controller', 'contract', 'unit'];
+export const layerOrder = ['ui', 'performance', 'integration', 'contract', 'controller', 'unit'];
 
 export const bddInfo = {
   name: 'BDD',
