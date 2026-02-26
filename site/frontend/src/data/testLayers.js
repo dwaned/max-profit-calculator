@@ -69,6 +69,73 @@ void positiveScenarios(
     ]
   },
   {
+    id: 'contract',
+    name: 'Contract Tests',
+    color: 'bg-teal-500',
+    borderColor: 'border-teal-400',
+    textColor: 'text-teal-400',
+    description: 'Verify API contracts between services. Consumer-driven contracts ensure the provider API matches what consumers expect. Frontend generates contracts, backend verifies them.',
+    framework: 'Pact (Consumer-Driven)',
+    testCount: 3,
+    testClasses: ['calculate.api.test.js (frontend)'],
+    codeExample: `// Frontend generates contract
+describe('POST /api/calculate', () => {
+  it('should calculate max profit', async () => {
+    await pact.addInteraction({
+      uponReceiving: 'a request to calculate max profit',
+      withRequest: {
+        method: 'POST',
+        path: '/api/calculate',
+        body: { savings: 10, buyPrices: [5,5,10], ... }
+      },
+      willRespondWith: {
+        status: 200,
+        body: { maxProfit: 20, indices: [0,2], ... }
+      }
+    });
+    
+    const response = await fetch('/api/calculate', ...);
+    expect(response.ok).toBe(true);
+  });
+});`,
+    properties: [
+      'Consumer-driven contracts',
+      'Frontend defines expected API behavior',
+      'Backend verifies it satisfies contracts',
+      'Published to Pact Broker',
+      'Enables independent deployment'
+    ],
+    subTests: [
+      {
+        name: 'Frontend (Consumer)',
+        description: 'Generates Pact contracts that define expected API behavior from the frontend perspective.',
+        codeExample: `// frontend/tests/pact/calculate.api.test.js
+it('should generate pact contract', async () => {
+  const pact = {
+    interactions: [{
+      description: 'calculate max profit',
+      request: { method: 'POST', path: '/api/calculate', body: {...} },
+      response: { status: 200, body: {...} }
+    }]
+  };
+  fs.writeFileSync('pacts/frontend-backend.json', JSON.stringify(pact));
+});`
+      },
+      {
+        name: 'Backend (Provider)',
+        description: 'Verifies the backend API satisfies the contracts published by consumers.',
+        codeExample: `// PactProviderVerificationTest.java
+@Provider("max-profit-calculator-backend")
+@Consumer("frontend")
+@PactBroker(url = "\${pactbroker.url}")
+@SpringBootTest
+void verifyContract(PactVerificationContext context) {
+  context.verifyInteraction();
+}`
+      }
+    ]
+  },
+  {
     id: 'controller',
     name: 'Controller Tests',
     color: 'bg-blue-500',
@@ -226,13 +293,20 @@ void noOutOfMemoryErrorForMaxInput() {
   }
 ];
 
-export const layerOrder = ['ui', 'performance', 'integration', 'controller', 'unit'];
+export const layerOrder = ['ui', 'performance', 'integration', 'controller', 'contract', 'unit'];
 
 export const bddInfo = {
   name: 'BDD',
   appliesTo: ['ui', 'integration'],
   description: 'Behavior-Driven Development is an abstract layer using Gherkin syntax to describe test behavior in human-readable language. It can be applied at ANY testing level (unit, integration, or E2E) depending on what the scenarios describe. Most commonly used at E2E level, but backend-only teams can use it to make use cases and test scenarios readable for non-technical stakeholders. Step definitions abstract the technical implementation details.',
   badge: 'BDD'
+};
+
+export const contractTestingInfo = {
+  name: 'Contract Testing',
+  appliesTo: ['contract'],
+  description: 'Consumer-Driven Contract Testing allows the frontend (consumer) to define expected API behavior. The backend (provider) then verifies it satisfies these contracts. Enables independent service deployment without integration testing. Uses Pact framework with a broker for contract sharing.',
+  badge: 'Contract'
 };
 
 export const propertyBasedInfo = {
@@ -307,6 +381,28 @@ void apiMustRespondUnder500ms() {
     assertTrue(
         System.currentTimeMillis() - start < 500
     );
+}`
+  },
+  {
+    id: 'contract',
+    name: 'Contract Testing',
+    icon: '🤝',
+    color: 'bg-teal-500',
+    description: 'Consumer-Driven Contract Testing ensures services can evolve independently. The consumer (frontend) defines expected API behavior in contracts, which are published to a broker. The provider (backend) verifies it satisfies all consumer contracts before deployment.',
+    whenToUse: 'When you want to enable independent service deployment. Frontend defines what API should look like, backend verifies it works. Essential for microservices or frontend/backend teams working separately.',
+    example: `// Frontend defines contract
+const interaction = {
+  uponReceiving: 'calculate request',
+  withRequest: { path: '/api/calculate', body: {...} },
+  willRespondWith: { status: 200, body: {...} }
+};
+
+// Backend verifies contract
+@Provider("backend")
+@Consumer("frontend")
+@PactBroker(url = "...")
+void verifyContract() {
+  context.verifyInteraction();
 }`
   }
 ];
