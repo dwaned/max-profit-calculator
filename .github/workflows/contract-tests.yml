@@ -1,5 +1,5 @@
 # Contract Tests Workflow
-# Runs Pact contract tests and can-i-deploy check
+# Runs Pact contract tests - can-i-deploy runs separately on deployment
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,9 +35,6 @@ jobs:
       - name: Run Contract Tests (Pact)
         run: |
           mvn test -Pcontract-tests
-        env:
-          PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
-          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
 
       - name: Report Contract Test Results
         uses: mikepenz/action-junit-report@v3
@@ -49,12 +46,3 @@ jobs:
           include_passed: true
           annotate_notice: false
           fail_on_failure: true
-
-      - name: Can I Deploy
-        if: github.event_name == 'pull_request'
-        run: |
-          curl -s -X GET "https://no-company-399294d1.pactflow.io/can-i-deploy" \
-            -H "Authorization: Bearer ${{ secrets.PACT_BROKER_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"provider":"max-profit-calculator-backend","consumer":"frontend","version":"${{ github.sha }}","to":"production"}' | tee response.json
-          grep -q '"ready":true' response.json && echo "✅ Can deploy!" || (echo "❌ Cannot deploy!" && exit 1)
