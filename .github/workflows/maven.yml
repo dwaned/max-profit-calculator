@@ -65,10 +65,10 @@ jobs:
 
       - name: Can I Deploy - Check Provider
         run: |
-          npx @pact-foundation/pact-cli@latest can-i-deploy \
+          npx pact-broker can-i-deploy \
             --provider=max-profit-calculator-backend \
             --consumer=frontend \
-            --broker-url=$PACT_BROKER_URL \
+            --broker-base-url=$PACT_BROKER_URL \
             --broker-token=$PACT_BROKER_TOKEN \
             --to=production
         env:
