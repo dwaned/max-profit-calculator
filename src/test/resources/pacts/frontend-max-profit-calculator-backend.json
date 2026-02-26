@@ -1,0 +1,227 @@
+{
+  "consumer": {
+    "name": "frontend"
+  },
+  "provider": {
+    "name": "max-profit-calculator-backend"
+  },
+  "interactions": [
+    {
+      "description": "Calculate max profit with valid request",
+      "request": {
+        "method": "POST",
+        "path": "/api/calculate",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "savings": 10,
+          "buyPrices": [5, 5, 10],
+          "sellPrices": [15, 10, 35],
+          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
+        },
+        "matchingRules": {
+          "body": {
+            "$.savings": {"matcher": "type"},
+            "$.buyPrices": {"matcher": "type"},
+            "$.sellPrices": {"matcher": "type"},
+            "$.companyNames": {"matcher": "type"}
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "maxProfit": 20,
+          "indices": [0, 2],
+          "savingsUsed": 15,
+          "remainingSavings": 0,
+          "companyNames": ["Acme Corp", "Initech"]
+        },
+        "matchingRules": {
+          "body": {
+            "$.maxProfit": {"matcher": "type"},
+            "$.indices": {"matcher": "type"},
+            "$.savingsUsed": {"matcher": "type"},
+            "$.remainingSavings": {"matcher": "type"},
+            "$.companyNames": {"matcher": "type"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Calculate max profit with minimal request",
+      "request": {
+        "method": "POST",
+        "path": "/api/calculate",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "savings": 100,
+          "buyPrices": [50],
+          "sellPrices": [100]
+        },
+        "matchingRules": {
+          "body": {
+            "$.savings": {"matcher": "type"},
+            "$.buyPrices": {"matcher": "type"},
+            "$.sellPrices": {"matcher": "type"}
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "maxProfit": {
+            "matcher": "integer"
+          },
+          "indices": {
+            "matcher": "type"
+          },
+          "savingsUsed": {
+            "matcher": "integer"
+          },
+          "remainingSavings": {
+            "matcher": "integer"
+          },
+          "companyNames": {
+            "matcher": "type"
+          }
+        },
+        "matchingRules": {
+          "body": {
+            "$.maxProfit": {"matcher": "number"},
+            "$.indices": {"matcher": "type"},
+            "$.savingsUsed": {"matcher": "number"},
+            "$.remainingSavings": {"matcher": "number"},
+            "$.companyNames": {"matcher": "type"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Calculate max profit with invalid savings - negative value",
+      "request": {
+        "method": "POST",
+        "path": "/api/calculate",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "savings": -10,
+          "buyPrices": [5, 5, 10],
+          "sellPrices": [15, 10, 35]
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "message": {
+            "matcher": "type"
+          }
+        },
+        "matchingRules": {
+          "body": {
+            "$.message": {"matcher": "type"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Calculate max profit with invalid savings - exceeds maximum",
+      "request": {
+        "method": "POST",
+        "path": "/api/calculate",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "savings": 1001,
+          "buyPrices": [5, 5, 10],
+          "sellPrices": [15, 10, 35]
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "message": {
+            "matcher": "type"
+          }
+        },
+        "matchingRules": {
+          "body": {
+            "$.message": {"matcher": "type"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Calculate max profit with empty buy prices",
+      "request": {
+        "method": "POST",
+        "path": "/api/calculate",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "savings": 10,
+          "buyPrices": [],
+          "sellPrices": [15]
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "message": {
+            "matcher": "type"
+          }
+        },
+        "matchingRules": {
+          "body": {
+            "$.message": {"matcher": "type"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Health check endpoint",
+      "request": {
+        "method": "GET",
+        "path": "/api/health"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/plain"
+        },
+        "body": "OK",
+        "matchingRules": {
+          "body": {
+            "": {"matcher": "equality", "value": "OK"}
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  }
+}
