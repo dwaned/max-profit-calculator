@@ -71,14 +71,11 @@ jobs:
           VITE_API_URL: http://localhost:3000
 
       - name: Publish Pacts to Broker
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         working-directory: site/frontend
         run: |
           npm install -g @pact-foundation/pact-cli
           pact-broker publish pacts/ \
-            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
+            --broker-base-url=https://no-company-399294d1.pactflow.io \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer-app-version=${{ github.sha }}
-        env:
-          PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
-          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
