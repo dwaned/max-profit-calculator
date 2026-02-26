@@ -22,10 +22,10 @@
         },
         "matchingRules": {
           "body": {
-            "$.savings": {"matcher": "type"},
-            "$.buyPrices": {"matcher": "type"},
-            "$.sellPrices": {"matcher": "type"},
-            "$.companyNames": {"matcher": "type"}
+            "$.savings": { "matcher": "type" },
+            "$.buyPrices": { "matcher": "type" },
+            "$.sellPrices": { "matcher": "type" },
+            "$.companyNames": { "matcher": "type" }
           }
         }
       },
@@ -43,11 +43,11 @@
         },
         "matchingRules": {
           "body": {
-            "$.maxProfit": {"matcher": "type"},
-            "$.indices": {"matcher": "type"},
-            "$.savingsUsed": {"matcher": "type"},
-            "$.remainingSavings": {"matcher": "type"},
-            "$.companyNames": {"matcher": "type"}
+            "$.maxProfit": { "matcher": "type" },
+            "$.indices": { "matcher": "type" },
+            "$.savingsUsed": { "matcher": "type" },
+            "$.remainingSavings": { "matcher": "type" },
+            "$.companyNames": { "matcher": "type" }
           }
         }
       }
@@ -67,9 +67,9 @@
         },
         "matchingRules": {
           "body": {
-            "$.savings": {"matcher": "type"},
-            "$.buyPrices": {"matcher": "type"},
-            "$.sellPrices": {"matcher": "type"}
+            "$.savings": { "matcher": "type" },
+            "$.buyPrices": { "matcher": "type" },
+            "$.sellPrices": { "matcher": "type" }
           }
         }
       },
@@ -97,11 +97,11 @@
         },
         "matchingRules": {
           "body": {
-            "$.maxProfit": {"matcher": "number"},
-            "$.indices": {"matcher": "type"},
-            "$.savingsUsed": {"matcher": "number"},
-            "$.remainingSavings": {"matcher": "number"},
-            "$.companyNames": {"matcher": "type"}
+            "$.maxProfit": { "matcher": "number" },
+            "$.indices": { "matcher": "type" },
+            "$.savingsUsed": { "matcher": "number" },
+            "$.remainingSavings": { "matcher": "number" },
+            "$.companyNames": { "matcher": "type" }
           }
         }
       }
@@ -132,7 +132,7 @@
         },
         "matchingRules": {
           "body": {
-            "$.message": {"matcher": "type"}
+            "$.message": { "matcher": "type" }
           }
         }
       }
@@ -163,7 +163,7 @@
         },
         "matchingRules": {
           "body": {
-            "$.message": {"matcher": "type"}
+            "$.message": { "matcher": "type" }
           }
         }
       }
@@ -194,7 +194,7 @@
         },
         "matchingRules": {
           "body": {
-            "$.message": {"matcher": "type"}
+            "$.message": { "matcher": "type" }
           }
         }
       }
@@ -213,7 +213,7 @@
         "body": "OK",
         "matchingRules": {
           "body": {
-            "": {"matcher": "equality", "value": "OK"}
+            "": { "matcher": "equality", "value": "OK" }
           }
         }
       }
