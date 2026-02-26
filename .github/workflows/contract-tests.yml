@@ -76,9 +76,6 @@ jobs:
         run: |
           npm install -g @pact-foundation/pact-cli
           pact-broker publish pacts/ \
-            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
+            --broker-base-url=https://no-company-399294d1.pactflow.io \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer-app-version=${{ github.sha }}
-        env:
-          PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
-          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
