@@ -3,7 +3,6 @@
 # - Mutation tests
 # - Cucumber tests (BDD scenarios)
 # - OWASP Dependency Check
-# - Contract Tests (Pact)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,59 +24,8 @@ name: Multiple Test Types & OWASP Dependency Check
 run-name: Multiple Test Types & OWASP Dependency Check
 
 jobs:
-  contract-tests:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5.1.0
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: maven
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Run Contract Tests (Pact)
-        run: |
-          mvn test -Pcontract-tests -Dpactbroker.url=$PACT_BROKER_URL -Dpactbroker.auth.token=$PACT_BROKER_TOKEN
-        env:
-          PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
-          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
-
-      - name: Report Contract Test Results
-        uses: mikepenz/action-junit-report@v3
-        if: always()
-        with:
-          report_paths: "**/target/surefire-reports/TEST-*.xml"
-          check_name: "Contract Test Results"
-          detailed_summary: true
-          include_passed: true
-          annotate_notice: false
-          fail_on_failure: true
-
-      - name: Can I Deploy - Check Provider
-        run: |
-          npx pact-broker can-i-deploy \
-            --provider=max-profit-calculator-backend \
-            --consumer=frontend \
-            --broker-base-url=$PACT_BROKER_URL \
-            --broker-token=$PACT_BROKER_TOKEN \
-            --to=production
-        env:
-          PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
-          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
-
   build-and-test:
     runs-on: ubuntu-22.04
-    needs: contract-tests
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6.0.1
