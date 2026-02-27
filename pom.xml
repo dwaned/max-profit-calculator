@@ -313,9 +313,6 @@
                             </serviceProviders>
                             <verificationTimeout>60000</verificationTimeout>
                             <publishVerificationResults>true</publishVerificationResults>
-                            <includes>
-                                <include>com.maxprofit.calculator.PactProviderVerificationTest</include>
-                            </includes>
                         </configuration>
                         <executions>
                             <execution>
