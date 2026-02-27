@@ -299,6 +299,10 @@
                             <pactBrokerUrl>${pactbroker.url}</pactBrokerUrl>
                             <pactBrokerAuthToken>${pactbroker.auth.token}</pactBrokerAuthToken>
                             <providerName>max-profit-calculator-backend</providerName>
+                            <providerVersion>${project.version}</providerVersion>
+                            <consumerVersionSelectors>
+                                <matcher>.*</matcher>
+                            </consumerVersionSelectors>
                             <serviceProviders>
                                 <serviceProvider>
                                     <name>max-profit-calculator-backend</name>
@@ -309,6 +313,9 @@
                             </serviceProviders>
                             <verificationTimeout>60000</verificationTimeout>
                             <publishVerificationResults>true</publishVerificationResults>
+                            <includes>
+                                <include>com.maxprofit.calculator.PactProviderVerificationTest</include>
+                            </includes>
                         </configuration>
                         <executions>
                             <execution>
