@@ -45,8 +45,7 @@ jobs:
       - name: Verify Contracts from Broker
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         run: |
-          mvn pact:verify \
-            -Pcontract-tests \
+          mvn verify -Pcontract-tests \
             -Dpactbroker.url=https://no-company-399294d1.pactflow.io \
             -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }}
         continue-on-error: true
