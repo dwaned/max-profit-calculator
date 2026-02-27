@@ -287,7 +287,7 @@
                             <printSummary>true</printSummary>
                             <systemPropertyVariables>
                                 <pactbroker.url>${pactbroker.url}</pactbroker.url>
-                                <pactbroker.token>${pactbroker.auth.token}</pactbroker.token>
+                                <pactbroker.token>${pactbroker.token}</pactbroker.token>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -297,12 +297,9 @@
                         <version>${pact.version}</version>
                         <configuration>
                             <pactBrokerUrl>${pactbroker.url}</pactBrokerUrl>
-                            <pactBrokerAuthToken>${pactbroker.auth.token}</pactBrokerAuthToken>
-                            <providerName>max-profit-calculator-backend</providerName>
+                            <pactBrokerToken>${pactbroker.auth.token}</pactBrokerToken>
+                            <provider>max-profit-calculator-backend</provider>
                             <providerVersion>${project.version}</providerVersion>
-                            <consumerVersionSelectors>
-                                <matcher>.*</matcher>
-                            </consumerVersionSelectors>
                             <serviceProviders>
                                 <serviceProvider>
                                     <name>max-profit-calculator-backend</name>
@@ -312,7 +309,7 @@
                                 </serviceProvider>
                             </serviceProviders>
                             <verificationTimeout>60000</verificationTimeout>
-                            <publishVerificationResults>true</publishVerificationResults>
+                            <publishResults>true</publishResults>
                         </configuration>
                         <executions>
                             <execution>
