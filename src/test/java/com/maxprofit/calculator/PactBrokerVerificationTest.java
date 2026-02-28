@@ -17,7 +17,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = {"server.port=9095"})
 @Provider("max-profit-calculator-backend")
 @Consumer("frontend")
-@PactBroker(url = "${pact.broker.url:}")
+@PactBroker(url = "${pact.broker.url:}", protocol = "https")
 public class PactBrokerVerificationTest {
 
     @BeforeEach

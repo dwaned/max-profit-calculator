@@ -285,8 +285,8 @@
                                 <exclude>**/PerformanceTests.java</exclude>
                             </excludes>
                             <systemPropertyVariables>
-                                <PACT_BROKER_URL>${pact.broker.url:}</PACT_BROKER_URL>
-                                <PACT_BROKER_TOKEN>${pact.broker.token:}</PACT_BROKER_TOKEN>
+                                <pact.broker.url>${pact.broker.url:}</pact.broker.url>
+                                <pact.broker.token>${pact.broker.token:}</pact.broker.token>
                                 <pact.provider.version>${pact.provider.version:}</pact.provider.version>
                                 <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
                             </systemPropertyVariables>
