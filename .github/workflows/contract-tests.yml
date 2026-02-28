@@ -92,7 +92,7 @@ jobs:
         run: |
           mvn test -Pcontract-tests \
             -Dpact.broker.url=${{ env.PACT_BROKER_URL }} \
-            -Dpact.broker.token=${{ secrets.PACT_BROKER_TOKEN }} \
+            -Dpact.broker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
             -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
         continue-on-error: true
