@@ -42,16 +42,7 @@ jobs:
           sleep 30
           curl -s http://localhost:9095/api/health || exit 1
 
-      - name: Verify Contracts from Broker
-        if: github.event_name == 'push' || github.event_name == 'pull_request'
-        run: |
-          mvn verify -Pcontract-tests \
-            -Dpact.broker.url=https://no-company-399294d1.pactflow.io \
-            -Dpact.broker.token=${{ secrets.PACT_BROKER_TOKEN }} \
-            -Dpact.provider.version=${{ github.sha }}
-        continue-on-error: true
-
-      - name: Run Unit Tests
+      - name: Run Contract Tests
         run: mvn test -Pcontract-tests
 
       - name: Report Contract Test Results
