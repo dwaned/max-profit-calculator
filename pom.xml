@@ -288,6 +288,7 @@
                             <systemPropertyVariables>
                                 <pact.broker.url>${pact.broker.url}</pact.broker.url>
                                 <pact.broker.token>${pact.broker.token}</pact.broker.token>
+                                <pact.verifier.publishResults>true</pact.verifier.publishResults>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -304,6 +305,8 @@
                                     <port>9095</port>
                                 </serviceProvider>
                             </serviceProviders>
+                            <publishResults>true</publishResults>
+                            <providerVersion>${pact.provider.version}</providerVersion>
                         </configuration>
                         <executions>
                             <execution>
