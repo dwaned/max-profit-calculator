@@ -270,7 +270,7 @@
                         <version>3.0.0-M7</version>
                         <configuration>
                             <includes>
-                                <include>**/PactProviderVerificationTest.java</include>
+                                <include>**/LocalContractVerificationTest.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/ExampleBasedTests.java</exclude>
@@ -283,13 +283,6 @@
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/PerformanceTests.java</exclude>
                             </excludes>
-                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                            <printSummary>true</printSummary>
-                            <systemPropertyVariables>
-                                <pact.broker.url>${pact.broker.url}</pact.broker.url>
-                                <pact.broker.token>${pact.broker.token}</pact.broker.token>
-                                <pact.verifier.publishResults>true</pact.verifier.publishResults>
-                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -305,8 +298,11 @@
                                     <port>9095</port>
                                 </serviceProvider>
                             </serviceProviders>
-                            <publishResults>true</publishResults>
-                            <providerVersion>${pact.provider.version}</providerVersion>
+                            <failIfNoPactsFound>false</failIfNoPactsFound>
+                            <pactBrokerUrl>${pact.broker.url:}</pactBrokerUrl>
+                            <pactBrokerToken>${pact.broker.token:}</pactBrokerToken>
+                            <publishResults>${pact.verifier.publishResults:false}</publishResults>
+                            <providerVersion>${pact.provider.version:}</providerVersion>
                         </configuration>
                         <executions>
                             <execution>
