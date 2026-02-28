@@ -6,31 +6,26 @@ import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvide
 import au.com.dius.pact.provider.junitsupport.Consumer;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerAuth;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 @ExtendWith(PactVerificationInvocationContextProvider.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(properties = {"server.port=9095"})
 @Provider("max-profit-calculator-backend")
 @Consumer("frontend")
-@PactBroker(url = "${pact.broker.url:}")
+@PactBroker(
+    url = "${pact.broker.url:}",
+    authentication = @PactBrokerAuth(token = "${pact.broker.auth.token:}")
+)
 public class PactBrokerVerificationTest {
 
     @BeforeEach
     void setup(PactVerificationContext context) {
-        String brokerUrl = System.getProperty("pact.broker.url");
-        String brokerToken = System.getProperty("pact.broker.token");
-        
-        assumeTrue(brokerUrl != null && !brokerUrl.isEmpty() 
-            && brokerToken != null && !brokerToken.isEmpty(),
-            "Pact broker URL or token not configured, skipping broker verification test");
-        
         context.setTarget(new HttpTestTarget("localhost", 9095));
     }
 

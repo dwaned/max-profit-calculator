@@ -286,7 +286,7 @@
                             </excludes>
                             <systemPropertyVariables>
                                 <pact.broker.url>${pact.broker.url:}</pact.broker.url>
-                                <pact.broker.token>${pact.broker.token:}</pact.broker.token>
+                                <pact.broker.auth.token>${pact.broker.token:}</pact.broker.auth.token>
                                 <pact.provider.version>${pact.provider.version:}</pact.provider.version>
                                 <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
                             </systemPropertyVariables>
