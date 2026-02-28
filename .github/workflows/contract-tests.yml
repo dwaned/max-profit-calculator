@@ -46,9 +46,9 @@ jobs:
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         run: |
           mvn verify -Pcontract-tests \
-            -Dpactbroker.url=https://no-company-399294d1.pactflow.io \
-            -Dpactbroker.token=${{ secrets.PACT_BROKER_TOKEN }} \
-            -Dproject.version=${{ github.sha }}
+            -Dpact.broker.url=https://no-company-399294d1.pactflow.io \
+            -Dpact.broker.token=${{ secrets.PACT_BROKER_TOKEN }} \
+            -Dpact.provider.version=${{ github.sha }}
         continue-on-error: true
 
       - name: Run Unit Tests

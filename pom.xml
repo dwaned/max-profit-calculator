@@ -286,8 +286,8 @@
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                             <printSummary>true</printSummary>
                             <systemPropertyVariables>
-                                <pactbroker.url>${pactbroker.url}</pactbroker.url>
-                                <pactbroker.token>${pactbroker.token}</pactbroker.token>
+                                <pact.broker.url>${pact.broker.url}</pact.broker.url>
+                                <pact.broker.token>${pact.broker.token}</pact.broker.token>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -296,10 +296,6 @@
                         <artifactId>maven</artifactId>
                         <version>${pact.version}</version>
                         <configuration>
-                            <pactBrokerUrl>${pactbroker.url}</pactBrokerUrl>
-                            <pactBrokerToken>${pactbroker.auth.token}</pactBrokerToken>
-                            <provider>max-profit-calculator-backend</provider>
-                            <providerVersion>${project.version}</providerVersion>
                             <serviceProviders>
                                 <serviceProvider>
                                     <name>max-profit-calculator-backend</name>
@@ -308,8 +304,6 @@
                                     <port>9095</port>
                                 </serviceProvider>
                             </serviceProviders>
-                            <verificationTimeout>60000</verificationTimeout>
-                            <publishResults>true</publishResults>
                         </configuration>
                         <executions>
                             <execution>
