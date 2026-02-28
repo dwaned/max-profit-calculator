@@ -282,7 +282,14 @@
                                 <exclude>**/ContainerTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/PerformanceTests.java</exclude>
+                                <exclude>**/PactBrokerVerificationTest.java</exclude>
                             </excludes>
+                            <systemPropertyVariables>
+                                <pact.broker.url>${pact.broker.url:}</pact.broker.url>
+                                <pact.broker.auth.token>${pact.broker.token:}</pact.broker.auth.token>
+                                <pact.provider.version>${pact.provider.version:}</pact.provider.version>
+                                <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                     <plugin>
