@@ -271,6 +271,7 @@
                         <configuration>
                             <includes>
                                 <include>**/LocalContractVerificationTest.java</include>
+                                <include>**/PactBrokerVerificationTest.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/ExampleBasedTests.java</exclude>
@@ -283,6 +284,12 @@
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/PerformanceTests.java</exclude>
                             </excludes>
+                            <systemPropertyVariables>
+                                <PACT_BROKER_URL>${pact.broker.url:}</PACT_BROKER_URL>
+                                <PACT_BROKER_TOKEN>${pact.broker.token:}</PACT_BROKER_TOKEN>
+                                <pact.provider.version>${pact.provider.version:}</pact.provider.version>
+                                <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                     <plugin>
