@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 @ExtendWith(PactVerificationInvocationContextProvider.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(properties = {"server.port=9095"})
@@ -22,6 +24,13 @@ public class PactBrokerVerificationTest {
 
     @BeforeEach
     void setup(PactVerificationContext context) {
+        String brokerUrl = System.getProperty("pact.broker.url");
+        String brokerToken = System.getProperty("pact.broker.token");
+        
+        assumeTrue(brokerUrl != null && !brokerUrl.isEmpty() 
+            && brokerToken != null && !brokerToken.isEmpty(),
+            "Pact broker URL or token not configured, skipping broker verification test");
+        
         context.setTarget(new HttpTestTarget("localhost", 9095));
     }
 
