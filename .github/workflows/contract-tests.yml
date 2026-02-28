@@ -121,6 +121,7 @@ jobs:
             --broker-base-url=${{ env.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --pacticipant=frontend \
+            --version=${{ github.sha }} \
             --pacticipant=max-profit-calculator-backend \
             --version=${{ github.sha }} \
             --to-environment=main
