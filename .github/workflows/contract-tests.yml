@@ -92,8 +92,8 @@ jobs:
       - name: Run Broker Contract Tests
         run: |
           mvn test -Pcontract-tests \
-            -Dpact.broker.url=${{ env.PACT_BROKER_URL }} \
-            -Dpact.broker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
+            -Dpactbroker.url=${{ env.PACT_BROKER_URL }} \
+            -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
             -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
         continue-on-error: true
@@ -116,9 +116,14 @@ jobs:
       - name: Install Pact CLI
         run: npm install -g @pact-foundation/pact-cli
 
-      - name: Can I Deploy (Frontend only)
+<<<<<<< HEAD
+      - name: Can I Deploy
         run: |
-          echo "Note: Full can-i-deploy requires broker verification from backend"
-          echo "Skipping since backend broker verification is not configured"
-          echo "Frontend pact published successfully"
+          pact-broker can-i-deploy \
+            --broker-base-url=${{ env.PACT_BROKER_URL }} \
+            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            --pacticipant=frontend \
+            --latest \
+            --pacticipant=max-profit-calculator-backend \
+            --latest
         continue-on-error: true
