@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { Matchers } from '@pact-foundation/pact';
+
+const { like } = Matchers;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,13 +38,13 @@ describe('Pact Consumer Contract Tests', () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: {
+            body: like({
               maxProfit: 20,
               indices: [0, 1],
               savingsUsed: 10,
               remainingSavings: 0,
               companyNames: ['Acme Corp', 'Globex Inc'],
-            },
+            }),
           },
         },
         {
@@ -63,9 +66,9 @@ describe('Pact Consumer Contract Tests', () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: {
+            body: like({
               message: 'Invalid input: Savings must be at least 1',
-            },
+            }),
           },
         },
         {

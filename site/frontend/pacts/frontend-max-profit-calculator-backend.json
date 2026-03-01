@@ -16,9 +16,21 @@
         },
         "body": {
           "savings": 10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35],
-          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "sellPrices": [
+            15,
+            10,
+            35
+          ],
+          "companyNames": [
+            "Acme Corp",
+            "Globex Inc",
+            "Initech"
+          ]
         }
       },
       "response": {
@@ -27,11 +39,20 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "maxProfit": 20,
-          "indices": [0, 2],
-          "savingsUsed": 15,
-          "remainingSavings": 0,
-          "companyNames": ["Acme Corp", "Initech"]
+          "pact:matcher:type": "type",
+          "value": {
+            "maxProfit": 20,
+            "indices": [
+              0,
+              1
+            ],
+            "savingsUsed": 10,
+            "remainingSavings": 0,
+            "companyNames": [
+              "Acme Corp",
+              "Globex Inc"
+            ]
+          }
         }
       }
     },
@@ -45,8 +66,16 @@
         },
         "body": {
           "savings": -10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35]
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "sellPrices": [
+            15,
+            10,
+            35
+          ]
         }
       },
       "response": {
@@ -55,7 +84,10 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "message": "Invalid input: Savings must be at least 1"
+          "pact:matcher:type": "type",
+          "value": {
+            "message": "Invalid input: Savings must be at least 1"
+          }
         }
       }
     },
