@@ -37,10 +37,10 @@ describe('Pact Consumer Contract Tests', () => {
             },
             body: {
               maxProfit: 20,
-              indices: [0, 2],
-              savingsUsed: 15,
+              indices: [0, 1],
+              savingsUsed: 10,
               remainingSavings: 0,
-              companyNames: ['Acme Corp', 'Initech'],
+              companyNames: ['Acme Corp', 'Globex Inc'],
             },
           },
         },
