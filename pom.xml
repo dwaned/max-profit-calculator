@@ -290,6 +290,7 @@
                                 <pactbroker.auth.token>${pact.broker.token:}</pactbroker.auth.token>
                                 <pact.provider.version>${pact.provider.version:}</pact.provider.version>
                                 <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
+                                <pact.pactbroker.httpclient.usePreemptiveAuthentication>true</pact.pactbroker.httpclient.usePreemptiveAuthentication>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -307,8 +308,8 @@
                                 </serviceProvider>
                             </serviceProviders>
                             <failIfNoPactsFound>false</failIfNoPactsFound>
-                            <pactBrokerUrl>${pact.broker.url:}</pactBrokerUrl>
-                            <pactBrokerToken>${pact.broker.token:}</pactBrokerToken>
+                            <pactBrokerUrl>${pactbroker.url:}</pactBrokerUrl>
+                            <pactBrokerToken>${pactbroker.auth.token:}</pactBrokerToken>
                             <publishResults>${pact.verifier.publishResults:false}</publishResults>
                             <providerVersion>${pact.provider.version:}</providerVersion>
                         </configuration>
