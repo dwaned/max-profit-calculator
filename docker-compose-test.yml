@@ -7,7 +7,7 @@ services:
     ports:
       - "9095:9095"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9095/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:9095/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

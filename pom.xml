@@ -270,7 +270,7 @@
                         <version>3.0.0-M7</version>
                         <configuration>
                             <includes>
-                                <include>**/PactProviderVerificationTest.java</include>
+                                <include>**/LocalContractVerificationTest.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/ExampleBasedTests.java</exclude>
@@ -282,12 +282,13 @@
                                 <exclude>**/ContainerTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/PerformanceTests.java</exclude>
+                                <exclude>**/PactBrokerVerificationTest.java</exclude>
                             </excludes>
-                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                            <printSummary>true</printSummary>
                             <systemPropertyVariables>
-                                <pactbroker.url>${pactbroker.url}</pactbroker.url>
-                                <pactbroker.token>${pactbroker.auth.token}</pactbroker.token>
+                                <pact.broker.url>${pact.broker.url:}</pact.broker.url>
+                                <pact.broker.auth.token>${pact.broker.token:}</pact.broker.auth.token>
+                                <pact.provider.version>${pact.provider.version:}</pact.provider.version>
+                                <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -296,9 +297,6 @@
                         <artifactId>maven</artifactId>
                         <version>${pact.version}</version>
                         <configuration>
-                            <pactBrokerUrl>${pactbroker.url}</pactBrokerUrl>
-                            <pactBrokerAuthToken>${pactbroker.auth.token}</pactBrokerAuthToken>
-                            <providerName>max-profit-calculator-backend</providerName>
                             <serviceProviders>
                                 <serviceProvider>
                                     <name>max-profit-calculator-backend</name>
@@ -307,8 +305,11 @@
                                     <port>9095</port>
                                 </serviceProvider>
                             </serviceProviders>
-                            <verificationTimeout>60000</verificationTimeout>
-                            <publishVerificationResults>true</publishVerificationResults>
+                            <failIfNoPactsFound>false</failIfNoPactsFound>
+                            <pactBrokerUrl>${pact.broker.url:}</pactBrokerUrl>
+                            <pactBrokerToken>${pact.broker.token:}</pactBrokerToken>
+                            <publishResults>${pact.verifier.publishResults:false}</publishResults>
+                            <providerVersion>${pact.provider.version:}</providerVersion>
                         </configuration>
                         <executions>
                             <execution>
