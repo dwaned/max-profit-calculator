@@ -116,6 +116,7 @@ jobs:
       - name: Install Pact CLI
         run: npm install -g @pact-foundation/pact-cli
 
+<<<<<<< HEAD
       - name: Can I Deploy
         run: |
           pact-broker can-i-deploy \

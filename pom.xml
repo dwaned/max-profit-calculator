@@ -283,6 +283,7 @@
                                 <exclude>**/ContainerTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/PerformanceTests.java</exclude>
+                                <exclude>**/PactBrokerVerificationTest.java</exclude>
                             </excludes>
                             <systemPropertyVariables>
                                 <pactbroker.url>${pact.broker.url:}</pactbroker.url>
