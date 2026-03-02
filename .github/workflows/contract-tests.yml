@@ -89,12 +89,22 @@ jobs:
           sleep 30
           curl -s http://localhost:9095/api/health || exit 1
 
+      - name: Determine branch
+        id: determine-branch
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "branch=main" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run Broker Contract Tests
         run: |
           mvn test -Pcontract-tests \
             -Dpactbroker.url=${{ env.PACT_BROKER_URL }} \
             -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
             -Dpact.provider.version=${{ github.sha }} \
+            -Dpact.consumer.branch=${{ steps.determine-branch.outputs.branch }} \
             -Dpact.verifier.publishResults=true
         continue-on-error: true
 
