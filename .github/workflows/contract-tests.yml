@@ -106,15 +106,13 @@ jobs:
       - name: Install Pact CLI
         run: npm install -g @pact-foundation/pact-cli
 
-      - name: Can I Deploy (check frontend pact)
+      - name: Can I Deploy
         run: |
-          echo "Checking if frontend pact exists in broker..."
-          pact-broker describe-contract \
+          pact-broker can-i-deploy \
             --broker-base-url=${{ env.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer=frontend \
-            --provider=max-profit-calculator-backend || echo "No contract found"
-
-          echo "Frontend pact published successfully - skipping full can-i-deploy"
-          echo "Full verification requires backend to publish verification results"
+            --latest \
+            --provider=max-profit-calculator-backend \
+            --latest
         continue-on-error: true
