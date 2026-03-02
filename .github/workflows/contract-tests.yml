@@ -85,6 +85,7 @@ jobs:
           mvn test -Pcontract-tests \
             -Dpactbroker.url=${{ env.PACT_BROKER_URL }} \
             -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
+            -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
 
       - name: Report Contract Test Results
