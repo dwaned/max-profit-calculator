@@ -6,6 +6,8 @@ import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvide
 import au.com.dius.pact.provider.junitsupport.Consumer;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerAuth;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,14 +18,18 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Provider("max-profit-calculator-backend")
 @Consumer("frontend")
-@PactBroker(url = "${pact.broker.url:}")
+@PactBroker(
+    url = "${pactbroker.url:}",
+    authentication = @PactBrokerAuth(token = "${pactbroker.auth.token:}"),
+    tags = {"latest"}
+)
 public class PactBrokerVerificationTest {
 
     @BeforeEach
     void setup(PactVerificationContext context) {
-        String brokerUrl = Optional.ofNullable(System.getProperty("pact.broker.url"))
+        String brokerUrl = Optional.ofNullable(System.getProperty("pactbroker.url"))
             .orElse(System.getenv("PACT_BROKER_URL"));
-        String brokerToken = Optional.ofNullable(System.getProperty("pact.broker.auth.token"))
+        String brokerToken = Optional.ofNullable(System.getProperty("pactbroker.auth.token"))
             .orElse(System.getenv("PACT_BROKER_TOKEN"));
         
         assumeTrue(brokerUrl != null && !brokerUrl.isEmpty() 

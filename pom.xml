@@ -35,7 +35,7 @@
         <javafaker.version>1.0.2</javafaker.version>
         <jamm.version>0.3.3</jamm.version>
         <jamm2.version>0.4.0</jamm2.version>
-        <pact.version>4.6.7</pact.version>
+        <pact.version>4.6.20</pact.version>
         <spring-boot.version>3.3.11</spring-boot.version>
         <rest-assured.version>5.3.2</rest-assured.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
@@ -271,6 +271,7 @@
                         <configuration>
                             <includes>
                                 <include>**/LocalContractVerificationTest.java</include>
+                                <include>**/PactBrokerVerificationTest.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/ExampleBasedTests.java</exclude>
@@ -282,13 +283,13 @@
                                 <exclude>**/ContainerTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/PerformanceTests.java</exclude>
-                                <exclude>**/PactBrokerVerificationTest.java</exclude>
                             </excludes>
                             <systemPropertyVariables>
-                                <pact.broker.url>${pact.broker.url:}</pact.broker.url>
-                                <pact.broker.auth.token>${pact.broker.token:}</pact.broker.auth.token>
+                                <pactbroker.url>${pact.broker.url:}</pactbroker.url>
+                                <pactbroker.auth.token>${pact.broker.token:}</pactbroker.auth.token>
                                 <pact.provider.version>${pact.provider.version:}</pact.provider.version>
                                 <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
+                                <pact.pactbroker.httpclient.usePreemptiveAuthentication>true</pact.pactbroker.httpclient.usePreemptiveAuthentication>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -306,8 +307,8 @@
                                 </serviceProvider>
                             </serviceProviders>
                             <failIfNoPactsFound>false</failIfNoPactsFound>
-                            <pactBrokerUrl>${pact.broker.url:}</pactBrokerUrl>
-                            <pactBrokerToken>${pact.broker.token:}</pactBrokerToken>
+                            <pactBrokerUrl>${pactbroker.url:}</pactBrokerUrl>
+                            <pactBrokerToken>${pactbroker.auth.token:}</pactBrokerToken>
                             <publishResults>${pact.verifier.publishResults:false}</publishResults>
                             <providerVersion>${pact.provider.version:}</providerVersion>
                         </configuration>

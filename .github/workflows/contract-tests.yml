@@ -46,15 +46,6 @@ jobs:
         env:
           VITE_API_URL: http://localhost:3000
 
-      - name: Determine tag
-        id: determine-tag
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "tag=main" >> $GITHUB_OUTPUT
-          else
-            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Publish Pacts to Broker
         working-directory: site/frontend
         run: |
@@ -63,7 +54,7 @@ jobs:
             --broker-base-url=${{ env.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer-app-version=${{ github.sha }} \
-            --branch=${{ steps.determine-tag.outputs.tag }}
+            --tag=latest
 
   backend-contract-tests:
     runs-on: ubuntu-22.04
@@ -92,11 +83,9 @@ jobs:
       - name: Run Broker Contract Tests
         run: |
           mvn test -Pcontract-tests \
-            -Dpact.broker.url=${{ env.PACT_BROKER_URL }} \
-            -Dpact.broker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
-            -Dpact.provider.version=${{ github.sha }} \
+            -Dpactbroker.url=${{ env.PACT_BROKER_URL }} \
+            -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
             -Dpact.verifier.publishResults=true
-        continue-on-error: true
 
       - name: Report Contract Test Results
         uses: mikepenz/action-junit-report@v3
@@ -116,9 +105,10 @@ jobs:
       - name: Install Pact CLI
         run: npm install -g @pact-foundation/pact-cli
 
-      - name: Can I Deploy (Frontend only)
+      - name: Can I Deploy
         run: |
-          echo "Note: Full can-i-deploy requires broker verification from backend"
-          echo "Skipping since backend broker verification is not configured"
-          echo "Frontend pact published successfully"
-        continue-on-error: true
+          pact-broker can-i-deploy \
+            --broker-base-url=${{ env.PACT_BROKER_URL }} \
+            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            --pacticipant=frontend --latest \
+            --pacticipant=max-profit-calculator-backend --latest
