@@ -20,7 +20,7 @@ describe('Pact Consumer Contract Tests', () => {
       },
       interactions: [
         {
-          description: 'a request to calculate max profit',
+          description: 'a request to calculate max profit - returns calculated values',
           request: {
             method: 'POST',
             path: '/api/calculate',

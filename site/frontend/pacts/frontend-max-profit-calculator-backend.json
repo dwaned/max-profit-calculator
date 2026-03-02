@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "a request to calculate max profit",
+      "description": "a request to calculate max profit - returns calculated values",
       "request": {
         "method": "POST",
         "path": "/api/calculate",
@@ -16,9 +16,21 @@
         },
         "body": {
           "savings": 10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35],
-          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "sellPrices": [
+            15,
+            10,
+            35
+          ],
+          "companyNames": [
+            "Acme Corp",
+            "Globex Inc",
+            "Initech"
+          ]
         }
       },
       "response": {
@@ -30,10 +42,16 @@
           "pact:matcher:type": "type",
           "value": {
             "maxProfit": 20,
-            "indices": [0, 1],
+            "indices": [
+              0,
+              1
+            ],
             "savingsUsed": 10,
             "remainingSavings": 0,
-            "companyNames": ["Acme Corp", "Globex Inc"]
+            "companyNames": [
+              "Acme Corp",
+              "Globex Inc"
+            ]
           }
         }
       }
@@ -48,8 +66,16 @@
         },
         "body": {
           "savings": -10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35]
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "sellPrices": [
+            15,
+            10,
+            35
+          ]
         }
       },
       "response": {
