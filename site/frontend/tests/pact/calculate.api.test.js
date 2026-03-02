@@ -8,6 +8,7 @@ const { like } = Matchers;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Pact Consumer Contract Tests - tests the contract between frontend and backend
 describe('Pact Consumer Contract Tests', () => {
   it('should generate pact contract for calculate endpoint', async () => {
     const pact = {
