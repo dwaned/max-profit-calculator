@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @PactBroker(
     url = "${pactbroker.url:}",
     authentication = @PactBrokerAuth(token = "${pactbroker.auth.token:}"),
-    tags = {"${pact.consumer.branch:}", "main"}
+    tags = {"latest"}
 )
 public class PactBrokerVerificationTest {
 
