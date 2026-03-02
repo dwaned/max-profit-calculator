@@ -63,7 +63,7 @@ jobs:
             --broker-base-url=${{ env.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer-app-version=${{ github.sha }} \
-            --branch=${{ steps.determine-tag.outputs.tag }}
+            --tag=${{ steps.determine-tag.outputs.tag }}
 
   backend-contract-tests:
     runs-on: ubuntu-22.04
