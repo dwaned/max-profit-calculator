@@ -43,7 +43,7 @@ describe('Pact Consumer Contract Tests', () => {
               indices: [0, 1],
               savingsUsed: 10,
               remainingSavings: 0,
-              companyNames: ['Acme Corp', 'Globex Inc'],
+              companyNames: ['Acme Corp', 'Globex Inc', 'Initech'],
             },
           },
         },
