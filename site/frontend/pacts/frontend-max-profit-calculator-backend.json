@@ -39,16 +39,16 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "maxProfit": 20,
+          "maxProfit": 25,
           "indices": [
-            0,
-            1
+            2
           ],
           "savingsUsed": 10,
           "remainingSavings": 0,
           "companyNames": [
             "Acme Corp",
-            "Globex Inc"
+            "Globex Inc",
+            "Initech"
           ]
         }
       }

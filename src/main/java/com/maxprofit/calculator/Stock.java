@@ -186,18 +186,7 @@ public final class Stock {
                 ? new java.util.ArrayList<>() 
                 : chosenIndices.get(0);
         int remaining = saving - usedSavings;
-        
-        List<String> resultCompanyNames = null;
-        if (companyNames != null && !flatIndices.isEmpty()) {
-            resultCompanyNames = new java.util.ArrayList<>();
-            for (Integer idx : flatIndices) {
-                if (idx != null && idx >= 0 && idx < companyNames.size()) {
-                    resultCompanyNames.add(companyNames.get(idx));
-                }
-            }
-        }
-        
-        return new CalculationResult(maxProfit, flatIndices, usedSavings, remaining, resultCompanyNames);
+        return new CalculationResult(maxProfit, flatIndices, usedSavings, remaining, companyNames);
     }
 
 }
