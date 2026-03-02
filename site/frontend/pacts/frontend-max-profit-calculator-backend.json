@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "a request to calculate max profit - returns calculated values",
+      "description": "a request to calculate max profit",
       "request": {
         "method": "POST",
         "path": "/api/calculate",
@@ -16,9 +16,21 @@
         },
         "body": {
           "savings": 10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35],
-          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "sellPrices": [
+            15,
+            10,
+            35
+          ],
+          "companyNames": [
+            "Acme Corp",
+            "Globex Inc",
+            "Initech"
+          ]
         }
       },
       "response": {
@@ -27,14 +39,17 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "pact:matcher:type": "type",
-          "value": {
-            "maxProfit": 20,
-            "indices": [0, 1],
-            "savingsUsed": 10,
-            "remainingSavings": 0,
-            "companyNames": ["Acme Corp", "Globex Inc"]
-          }
+          "maxProfit": 20,
+          "indices": [
+            0,
+            1
+          ],
+          "savingsUsed": 10,
+          "remainingSavings": 0,
+          "companyNames": [
+            "Acme Corp",
+            "Globex Inc"
+          ]
         }
       }
     },
@@ -48,8 +63,16 @@
         },
         "body": {
           "savings": -10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35]
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "sellPrices": [
+            15,
+            10,
+            35
+          ]
         }
       },
       "response": {
@@ -58,10 +81,7 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "pact:matcher:type": "type",
-          "value": {
-            "message": "Invalid input: Savings must be at least 1"
-          }
+          "message": "Invalid input: Savings must be at least 1"
         }
       }
     },

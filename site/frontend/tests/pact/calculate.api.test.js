@@ -2,15 +2,14 @@ import { describe, it, expect } from 'vitest';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import { Matchers } from '@pact-foundation/pact';
-
-const { like } = Matchers;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Pact Consumer Contract Tests - tests the contract between frontend and backend
 describe('Pact Consumer Contract Tests', () => {
   it('should generate pact contract for calculate endpoint', async () => {
+    // Using exact values for compatibility with pact-jvm
+    // In production, use matchers like: like({...})
     const pact = {
       consumer: {
         name: 'frontend',
@@ -20,7 +19,7 @@ describe('Pact Consumer Contract Tests', () => {
       },
       interactions: [
         {
-          description: 'a request to calculate max profit - returns calculated values',
+          description: 'a request to calculate max profit',
           request: {
             method: 'POST',
             path: '/api/calculate',
@@ -39,13 +38,13 @@ describe('Pact Consumer Contract Tests', () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: like({
+            body: {
               maxProfit: 20,
               indices: [0, 1],
               savingsUsed: 10,
               remainingSavings: 0,
               companyNames: ['Acme Corp', 'Globex Inc'],
-            }),
+            },
           },
         },
         {
@@ -67,9 +66,9 @@ describe('Pact Consumer Contract Tests', () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: like({
+            body: {
               message: 'Invalid input: Savings must be at least 1',
-            }),
+            },
           },
         },
         {
