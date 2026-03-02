@@ -27,11 +27,11 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "maxProfit": 20,
-          "indices": [0, 2],
-          "savingsUsed": 15,
+          "maxProfit": 25,
+          "indices": [2],
+          "savingsUsed": 10,
           "remainingSavings": 0,
-          "companyNames": ["Acme Corp", "Initech"]
+          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
         }
       }
     },
