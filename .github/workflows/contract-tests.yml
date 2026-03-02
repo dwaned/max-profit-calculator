@@ -111,8 +111,6 @@ jobs:
           pact-broker can-i-deploy \
             --broker-base-url=${{ env.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
-            --consumer=frontend \
-            --latest \
-            --provider=max-profit-calculator-backend \
-            --latest
+            --pacticipant=frontend \
+            --pacticipant=max-profit-calculator-backend
         continue-on-error: true
