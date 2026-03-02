@@ -86,7 +86,6 @@ jobs:
             -Dpactbroker.url=${{ env.PACT_BROKER_URL }} \
             -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
             -Dpact.verifier.publishResults=true
-        continue-on-error: true
 
       - name: Report Contract Test Results
         uses: mikepenz/action-junit-report@v3
@@ -113,4 +112,3 @@ jobs:
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --pacticipant=frontend --latest \
             --pacticipant=max-profit-calculator-backend --latest
-        continue-on-error: true
