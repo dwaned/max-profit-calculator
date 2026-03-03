@@ -18,7 +18,7 @@
           "savings": 10,
           "buyPrices": [5, 5, 10],
           "sellPrices": [15, 10, 35],
-          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
+          "companyNames": ["Initech"]
         },
         "matchingRules": {
           "body": {
@@ -39,7 +39,7 @@
           "indices": [2],
           "savingsUsed": 10,
           "remainingSavings": 0,
-          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
+          "companyNames": ["Initech"]
         },
         "matchingRules": {
           "body": {
