@@ -20,7 +20,7 @@ permissions:
 name: Contract Tests
 
 env:
-  PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
+  PACT_BROKER_URL: ${{ secrets.PACT_BROKER_URL }}
 
 jobs:
   frontend-contract-tests:
