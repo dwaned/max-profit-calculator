@@ -81,10 +81,11 @@ jobs:
           curl -s http://localhost:9095/api/health || exit 1
 
       - name: Run Broker Contract Tests
+        env:
+          PACT_BROKER_URL: ${{ secrets.PACT_BROKER_URL }}
+          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
         run: |
           mvn test -Pcontract-tests \
-            -Dpactbrokerurl="${{ secrets.PACT_BROKER_URL }}" \
-            -Dpactbrokertoken="${{ secrets.PACT_BROKER_TOKEN }}" \
             -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
 
