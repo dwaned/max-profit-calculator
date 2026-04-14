@@ -109,6 +109,6 @@ jobs:
             --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --pacticipant=frontend \
-            --version-selector=latest \
+            --version=latest \
             --pacticipant=max-profit-calculator-backend \
-            --version-selector=latest
+            --version=latest
