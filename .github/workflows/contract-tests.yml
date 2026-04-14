@@ -19,9 +19,6 @@ permissions:
 
 name: Contract Tests
 
-env:
-  # PACT_BROKER_URL: ${{ secrets.PACT_BROKER_URL }}
-
 jobs:
   frontend-contract-tests:
     runs-on: ubuntu-22.04
@@ -51,7 +48,7 @@ jobs:
         run: |
           npm install -g @pact-foundation/pact-cli
           pact-broker publish pacts/ \
-            --broker-base-url=${{ env.PACT_BROKER_URL }} \
+            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer-app-version=${{ github.sha }} \
             --tag=latest
