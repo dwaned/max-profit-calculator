@@ -20,7 +20,7 @@ permissions:
 name: Contract Tests
 
 env:
-  PACT_BROKER_URL: ${{ secrets.PACT_BROKER_URL }}
+  # PACT_BROKER_URL: ${{ secrets.PACT_BROKER_URL }}
 
 jobs:
   frontend-contract-tests:
@@ -83,8 +83,8 @@ jobs:
       - name: Run Broker Contract Tests
         run: |
           mvn test -Pcontract-tests \
-            -Dpact.broker.url="${{ secrets.PACT_BROKER_URL }}" \
-            -Dpact.broker.token="${{ secrets.PACT_BROKER_TOKEN }}" \
+            -Dpactbroker.host="${{ secrets.PACT_BROKER_URL }}" \
+            -Dpactbroker.token="${{ secrets.PACT_BROKER_TOKEN }}" \
             -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
 
@@ -109,7 +109,9 @@ jobs:
       - name: Can I Deploy
         run: |
           pact-broker can-i-deploy \
-            --broker-base-url=${{ env.PACT_BROKER_URL }} \
+            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
-            --pacticipant=frontend --latest \
-            --pacticipant=max-profit-calculator-backend --latest
+            --pacticipant=frontend \
+            --version-selector=latest \
+            --pacticipant=max-profit-calculator-backend \
+            --version-selector=latest
