@@ -82,10 +82,11 @@ jobs:
 
       - name: Run Broker Contract Tests
         run: |
-          mvn verify -Pcontract-tests \
-            -Dpactbrokerurl="${{ secrets.PACT_BROKER_URL }}" \
-            -Dpactbrokertoken="${{ secrets.PACT_BROKER_TOKEN }}" \
-            -Dpact.provider.version=${{ github.sha }}
+          mvn test -Pcontract-tests \
+            -Dpact.broker.url="${{ secrets.PACT_BROKER_URL }}" \
+            -Dpact.broker.token="${{ secrets.PACT_BROKER_TOKEN }}" \
+            -Dpact.provider.version=${{ github.sha }} \
+            -Dpact.verifier.publishResults=true
 
       - name: Report Contract Test Results
         uses: mikepenz/action-junit-report@v3
