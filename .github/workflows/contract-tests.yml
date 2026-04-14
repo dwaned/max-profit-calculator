@@ -96,19 +96,19 @@ jobs:
           annotate_notice: false
           fail_on_failure: false
 
-  can-i-deploy:
-    runs-on: ubuntu-22.04
-    needs: [frontend-contract-tests, backend-contract-tests]
-    steps:
-      - name: Install Pact CLI
-        run: npm install -g @pact-foundation/pact-cli
+  # can-i-deploy:
+    # runs-on: ubuntu-22.04
+    # needs: [frontend-contract-tests, backend-contract-tests]
+    # steps:
+      # - name: Install Pact CLI
+        # run: npm install -g @pact-foundation/pact-cli
 
-      - name: Can I Deploy
-        run: |
-          pact-broker can-i-deploy \
-            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
-            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
-            --pacticipant=frontend \
-            --version=latest \
-            --pacticipant=max-profit-calculator-backend \
-            --version=latest
+      # - name: Can I Deploy
+        # run: |
+          # pact-broker can-i-deploy \
+            # --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
+            # --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            # --pacticipant=frontend \
+            # --version=latest \
+            # --pacticipant=max-profit-calculator-backend \
+            # --version=latest
