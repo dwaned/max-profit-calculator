@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @Provider("max-profit-calculator-backend")
 @Consumer("frontend")
 @PactBroker(
-    url = "${PACT_BROKER_URL:}",
-    authentication = @PactBrokerAuth(token = "${PACT_BROKER_TOKEN:}"),
+    url = "${pactbrokerurl:}",
+    authentication = @PactBrokerAuth(token = "${pactbrokertoken:}"),
     tags = {"latest"}
 )
 public class PactBrokerVerificationTest {
