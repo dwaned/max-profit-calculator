@@ -28,6 +28,7 @@ public class PactBrokerVerificationTest {
     @BeforeEach
     void setup(PactVerificationContext context) {
         String brokerUrl = System.getenv("PACT_BROKER_URL");
+        String brokerToken = System.getenv("PACT_BROKER_TOKEN");
         
         assumeTrue(brokerUrl != null && !brokerUrl.isEmpty() 
             && brokerToken != null && !brokerToken.isEmpty(),
