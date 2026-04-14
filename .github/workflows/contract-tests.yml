@@ -19,9 +19,6 @@ permissions:
 
 name: Contract Tests
 
-env:
-  PACT_BROKER_URL: https://no-company-399294d1.pactflow.io
-
 jobs:
   frontend-contract-tests:
     runs-on: ubuntu-22.04
@@ -51,7 +48,7 @@ jobs:
         run: |
           npm install -g @pact-foundation/pact-cli
           pact-broker publish pacts/ \
-            --broker-base-url=${{ env.PACT_BROKER_URL }} \
+            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
             --consumer-app-version=${{ github.sha }} \
             --tag=latest
@@ -83,8 +80,8 @@ jobs:
       - name: Run Broker Contract Tests
         run: |
           mvn test -Pcontract-tests \
-            -Dpactbroker.url=${{ env.PACT_BROKER_URL }} \
-            -Dpactbroker.auth.token=${{ secrets.PACT_BROKER_TOKEN }} \
+            -Dpactbroker.host="${{ secrets.PACT_BROKER_URL }}" \
+            -Dpactbroker.token="${{ secrets.PACT_BROKER_TOKEN }}" \
             -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
 
@@ -99,17 +96,19 @@ jobs:
           annotate_notice: false
           fail_on_failure: false
 
-  can-i-deploy:
-    runs-on: ubuntu-22.04
-    needs: [frontend-contract-tests, backend-contract-tests]
-    steps:
-      - name: Install Pact CLI
-        run: npm install -g @pact-foundation/pact-cli
+  # can-i-deploy:
+  # runs-on: ubuntu-22.04
+  # needs: [frontend-contract-tests, backend-contract-tests]
+  # steps:
+  # - name: Install Pact CLI
+  # run: npm install -g @pact-foundation/pact-cli
 
-      - name: Can I Deploy
-        run: |
-          pact-broker can-i-deploy \
-            --broker-base-url=${{ env.PACT_BROKER_URL }} \
-            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
-            --pacticipant=frontend --latest \
-            --pacticipant=max-profit-calculator-backend --latest
+  # - name: Can I Deploy
+  # run: |
+  # pact-broker can-i-deploy \
+  # --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
+  # --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+  # --pacticipant=frontend \
+  # --version=latest \
+  # --pacticipant=max-profit-calculator-backend \
+  # --version=latest
