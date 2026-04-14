@@ -110,7 +110,7 @@ jobs:
           pact broker can-i-deploy \
             --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
             --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
-            --pacticipant=frontend \
+            --pacticipant frontend \
             --latest \
-            --pacticipant=max-profit-calculator-backend \
+            --pacticipant max-profit-calculator-backend \
             --latest
