@@ -19,17 +19,17 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @Provider("max-profit-calculator-backend")
 @Consumer("frontend")
 @PactBroker(
-    url = "${pactbroker.url:}",
-    authentication = @PactBrokerAuth(token = "${pactbroker.auth.token:}"),
+    url = "${pactbrokerurl:}",
+    authentication = @PactBrokerAuth(token = "${pactbrokertoken:}"),
     tags = {"latest"}
 )
 public class PactBrokerVerificationTest {
 
     @BeforeEach
     void setup(PactVerificationContext context) {
-        String brokerUrl = Optional.ofNullable(System.getProperty("pactbroker.url"))
+        String brokerUrl = Optional.ofNullable(System.getProperty("pactbrokerurl"))
             .orElse(System.getenv("PACT_BROKER_URL"));
-        String brokerToken = Optional.ofNullable(System.getProperty("pactbroker.auth.token"))
+        String brokerToken = Optional.ofNullable(System.getProperty("pactbrokertoken"))
             .orElse(System.getenv("PACT_BROKER_TOKEN"));
         
         assumeTrue(brokerUrl != null && !brokerUrl.isEmpty() 

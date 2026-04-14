@@ -285,8 +285,8 @@
                                 <exclude>**/PerformanceTests.java</exclude>
                             </excludes>
                             <systemPropertyVariables>
-                                <pactbroker.url>${pact.broker.url:}</pactbroker.url>
-                                <pactbroker.auth.token>${pact.broker.token:}</pactbroker.auth.token>
+                                <pactbrokerurl>${pactbrokerurl:}</pactbrokerurl>
+                                <pactbrokertoken>${pactbrokertoken:}</pactbrokertoken>
                                 <pact.provider.version>${pact.provider.version:}</pact.provider.version>
                                 <pact.verifier.publishResults>${pact.verifier.publishResults:false}</pact.verifier.publishResults>
                                 <pact.pactbroker.httpclient.usePreemptiveAuthentication>true</pact.pactbroker.httpclient.usePreemptiveAuthentication>
@@ -307,8 +307,8 @@
                                 </serviceProvider>
                             </serviceProviders>
                             <failIfNoPactsFound>false</failIfNoPactsFound>
-                            <pactBrokerUrl>${pactbroker.url:}</pactBrokerUrl>
-                            <pactBrokerToken>${pactbroker.auth.token:}</pactBrokerToken>
+                            <pactBrokerUrl>${pactbrokerurl:}</pactBrokerUrl>
+                            <pactBrokerToken>${pactbrokertoken:}</pactBrokerToken>
                             <publishResults>${pact.verifier.publishResults:false}</publishResults>
                             <providerVersion>${pact.provider.version:}</providerVersion>
                         </configuration>
