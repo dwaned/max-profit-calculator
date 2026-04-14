@@ -86,7 +86,8 @@ jobs:
             -Dpact.broker.url=${{ env.PACT_BROKER_URL }} \
             -Dpact.broker.token=${{ secrets.PACT_BROKER_TOKEN }} \
             -Dpact.provider.version=${{ github.sha }} \
-            -Dpact.verifier.publishResults=true
+            -Dpact.verifier.publishResults=true \
+            -Dpactbroker.url=${{ env.PACT_BROKER_URL }}
 
       - name: Report Contract Test Results
         uses: mikepenz/action-junit-report@v3
