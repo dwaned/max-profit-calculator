@@ -1,5 +1,5 @@
 # Contract Tests Workflow
-# Runs Pact contract tests - can-i-deploy runs separately on deployment
+# Runs Pact contract tests using self-hosted Pact Broker on Mac Mini
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,8 +21,13 @@ name: Contract Tests
 
 jobs:
   frontend-contract-tests:
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, osx, arm64, pact-broker]
     steps:
+      - name: Start Pact Broker
+        run: |
+          cd ~/pact-broker-docker && docker compose up -d
+          sleep 10
+
       - name: Checkout Repository
         uses: actions/checkout@v6.0.1
 
@@ -48,15 +53,19 @@ jobs:
         run: |
           npm install -g @pact-foundation/pact-cli
           pact-broker publish pacts/ \
-            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
-            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            --broker-base-url=http://localhost:8080 \
             --consumer-app-version=${{ github.sha }} \
             --tag=latest
 
   backend-contract-tests:
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, osx, arm64, pact-broker]
     needs: frontend-contract-tests
     steps:
+      - name: Start Pact Broker
+        run: |
+          cd ~/pact-broker-docker && docker compose up -d
+          sleep 10
+
       - name: Checkout Repository
         uses: actions/checkout@v6.0.1
 
@@ -80,8 +89,7 @@ jobs:
       - name: Run Broker Contract Tests
         run: |
           mvn test -Pcontract-tests \
-            -Dpactbroker.host="${{ secrets.PACT_BROKER_URL }}" \
-            -Dpactbroker.token="${{ secrets.PACT_BROKER_TOKEN }}" \
+            -Dpactbroker.host=http://localhost:8080 \
             -Dpact.provider.version=${{ github.sha }} \
             -Dpact.verifier.publishResults=true
 
@@ -97,9 +105,14 @@ jobs:
           fail_on_failure: false
 
   can-i-deploy:
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, osx, arm64, pact-broker]
     needs: [frontend-contract-tests, backend-contract-tests]
     steps:
+      - name: Start Pact Broker
+        run: |
+          cd ~/pact-broker-docker && docker compose up -d
+          sleep 10
+
       - name: Install Pact CLI
         run: npm install -g @pact-foundation/pact-cli
 
@@ -108,8 +121,7 @@ jobs:
       - name: Can I Deploy (Compatibility Check)
         run: |
           pact broker can-i-deploy \
-            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
-            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            --broker-base-url=http://localhost:8080 \
             --pacticipant frontend \
             --latest \
             --pacticipant max-profit-calculator-backend \
