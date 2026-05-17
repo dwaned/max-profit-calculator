@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Start Pact Broker
         run: |
-          cd ~/pact-broker-docker && docker compose up -d
+          cd ~/pact-broker-docker && docker-compose up -d
           sleep 10
 
       - name: Checkout Repository
@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: Start Pact Broker
         run: |
-          cd ~/pact-broker-docker && docker compose up -d
+          cd ~/pact-broker-docker && docker-compose up -d
           sleep 10
 
       - name: Checkout Repository
@@ -110,7 +110,7 @@ jobs:
     steps:
       - name: Start Pact Broker
         run: |
-          cd ~/pact-broker-docker && docker compose up -d
+          cd ~/pact-broker-docker && docker-compose up -d
           sleep 10
 
       - name: Install Pact CLI
