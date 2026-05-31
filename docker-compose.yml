@@ -13,22 +13,17 @@ services:
       timeout: 10s
       retries: 5
   site:
-    # image: calculator-site:latest
     build:
-      context: site/LiveTerm
+      context: site/frontend
       dockerfile: Dockerfile
-      target: base
     expose:
-      - 3000
+      - 80
     ports:
-      - "3000:3000"
-    volumes:
-      - ./site/LiveTerm/src/:/home/node/app/src
-    command: npm run dev
+      - "3000:80"
     depends_on:
       - app
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:3000"]
+      test: ["CMD", "curl", "--fail", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 5
