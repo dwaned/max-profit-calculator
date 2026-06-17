@@ -3,7 +3,7 @@ import { testLayers, layerOrder, bddInfo, propertyBasedInfo } from '../../data/t
 
 function TestPyramid({ onLayerSelect, selectedLayer }) {
   return (
-    <div className="relative w-full max-w-lg mx-auto">
+    <div className="relative w-full max-w-lg mx-auto px-4 sm:px-12">
       <div className="flex">
         <div className="flex flex-col justify-between py-2 pr-4 text-xs text-slate-500" style={{ height: '280px' }}>
           <span className="text-right">Few<br />Slow<br />Expensive</span>
@@ -64,9 +64,11 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
                   </div>
                 )}
 
-                {/* Property-Based badge on the left */}
+                {/* Property-Based badge on the left — kept inside the padded
+                    container so the pill can never overflow the viewport edge
+                    (#11). The outer wrapper has px-4 sm:px-12 for that room. */}
                 {hasPropertyBased && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full pl-2 flex items-center">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center">
                     <motion.span
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -75,8 +77,8 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
                     >
                       {propertyBasedInfo.name}
                     </motion.span>
-                    <svg 
-                      className="w-8 h-8 text-cyan-400" 
+                    <svg
+                      className="w-8 h-8 text-cyan-400"
                       viewBox="0 0 40 40"
                     >
                       <defs>
@@ -88,9 +90,9 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
                           refY="3"
                           orient="auto"
                         >
-                          <polygon 
-                            points="6 0, 0 3, 6 6" 
-                            fill="#06b6d4" 
+                          <polygon
+                            points="6 0, 0 3, 6 6"
+                            fill="#06b6d4"
                           />
                         </marker>
                       </defs>

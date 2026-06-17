@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import CalculatorForm from './components/CalculatorForm';
 import ResultsCard from './components/ResultsCard';
@@ -8,11 +8,23 @@ import TestingStrategies from './pages/TestingStrategies';
 import TestingTechniquesPage from './pages/TestingTechniquesPage';
 import HomePage from './pages/HomePage';
 import ReportsPage from './pages/ReportsPage';
+import { usePageTitle } from './hooks/usePageTitle';
+
+// Default to 25s — Render's free tier cold start usually completes in 30-60s
+// but the user's request is much more likely to succeed after the first warm-up.
+const API_REQUEST_TIMEOUT_MS = 25_000;
+
+// VITE_API_URL is set at build time via render.yaml env vars / .env files.
+// When unset we fall back to the known deployed backend URL so the footer is
+// always accurate (#6 — was previously hard-coded as a misleading "/api").
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) ||
+  'https://max-profit-calculator.onrender.com/api';
 
 function Navigation() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+
   const links = [
     { path: '/', label: 'Home' },
     { path: '/calculator', label: 'Calculator' },
@@ -20,9 +32,9 @@ function Navigation() {
     { path: '/testing-pyramid', label: 'Testing Pyramid' },
     { path: '/reports', label: 'Reports' },
   ];
-  
+
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
-  
+
   return (
     <>
       <nav className="sticky top-0 z-50 bg-slate-800 border-b border-slate-700">
@@ -47,7 +59,7 @@ function Navigation() {
                 ))}
               </div>
             </div>
-            
+
             <button
               className="md:hidden p-2 text-slate-400 hover:text-white"
               onClick={() => setIsMobileMenuOpen(true)}
@@ -60,11 +72,11 @@ function Navigation() {
           </div>
         </div>
       </nav>
-      
+
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50">
-          <div 
-            className="absolute inset-0 bg-black/50" 
+          <div
+            className="absolute inset-0 bg-black/50"
             onClick={closeMobileMenu}
           />
           <div className="absolute right-0 top-0 h-full w-64 bg-slate-800 shadow-xl flex flex-col">
@@ -105,27 +117,44 @@ function Navigation() {
 }
 
 function CalculatorPage() {
+  usePageTitle('Calculator');
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [errorTimeout, setErrorTimeout] = useState(false);
+  const [coldStartWarningShown, setColdStartWarningShown] = useState(false);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
+  const abortRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const loadingStartedAtRef = useRef(null);
 
   const calculate = async ({ savings, buyPrices, sellPrices, companyNames }) => {
     setIsLoading(true);
     setError(null);
+    setErrorTimeout(false);
+    loadingStartedAtRef.current = Date.now();
+
+    // Cold-start hint: if we've been "Calculating..." for >5s on the very
+    // first request, surface a banner explaining the wait (#7).
+    const coldTimer = setTimeout(() => {
+      setColdStartWarningShown(true);
+    }, 5_000);
+
+    // Hard request timeout so the UI never hangs silently (#7).
+    const controller = new AbortController();
+    abortRef.current = controller;
+    timeoutRef.current = setTimeout(() => {
+      controller.abort();
+      setErrorTimeout(true);
+    }, API_REQUEST_TIMEOUT_MS);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://max-profit-calculator.onrender.com/api';
-      const response = await fetch(`${apiUrl}/calculate`, {
+      const response = await fetch(`${API_BASE_URL}/calculate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          savings,
-          buyPrices,
-          sellPrices,
-          companyNames,
-        }),
+        body: JSON.stringify({ savings, buyPrices, sellPrices, companyNames }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -149,18 +178,36 @@ function CalculatorPage() {
 
       const data = await response.json();
       setResult(data);
+      setColdStartWarningShown(false);
 
       setHistory((prev) => [
         { request: { savings, buyPrices, sellPrices, companyNames }, result: data },
         ...prev.slice(0, 9),
       ]);
     } catch (err) {
-      setError(err.message || 'An unexpected error occurred. Please try again.');
-      setResult(null);
+      if (err.name === 'AbortError') {
+        if (errorTimeout) {
+          setError('The API took too long to respond. The backend may be waking up on the free tier — please try again in a moment.');
+        }
+        // Otherwise the abort was triggered by an unmount/newer request — silent.
+      } else {
+        setError(err.message || 'An unexpected error occurred. Please try again.');
+        setResult(null);
+      }
     } finally {
+      clearTimeout(coldTimer);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      abortRef.current = null;
       setIsLoading(false);
     }
   };
+
+  // Cancel any in-flight request when the component unmounts.
+  useEffect(() => () => {
+    if (abortRef.current) abortRef.current.abort();
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  }, []);
 
   const handleSampleSelect = (sample) => {
     setError(null);
@@ -201,12 +248,27 @@ function CalculatorPage() {
               <CalculatorForm onCalculate={calculate} isLoading={isLoading} />
             </div>
 
+            {coldStartWarningShown && isLoading && (
+              <div
+                role="status"
+                className="mt-4 p-4 rounded-lg bg-amber-900/50 border border-amber-700 text-amber-300"
+              >
+                <strong className="block font-semibold mb-1">Backend is waking up</strong>
+                <span>
+                  The free-tier backend may take 30–60 seconds on its first request. Hang tight…
+                </span>
+              </div>
+            )}
+
             {error && (
-              <div className={`mt-4 p-4 rounded-lg ${
-                error.includes('not running') 
-                  ? 'bg-amber-900/50 border border-amber-700 text-amber-300'
-                  : 'bg-red-900/50 border border-red-700 text-red-300'
-              }`}>
+              <div
+                role="alert"
+                className={`mt-4 p-4 rounded-lg ${
+                  error.includes('not running') || error.includes('waking up') || error.includes('too long')
+                    ? 'bg-amber-900/50 border border-amber-700 text-amber-300'
+                    : 'bg-red-900/50 border border-red-700 text-red-300'
+                }`}
+              >
                 {error}
               </div>
             )}
@@ -222,7 +284,7 @@ function CalculatorPage() {
               <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 max-w-md w-full" onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold text-white">History Details</h3>
-                  <button onClick={closeHistoryDetail} className="text-slate-400 hover:text-white">&times;</button>
+                  <button onClick={closeHistoryDetail} aria-label="Close history details" className="text-slate-400 hover:text-white">&times;</button>
                 </div>
                 <div className="mb-4">
                   <div className="text-sm text-slate-400 mb-1">Input</div>
@@ -241,7 +303,7 @@ function CalculatorPage() {
 
       <footer className="mt-8 md:mt-12 text-center text-slate-500 text-sm">
         <p className="text-xs md:text-sm">
-          API running at <code className="bg-slate-800 px-2 py-1 rounded text-xs">/api</code>
+          API: <code className="bg-slate-800 px-2 py-1 rounded text-xs break-all">{API_BASE_URL}</code>
         </p>
       </footer>
     </div>

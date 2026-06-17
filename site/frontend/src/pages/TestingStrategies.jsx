@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import TestPyramid from '../components/TestPyramid/TestPyramid';
 import LayerDetail from '../components/TestPyramid/LayerDetail';
 import { testLayers } from '../data/testLayers';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function TestingStrategies() {
+  usePageTitle('Testing Pyramid');
   const [selectedLayer, setSelectedLayer] = useState('unit');
 
   const handleLayerSelect = (layerId) => {
