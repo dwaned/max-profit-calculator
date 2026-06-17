@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+// HashRouter instead of BrowserRouter so deep links work without any
+// server-side SPA rewrite. The deployed frontend is a Render static site
+// without a configured rewrite rule, so BrowserRouter would 404 on direct
+// navigation to /calculator, /reports, etc. HashRouter keeps the server
+// path at "/" (which always 200s) and stores the route in the URL hash.
+import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import CalculatorForm from './components/CalculatorForm';
 import ResultsCard from './components/ResultsCard';
 import SampleButtons from './components/SampleButtons';
@@ -312,7 +317,7 @@ function CalculatorPage() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="min-h-screen bg-slate-900 text-slate-200">
         <Navigation />
         <Routes>
@@ -323,7 +328,7 @@ function App() {
           <Route path="/reports" element={<ReportsPage />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
