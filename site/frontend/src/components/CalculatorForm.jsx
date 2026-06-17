@@ -61,6 +61,15 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
     onCalculate({ savings, buyPrices, sellPrices, companyNames });
   };
 
+  const handleSavingsChange = (value) => {
+    setSavings(value);
+    // Clear the validation error when savings is corrected into range,
+    // so the banner doesn't keep shouting after the user fixes the input.
+    if (value >= SAVINGS_MIN && value <= SAVINGS_MAX) {
+      setValidationError(null);
+    }
+  };
+
   const updatePrice = (index, type, value) => {
     const parsed = value === '' ? '' : parseInt(value, 10);
     if (type === 'buy') {
@@ -71,6 +80,12 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
       const next = [...sellPrices];
       next[index] = Number.isNaN(parsed) ? '' : parsed;
       setSellPrices(next);
+    }
+    // Same correction-clears-error behavior as savings: if the resulting
+    // price is in range, drop any stale validation banner.
+    const numeric = Number(parsed);
+    if (!Number.isNaN(numeric) && numeric >= PRICE_MIN && numeric <= PRICE_MAX) {
+      setValidationError(null);
     }
   };
 
@@ -121,7 +136,7 @@ export default function CalculatorForm({ onCalculate, isLoading }) {
           min={SAVINGS_MIN}
           max={SAVINGS_MAX}
           value={savings}
-          onChange={(e) => setSavings(parseInt(e.target.value, 10) || 0)}
+          onChange={(e) => handleSavingsChange(parseInt(e.target.value, 10) || 0)}
           aria-invalid={savings < SAVINGS_MIN || savings > SAVINGS_MAX}
           aria-describedby={validationError ? 'savings-error' : undefined}
           className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
