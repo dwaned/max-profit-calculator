@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { useReportsAvailable } from '../utils/reports';
 
 function ReportsPage() {
+  usePageTitle('Reports');
   const [selectedReport, setSelectedReport] = useState('unit');
+  const { available, checking } = useReportsAvailable();
 
   const reportCategories = [
     {
@@ -134,7 +138,6 @@ function ReportsPage() {
   ];
 
   const activeCategory = reportCategories.find(cat => cat.id === selectedReport) || reportCategories[0];
-  const activeReport = activeCategory.reports[0];
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
@@ -186,7 +189,8 @@ function ReportsPage() {
                 mvn site
               </code>
               <p className="text-xs text-slate-400 mt-2">
-                Then copy to: <code className="text-cyan-400">site/frontend/public/reports/</code>
+                Then copy to <code className="text-cyan-400">site/frontend/public/reports/</code> before
+                rebuilding the frontend.
               </p>
             </div>
           </motion.div>
@@ -206,69 +210,46 @@ function ReportsPage() {
                   </div>
                 </div>
               </div>
-              
-              <div className="p-4 border-b border-slate-700">
+
+              <div className="p-4">
                 <h4 className="text-sm font-medium text-white mb-3">Available Reports</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {activeCategory.reports.map(report => (
-                    <a
-                      key={report.id}
-                      href={report.file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
-                    >
-                      <span className="text-cyan-400">📄</span>
-                      <div>
-                        <div className="text-sm font-medium text-white">{report.name}</div>
-                        <div className="text-xs text-slate-500">{report.description}</div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="md:col-span-3"
-          >
-            <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-white">
-                  {activeCategory.name} Reports
-                </h3>
-              </div>
-              
-              <p className="text-slate-400 mb-4">
-                Click on a report below to view it in a new tab.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {activeCategory.reports.map(report => (
-                  <a
-                    key={report.id}
-                    href={report.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-4 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
+                {checking ? (
+                  <p className="text-sm text-slate-400">Checking report availability…</p>
+                ) : available === false ? (
+                  <div
+                    role="status"
+                    className="p-4 bg-slate-900 rounded-lg border border-slate-700 text-sm text-slate-400"
                   >
-                    <span className="text-2xl">📄</span>
-                    <div>
-                      <div className="font-medium text-white">{report.name}</div>
-                      <div className="text-xs text-slate-400">{report.description}</div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-
-              <div className="mt-6 p-4 bg-slate-900 rounded-lg">
-                <p className="text-sm text-slate-400">
-                  <strong className="text-white">Note:</strong> Reports are static HTML files served from the public folder. 
-                  If reports don't appear, run text-cyan-<code className="400">mvn site</code> and copy to <code className="text-cyan-400">public/reports/</code>
-                </p>
+                    <p className="text-amber-300 font-semibold mb-2">
+                      Reports are not available in this deployment.
+                    </p>
+                    <p>
+                      They are generated locally by running{' '}
+                      <code className="text-cyan-400">mvn site</code> and copying the output to{' '}
+                      <code className="text-cyan-400">site/frontend/public/reports/</code> before
+                      rebuilding the frontend. The deployed static site on Render free tier
+                      doesn&apos;t include them.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {activeCategory.reports.map(report => (
+                      <a
+                        key={report.id}
+                        href={`/reports/${report.file}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        <span className="text-cyan-400">📄</span>
+                        <div>
+                          <div className="text-sm font-medium text-white">{report.name}</div>
+                          <div className="text-xs text-slate-500">{report.description}</div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

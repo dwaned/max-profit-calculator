@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function HomePage() {
+  usePageTitle(null);
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
       <div className="max-w-4xl mx-auto px-4 py-6 md:py-12">
@@ -28,7 +31,7 @@ function HomePage() {
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4">The Challenge</h2>
             <p className="text-slate-300 text-sm md:text-base mb-4">
               Given 2 arrays containing the current price and the forecasted future price of a set of stocks,
-              when a value of savings is entered, the system should output which combination of indices from the 
+              when a value of savings is entered, the system should output which combination of indices from the
               first array to choose so that with the available savings amount, the maximum profit is returned.
             </p>
           </section>

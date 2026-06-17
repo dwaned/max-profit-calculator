@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { testingTechniques } from '../data/testLayers';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function TestingTechniquesPage() {
+  usePageTitle('Testing Techniques');
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
