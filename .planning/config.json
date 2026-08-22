@@ -41,6 +41,7 @@
   "project": {
     "name": "max-profit-calculator",
     "type": "brownfield",
+    "project_mode": "mvp",
     "codebase_mapped": true,
     "codebase_map_path": ".planning/codebase/",
     "tooling": {
