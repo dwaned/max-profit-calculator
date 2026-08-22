@@ -7,11 +7,11 @@
 
 Three phases, sequenced one-per-thread as decided in questioning. Each phase ships an end-to-end capability: CI green → polynomial algorithm → DoS protection.
 
-| # | Phase | Goal | Requirements | Success Criteria |
-|---|-------|------|--------------|-------------------|
-| 1 | BugFixes | Restore CI green and tighten the API contract | BUG-01 → BUG-09, DRIFT-01 | 4 |
-| 2 | Algorithm | Replace brute-force engine with polynomial DP, preserve tie-break semantics | ALGO-01 → ALGO-05 | 4 |
-| 3 | SecurityHardening | Rate-limit `/api/calculate` with Bucket4j; close anonymous-DoS vector | SEC-01 → SEC-06 | 4 |
+| # | Phase             | Goal                                                                        | Requirements              | Success Criteria |
+|---|-------------------|-----------------------------------------------------------------------------|---------------------------|------------------|
+| 1 | BugFixes          | Restore CI green and tighten the API contract                               | BUG-01 → BUG-09, DRIFT-01 | 4                |
+| 2 | Algorithm         | Replace brute-force engine with polynomial DP, preserve tie-break semantics | ALGO-01 → ALGO-05         | 4                |
+| 3 | SecurityHardening | Rate-limit `/api/calculate` with Bucket4j; close anonymous-DoS vector       | SEC-01 → SEC-06           | 4                |
 
 **Coverage:** 21/21 v1 requirements mapped · 0 unmapped ✓
 

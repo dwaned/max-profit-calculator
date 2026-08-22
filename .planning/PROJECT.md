@@ -106,13 +106,13 @@ The single trade-off that must always work: given valid input, `Stock.returnIndi
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Algorithm approach: DP / knapsack (1-D over `savings`) | O(n · savings) is provably polynomial; standard interview answer; cleaner code than branch-and-bound; preserves tie-break semantics via reconstruction; enables the tightened performance thresholds in ALGO-05 | — Pending |
-| Hardening scope: rate-limit only (Bucket4j), no auth | Closes the documented DoS vector (CONCERNS.md:129-134) with minimum surface; no frontend changes needed; no key-issuance story to invent | — Pending |
-| JSON drift prevention: Pact broker verification on every PR | The producer-pact mismatch identified in CONCERNS.md:82-89 is exactly what `PactBrokerVerificationTest` is designed to catch; the workflow already exists (`.github/workflows/contract-tests.yml`); minimal new code | — Pending |
-| Sequencing: one phase per thread (bug fixes → algorithm → security) | Each phase has a clean verifier-checkable boundary; bug fixes unblock the broken tests so subsequent phases have a green baseline | — Pending |
-| Tighten performance thresholds in ALGO-05 only, no broader perf work | Demonstrates the project's "performance testing" theme; doesn't expand scope into benchmarking infrastructure | — Pending |
+| Decision                                                             | Rationale                                                                                                                                                                                                            | Outcome   |
+|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| Algorithm approach: DP / knapsack (1-D over `savings`)               | O(n · savings) is provably polynomial; standard interview answer; cleaner code than branch-and-bound; preserves tie-break semantics via reconstruction; enables the tightened performance thresholds in ALGO-05      | — Pending |
+| Hardening scope: rate-limit only (Bucket4j), no auth                 | Closes the documented DoS vector (CONCERNS.md:129-134) with minimum surface; no frontend changes needed; no key-issuance story to invent                                                                             | — Pending |
+| JSON drift prevention: Pact broker verification on every PR          | The producer-pact mismatch identified in CONCERNS.md:82-89 is exactly what `PactBrokerVerificationTest` is designed to catch; the workflow already exists (`.github/workflows/contract-tests.yml`); minimal new code | — Pending |
+| Sequencing: one phase per thread (bug fixes → algorithm → security)  | Each phase has a clean verifier-checkable boundary; bug fixes unblock the broken tests so subsequent phases have a green baseline                                                                                    | — Pending |
+| Tighten performance thresholds in ALGO-05 only, no broader perf work | Demonstrates the project's "performance testing" theme; doesn't expand scope into benchmarking infrastructure                                                                                                        | — Pending |
 
 ## Evolution
 

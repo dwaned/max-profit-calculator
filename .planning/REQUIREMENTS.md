@@ -86,47 +86,47 @@ Deferred to future release. Tracked but not in current roadmap.
 
 Explicitly excluded. Documented to prevent scope creep.
 
-| Feature | Reason |
-|---------|--------|
+| Feature                                            | Reason                                                                                                                |
+|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | API key / OAuth / IP allowlist on `/api/calculate` | Rate-limiting is sufficient for v1; auth adds key issuance + frontend integration that is out of scope this milestone |
-| CORS centralization | Already working correctly; cleanup deferred to a hardening pass |
-| Dockerfile JDK 17 pinning | Current JDK 25 builder produces correct Java 17 bytecode; pinning is a cleanup, not a correctness issue |
-| `CompanyNameGenerator` cache removal | Slow heap leak but irrelevant on Render free-tier dynos that recycle frequently |
-| Checkstyle Javadoc enforcement | Improves docs but churn-heavy |
-| Pact file deduplication | Drift risk is mitigated by DRIFT-01 (broker verification on every PR) |
-| Mobile app | Web-first, mobile never on the v1 menu for this project |
-| Real-time updates / WebSocket | Not in product scope |
-| New testing strategy (chaos, fuzz, k6) | Existing strategy stack already covers the project's stated goal; new strategy is a separate decision |
-| Tightening performance thresholds beyond ALGO-05 | The DP-driven tightening is the only perf-test change in scope |
-| Spring Boot minor version bump | Current 3.3.11 / 3.5.13 works; bumping is a separate maintenance task |
+| CORS centralization                                | Already working correctly; cleanup deferred to a hardening pass                                                       |
+| Dockerfile JDK 17 pinning                          | Current JDK 25 builder produces correct Java 17 bytecode; pinning is a cleanup, not a correctness issue               |
+| `CompanyNameGenerator` cache removal               | Slow heap leak but irrelevant on Render free-tier dynos that recycle frequently                                       |
+| Checkstyle Javadoc enforcement                     | Improves docs but churn-heavy                                                                                         |
+| Pact file deduplication                            | Drift risk is mitigated by DRIFT-01 (broker verification on every PR)                                                 |
+| Mobile app                                         | Web-first, mobile never on the v1 menu for this project                                                               |
+| Real-time updates / WebSocket                      | Not in product scope                                                                                                  |
+| New testing strategy (chaos, fuzz, k6)             | Existing strategy stack already covers the project's stated goal; new strategy is a separate decision                 |
+| Tightening performance thresholds beyond ALGO-05   | The DP-driven tightening is the only perf-test change in scope                                                        |
+| Spring Boot minor version bump                     | Current 3.3.11 / 3.5.13 works; bumping is a separate maintenance task                                                 |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| BUG-01 | Phase 1 | Complete |
-| BUG-02 | Phase 1 | Complete |
-| BUG-03 | Phase 1 | Complete |
-| BUG-04 | Phase 1 | Complete |
-| BUG-05 | Phase 1 | Complete |
-| BUG-06 | Phase 1 | Complete |
-| BUG-07 | Phase 1 | Complete |
-| BUG-08 | Phase 1 | Complete |
-| BUG-09 | Phase 1 | Complete |
-| DRIFT-01 | Phase 1 | Complete |
-| ALGO-01 | Phase 2 | Complete |
-| ALGO-02 | Phase 2 | Complete |
-| ALGO-03 | Phase 2 | Complete |
-| ALGO-04 | Phase 2 | Complete |
-| ALGO-05 | Phase 2 | Complete |
-| SEC-01 | Phase 3 | Pending |
-| SEC-02 | Phase 3 | Pending |
-| SEC-03 | Phase 3 | Pending |
-| SEC-04 | Phase 3 | Pending |
-| SEC-05 | Phase 3 | Pending |
-| SEC-06 | Phase 3 | Pending |
+| Requirement | Phase   | Status   |
+|-------------|---------|----------|
+| BUG-01      | Phase 1 | Complete |
+| BUG-02      | Phase 1 | Complete |
+| BUG-03      | Phase 1 | Complete |
+| BUG-04      | Phase 1 | Complete |
+| BUG-05      | Phase 1 | Complete |
+| BUG-06      | Phase 1 | Complete |
+| BUG-07      | Phase 1 | Complete |
+| BUG-08      | Phase 1 | Complete |
+| BUG-09      | Phase 1 | Complete |
+| DRIFT-01    | Phase 1 | Complete |
+| ALGO-01     | Phase 2 | Complete |
+| ALGO-02     | Phase 2 | Complete |
+| ALGO-03     | Phase 2 | Complete |
+| ALGO-04     | Phase 2 | Complete |
+| ALGO-05     | Phase 2 | Complete |
+| SEC-01      | Phase 3 | Pending  |
+| SEC-02      | Phase 3 | Pending  |
+| SEC-03      | Phase 3 | Pending  |
+| SEC-04      | Phase 3 | Pending  |
+| SEC-05      | Phase 3 | Pending  |
+| SEC-06      | Phase 3 | Pending  |
 
 **Coverage:**
 - v1 requirements: 21 total
