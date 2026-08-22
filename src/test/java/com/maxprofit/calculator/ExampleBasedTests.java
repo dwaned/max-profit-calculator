@@ -88,7 +88,7 @@ class ExampleBasedTests {
     }
 
     @Test
-    void shouldReturnEmtyListAndZeroProfitIfOnlyLossCanBeMade() {
+    void shouldReturnEmptyListAndZeroProfitIfOnlyLossCanBeMade() {
         CalculationResult result = Stock.returnIndicesMaxProfit(5,
                 Arrays.asList(5, 2, 3),
                 Arrays.asList(1, 0, 2));
@@ -108,7 +108,7 @@ class ExampleBasedTests {
     }
 
     @Test
-    void shouldChoseCheapestCombination() {
+    void shouldChooseCheapestCombination() {
         CalculationResult result = Stock.returnIndicesMaxProfit(7,
                 Arrays.asList(1, 2, 5),
                 Arrays.asList(2, 3, 20));
