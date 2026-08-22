@@ -59,7 +59,7 @@ public class CalculationResult {
             final List<Integer> combination,
             final int savingsUsed,
             final int remainingSavings) {
-        this(profit, combination, savingsUsed, remainingSavings, null);
+        this(profit, combination, savingsUsed, remainingSavings, Collections.emptyList());
     }
 
     public CalculationResult() {
@@ -67,6 +67,6 @@ public class CalculationResult {
         this.indices = Collections.emptyList();
         this.savingsUsed = 0;
         this.remainingSavings = 0;
-        this.companyNames = null;
+        this.companyNames = Collections.emptyList();
     }
 }
