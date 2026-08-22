@@ -13,6 +13,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -64,6 +67,37 @@ class CalculatorControllerHttpStatusTest {
                     .content(jsonRequest))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        }
+
+        @Test
+        @DisplayName("Returns 400 when buyPrices exceeds maximum size of 100")
+        void postBuyPricesExceedsMaxSize() throws Exception {
+            CalculationRequest request = new CalculationRequest();
+            request.setSavings(10);
+            List<Integer> oversized = IntStream.rangeClosed(1, 101).boxed().collect(Collectors.toList());
+            request.setBuyPrices(oversized);
+            request.setSellPrices(oversized);
+            String jsonRequest = objectMapper.writeValueAsString(request);
+            mockMvc.perform(post("/calculate")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonRequest))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("Returns 400 when sellPrices exceeds maximum size of 100")
+        void postSellPricesExceedsMaxSize() throws Exception {
+            CalculationRequest request = new CalculationRequest();
+            request.setSavings(10);
+            List<Integer> matching = IntStream.rangeClosed(1, 50).boxed().collect(Collectors.toList());
+            List<Integer> oversized = IntStream.rangeClosed(1, 101).boxed().collect(Collectors.toList());
+            request.setBuyPrices(matching);
+            request.setSellPrices(oversized);
+            String jsonRequest = objectMapper.writeValueAsString(request);
+            mockMvc.perform(post("/calculate")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonRequest))
+                    .andExpect(status().isBadRequest());
         }
     }
 }
