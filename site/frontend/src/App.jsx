@@ -14,6 +14,7 @@ import TestingTechniquesPage from './pages/TestingTechniquesPage';
 import HomePage from './pages/HomePage';
 import ReportsPage from './pages/ReportsPage';
 import { usePageTitle } from './hooks/usePageTitle';
+import { shouldShowApiFooter } from './utils/apiFooter';
 
 // Default to 25s — Render's free tier cold start usually completes in 30-60s
 // but the user's request is much more likely to succeed after the first warm-up.
@@ -306,11 +307,15 @@ function CalculatorPage() {
         </div>
       </div>
 
-      <footer className="mt-8 md:mt-12 text-center text-slate-500 text-sm">
-        <p className="text-xs md:text-sm">
-          API: <code className="bg-slate-800 px-2 py-1 rounded text-xs break-all">{API_BASE_URL}</code>
-        </p>
-      </footer>
+      {shouldShowApiFooter(API_BASE_URL, {
+        forceShow: typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SHOW_API_FOOTER === 'true',
+      }) && (
+        <footer className="mt-8 md:mt-12 text-center text-slate-500 text-sm">
+          <p className="text-xs md:text-sm">
+            API: <code className="bg-slate-800 px-2 py-1 rounded text-xs break-all">{API_BASE_URL}</code>
+          </p>
+        </footer>
+      )}
     </div>
   );
 }
