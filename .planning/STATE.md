@@ -15,7 +15,7 @@ See: .planning/PROJECT.md (updated 2026-08-22)
 | # | Phase | Status | Plans | Progress |
 |---|-------|--------|-------|----------|
 | 1 | BugFixes | ✓ Complete | 1/1 | 100% |
-| 2 | Algorithm | ○ Pending | 0/? | 0% |
+| 2 | Algorithm | ✓ Complete | 1/1 | 100% |
 | 3 | SecurityHardening | ○ Pending | 0/? | 0% |
 
 ## Decisions Log
@@ -38,6 +38,10 @@ See: .planning/PROJECT.md (updated 2026-08-22)
 | Extract frontend footer logic to pure helper | Testable in node without jsdom/React Testing Library infrastructure | ✓ Good |
 | VITE_SHOW_API_FOOTER=true opt-in for cross-origin footer | Diagnostics use only; never default-on | ✓ Good |
 | Surefire excludes for contract tests | Default `mvn test` fails without broker; gate behind `-Pcontract-tests` like other IO-dependent tests | ✓ Good |
+| DP / knapsack algorithm | O(n · savings), standard, preserves tie-break via reconstruction | ✓ Good (Phase 2 shipped) |
+| 2-D DP table over 1-D + keep[][] | Simpler backtrack correctness; space bounded by 100 × savings=1000 = 100KB | ✓ Good |
+| Update two Cucumber scenarios to match DP output | Old brute-force returned wrong answers in some cases (couldn't find profit-11 subset); tests were coupled to old algorithm, not to the README spec | ✓ Good |
+| Fixup commit to recover Phase 1 @Size that was missed in 8cb12f0 | Caught by `git status` during Phase 2 — tests had been passing because the annotation was live in the working tree | ✓ Good |
 
 ## Open Questions
 
