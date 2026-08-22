@@ -18,14 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 class ExampleBasedTests {
     @Test
-    void shouldReturnSizeOfAllPossiblePermutationsForGivenStockPriceSize() {
-        Helper helper = new Helper();
-        assertEquals(7, helper.getAllPermutationsForListOfSize(3).size());
-        assertEquals(1, helper.getAllPermutationsForListOfSize(1).size());
-        assertEquals(15, helper.getAllPermutationsForListOfSize(4).size());
-    }
-
-    @Test
     void shouldWorkWithOneIndex() {
         int result = Stock.returnIndicesMaxProfit(1,
                         Collections.singletonList(1),
@@ -116,6 +108,35 @@ class ExampleBasedTests {
         assertEquals(16, result.getMaxProfit());
         assertEquals(Arrays.asList(0, 2), result.getIndices());
 
+    }
+
+    /**
+     * Explicit tie-break test for Phase 2 criterion #5:
+     * two distinct subsets achieving the same max profit, where the
+     * smaller-cost one must win.
+     *
+     * <p>buy  = [2, 3, 4]
+     * <br>sell = [6, 7, 8]
+     * <br>profits = [4, 4, 4]
+     * <br>savings = 6
+     *
+     * <p>Subsets with profit 8:
+     * <ul>
+     *   <li>{@code {0, 1}} → cost 5, profit 8 ← must be chosen (smaller cost)</li>
+     *   <li>{@code {0, 2}} → cost 6, profit 8</li>
+     * </ul>
+     * {@code {1, 2}} (cost 7) and {@code {0, 1, 2}} (cost 9) exceed savings.
+     */
+    @Test
+    void shouldPreferSmallestCostAmongProfitTies() {
+        CalculationResult result = Stock.returnIndicesMaxProfit(6,
+                Arrays.asList(2, 3, 4),
+                Arrays.asList(6, 7, 8));
+
+        assertEquals(8, result.getMaxProfit());
+        assertEquals(5, result.getSavingsUsed());
+        assertEquals(1, result.getRemainingSavings());
+        assertEquals(Arrays.asList(0, 1), result.getIndices());
     }
 
     @Test

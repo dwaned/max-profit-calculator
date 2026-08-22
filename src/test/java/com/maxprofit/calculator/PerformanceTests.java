@@ -16,28 +16,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Performance Tests for the Max Profit Calculator.
- * 
+ *
  * <p>This test class verifies the algorithm's performance characteristics including:
  * <ul>
  *   <li>Algorithm execution time for various input sizes</li>
  *   <li>Memory usage under load</li>
  *   <li>No OutOfMemoryError conditions</li>
  * </ul>
- * 
+ *
  * <p><b>Test Thresholds:</b>
  * <ul>
  *   <li>5 items: &lt; 10ms</li>
  *   <li>10 items: &lt; 100ms</li>
- *   <li>50 items: &lt; 500ms</li>
- *   <li>100 items (boundary): &lt; 10s</li>
+ *   <li>50 items: &lt; 50ms</li>
+ *   <li>100 items (boundary): &lt; 500ms</li>
  *   <li>Memory usage: &lt; 512MB for max input</li>
  * </ul>
- * 
+ *
+ * <p>Thresholds for 50/100 items assume the polynomial DP rewrite in Phase 2
+ * (O(n · savings)). The original brute-force permutation algorithm only
+ * passed the relaxed thresholds (500ms / 10s) because the input size cap of
+ * 100 keeps 2^100 impractical.
+ *
  * <p><b>Running these tests:</b>
  * <pre>
  * mvn test -Dtest=PerformanceTests
  * </pre>
- * 
+ *
  * @see ApiPerformanceTests for API-level performance tests
  */
 @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength", "checkstyle:VisibilityModifier"})
@@ -50,8 +55,8 @@ class PerformanceTests {
 
     private static final long SMALL_THRESHOLD_MS = 10;
     private static final long MEDIUM_THRESHOLD_MS = 100;
-    private static final long LARGE_THRESHOLD_MS = 500;
-    private static final long BOUNDARY_THRESHOLD_MS = 10000;
+    private static final long LARGE_THRESHOLD_MS = 50;
+    private static final long BOUNDARY_THRESHOLD_MS = 500;
 
     private static final int MAX_MEMORY_MB = 512;
 
@@ -111,13 +116,14 @@ class PerformanceTests {
     }
 
     /**
-     * Tests that the algorithm completes in under 500ms for large input (50 items).
-     * 
-     * <p>This is the primary performance requirement - API must respond within 500ms
-     * for 50 stocks. Uses 10 iterations with 1 warmup run.
+     * Tests that the algorithm completes in under 50ms for large input (50 items).
+     *
+     * <p>Polynomial DP (Phase 2) handles 50 items × 1000 savings in microseconds;
+     * the previous brute-force threshold of 500ms only passed because of the
+     * 100-item cap. Uses 10 iterations with 1 warmup run.
      */
     @Test
-    void algorithmShouldCompleteInUnder500msFor50Items() {
+    void algorithmShouldCompleteInUnder50msFor50Items() {
         List<Integer> currentValues = generateRandomPrices(LARGE_SIZE);
         List<Integer> futureValues = generateRandomPrices(LARGE_SIZE);
 
@@ -129,14 +135,16 @@ class PerformanceTests {
     }
 
     /**
-     * Tests that the algorithm completes in under 10 seconds for maximum input (100 items).
-     * 
-     * <p>100 items is the maximum allowed input size (defined by priceListMaxSize in Stock.java).
-     * This is a boundary test to ensure the algorithm doesn't hang or take excessive time.
-     * Only runs once due to the long execution time.
+     * Tests that the algorithm completes in under 500ms for maximum input (100 items).
+     *
+     * <p>100 items is the maximum allowed input size (defined by {@code @Size(max=100)}
+     * on {@code CalculationRequest}). Polynomial DP handles 100 items × 1000 savings
+     * in milliseconds; the previous threshold of 10s only passed because the
+     * brute-force algorithm's worst case wasn't actually exercised. Only runs once
+     * due to the long execution time.
      */
     @Test
-    void algorithmShouldCompleteInUnder10sFor100Items() {
+    void algorithmShouldCompleteInUnder500msFor100Items() {
         List<Integer> currentValues = generateRandomPrices(BOUNDARY_SIZE);
         List<Integer> futureValues = generateRandomPrices(BOUNDARY_SIZE);
 
