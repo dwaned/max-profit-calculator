@@ -30,22 +30,21 @@ The single trade-off that must always work: given valid input, `Stock.returnIndi
 - ✓ SpringDoc OpenAPI 2.3.0 / Swagger UI at `/api/swagger-ui.html` — existing (OpenApiConfig.java, application.properties:7)
 - ✓ SonarQube, OWASP dependency-check, JaCoCo reporting — existing (pom.xml `sonar`/`dependency-check` profiles, JaCoCo reporting-only)
 - ✓ Maven site reports copied to `site/frontend/public/reports/` for the Reports page — existing (`mvn site` workflow in AGENTS.md)
+- ✓ `BUG-01` Integration test JSON keys match API contract (`savings`/`buyPrices`/`sellPrices`) — Phase 1 (ContainerTests.java:43-46)
+- ✓ `BUG-02` API performance test JSON keys match API contract — Phase 1 (ApiPerformanceTests.java:78-82)
+- ✓ `BUG-03` README curl example uses correct JSON keys — Phase 1 (README.md:109)
+- ✓ `BUG-04` `CalculationRequest` enforces `@Size(max=100)` on `buyPrices`/`sellPrices` at the controller boundary; oversized inputs return 400 — Phase 1 (CalculationRequest.java + 2 new controller slice tests)
+- ✓ `BUG-05` `shouldChoseCheapestCombination` → `shouldChooseCheapestCombination` typo fixed — Phase 1 (ExampleBasedTests.java:111)
+- ✓ `BUG-06` `shouldReturnEmtyListAndZeroProfitIfOnlyLossCanBeMade` → `shouldReturnEmptyListAndZeroProfitIfOnlyLossCanBeMade` typo fixed — Phase 1 (ExampleBasedTests.java:91)
+- ✓ `BUG-07` `StepDefinitions.logger` switched from `java.util.logging.Logger` to SLF4J — Phase 1 (StepDefinitions.java)
+- ✓ `BUG-08` HashRouter footer only shows `API_BASE_URL` when same-origin or `VITE_SHOW_API_FOOTER=true` opt-in — Phase 1 (App.jsx + new `src/utils/apiFooter.js` + 8 Vitest unit tests)
+- ✓ `BUG-09` `CalculationResult.getCompanyNames()` initialised to `Collections.emptyList()` in 4-arg and no-arg constructors — Phase 1 (CalculationResult.java + 4 new CalculationResultTests cases)
+- ✓ `DRIFT-01` `contract-tests.yml` runs on every PR (removed `branches: ["main"]` filter on `pull_request`) — Phase 1 (contract-tests.yml:8-12)
+- ✓ `PHASE-1-INFRA` Default `mvn test` excludes `LocalContractVerificationTest` and `PactBrokerVerificationTest` (gated by `-Pcontract-tests` like other IO-dependent tests) — Phase 1 (pom.xml:539-545)
 
 ### Active
 
 <!-- Current scope being built toward in this milestone. Each maps to a roadmap phase. -->
-
-**Phase 1 — Fix known bugs (highest priority because some tests currently fail on first run):**
-- [ ] **BUG-01**: `ContainerTests` JSON keys match API contract (`savings`, `buyPrices`, `sellPrices`) — currently sends `savingsAmount`/`currentPrices`/`futurePrices`, causing 400 not 200 (ContainerTests.java:44-46)
-- [ ] **BUG-02**: `ApiPerformanceTests` JSON keys match API contract — same drift (ApiPerformanceTests.java:79-82)
-- [ ] **BUG-03**: README curl example uses correct JSON keys (`savings`, `buyPrices`, `sellPrices`) — currently documents the wrong contract (README.md:109)
-- [ ] **BUG-04**: `CalculationRequest` enforces `@Size(max=100)` on `buyPrices`/`sellPrices` at the controller boundary — currently the 100-cap is silently enforced inside `Stock.java:94`, so 10 000-element inputs return 200 with empty indices instead of 400
-- [ ] **BUG-05**: Typo fix — `shouldChoseCheapestCombination` → `shouldChooseCheapestCombination` (ExampleBasedTests.java:111)
-- [ ] **BUG-06**: Typo fix — `shouldReturnEmtyListAndZeroProfitIfOnlyLossCanBeMade` → `shouldReturnEmptyListAndZeroProfitIfOnlyLossCanBeMade` (ExampleBasedTests.java:91)
-- [ ] **BUG-07**: `StepDefinitions.logger` switched from `java.util.logging.Logger` to SLF4J `Logger` to match the rest of the codebase (steps/StepDefinitions.java:26)
-- [ ] **BUG-08**: HashRouter footer only prints `API_BASE_URL` when it matches `window.location.origin` or is explicitly enabled — currently the footer can mislead about which API the page is using (App.jsx:311, App.jsx:25-27)
-- [ ] **BUG-09**: `CalculationResult.getCompanyNames()` initialised to `Collections.emptyList()` in the four-arg constructor — currently can return `null` (CalculationResult.java:40, :62), forcing every caller to null-check
-- [ ] **DRIFT-01**: `PactBrokerVerificationTest` runs on every PR and fails CI when the published frontend pact doesn't match the producer API contract — currently the broker workflow exists but doesn't gate every PR
 
 **Phase 2 — Replace brute-force algorithm with DP:**
 - [ ] **ALGO-01**: `Stock.returnIndicesMaxProfit` rewritten as a 1-D dynamic program over `savings ∈ [1, 1000]` using `currentValue`/`futureValue` deltas — O(n · savings) worst case (replaces the current O(2^n) permutation approach in Stock.java:79-180)
@@ -127,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-22 after initialization*
+*Last updated: 2026-08-22 after Phase 1 completion*

@@ -14,7 +14,7 @@ See: .planning/PROJECT.md (updated 2026-08-22)
 
 | # | Phase | Status | Plans | Progress |
 |---|-------|--------|-------|----------|
-| 1 | BugFixes | ○ Pending | 0/? | 0% |
+| 1 | BugFixes | ✓ Complete | 1/1 | 100% |
 | 2 | Algorithm | ○ Pending | 0/? | 0% |
 | 3 | SecurityHardening | ○ Pending | 0/? | 0% |
 
@@ -33,7 +33,11 @@ See: .planning/PROJECT.md (updated 2026-08-22)
 | Commit docs to git | Planning artifacts tracked alongside code | ✓ Set |
 | DP / knapsack algorithm | O(n · savings), standard, preserves tie-break via reconstruction | — Pending (Phase 2) |
 | Bucket4j rate limit only | Closes DoS vector with minimum surface; no frontend changes | — Pending (Phase 3) |
-| Pact broker as drift guard | Already wired; minimal new code | — Pending (Phase 1 DRIFT-01) |
+| Pact broker as drift guard | Already wired; minimal new code | ✓ Good (DRIFT-01 shipped) |
+| TDD for bug fixes where behavior changes | Watch test fail, then fix; renames/refactors used "stay green" instead | ✓ Good |
+| Extract frontend footer logic to pure helper | Testable in node without jsdom/React Testing Library infrastructure | ✓ Good |
+| VITE_SHOW_API_FOOTER=true opt-in for cross-origin footer | Diagnostics use only; never default-on | ✓ Good |
+| Surefire excludes for contract tests | Default `mvn test` fails without broker; gate behind `-Pcontract-tests` like other IO-dependent tests | ✓ Good |
 
 ## Open Questions
 
