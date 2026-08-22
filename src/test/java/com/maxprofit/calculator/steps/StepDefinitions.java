@@ -10,10 +10,10 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class StepDefinitions {
 
     @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable", "checkstyle:LineLength"})
-    static Logger logger = Logger.getLogger(Stock.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(StepDefinitions.class);
 
     /**
      * Integer storing the amount of savings.
