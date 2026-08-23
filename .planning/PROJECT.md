@@ -46,18 +46,16 @@ The single trade-off that must always work: given valid input, `Stock.returnIndi
 - ✓ `ALGO-03` `Helper.java` removed — no longer reachable from the new algorithm — Phase 2
 - ✓ `ALGO-04` Example-based, property-based (jqwik), controller slice, performance, and contract tests all pass against the new engine — Phase 2 (two Cucumber scenarios updated: 'Max Profit with same amount of savings with multiple combinations' now expects [0,2] instead of [1,2]; 'Random Scenario' now expects profit 11 instead of 7 — the old brute-force algorithm couldn't find the profit-11 subset, the DP does)
 - ✓ `ALGO-05` Performance thresholds tightened: 50 items < 50 ms (down from 500 ms); 100 items < 500 ms (down from 10 s) — verified in CI — Phase 2 (PerformanceTests.java)
+- ✓ `SEC-01` Bucket4j rate limiter on `/api/calculate` — per-IP token bucket, defaults 10 capacity / 10 tokens per second — Phase 3 (RateLimitFilter + RateLimiterService)
+- ✓ `SEC-02` HTTP 429 with JSON `{"message": "Rate limit exceeded"}` body — Phase 3 (RateLimitFilter)
+- ✓ `SEC-03` Thresholds read from `application.properties` under `app.ratelimit.*` — Phase 3 (RateLimitProperties, @ConfigurationProperties record)
+- ✓ `SEC-04` `/api/health` is exempt — Phase 3 (filter checks URI endsWith `/calculate`; `/health` falls through)
+- ✓ `SEC-05` Jqwik property tests on RateLimiterService cover first-N-succeed, independent keys, disabled mode, accepted-count = min(burst, capacity) — Phase 3 (RateLimiterServiceTests.java)
+- ✓ `SEC-06` Existing tests pass with the new filter in place — Phase 3 (47/47 green including Controller slice, BDD, jqwik engine, performance)
 
 ### Active
 
-<!-- Current scope being built toward in this milestone. Each maps to a roadmap phase. -->
-
-**Phase 3 — Rate-limit `/api/calculate` with Bucket4j:**
-- [ ] **SEC-01**: Bucket4j filter or interceptor on `/api/calculate` enforces per-IP rate limit (default `10 req/sec`, `60 req/min`) — closes the anonymous-DoS vector identified in CONCERNS.md:129-134
-- [ ] **SEC-02**: Rate-limited requests return HTTP 429 with a JSON `{"message": "Rate limit exceeded"}` body — consistent with the existing 400 shape from `GlobalExceptionHandler`
-- [ ] **SEC-03**: Rate-limit thresholds read from `application.properties` (e.g. `app.ratelimit.capacity=10`, `app.ratelimit.refill-per-second=10`, `app.ratelimit.refill-per-minute=60`) — config-driven so they can be tuned without a redeploy of code paths
-- [ ] **SEC-04**: Health endpoint (`/api/health`) is exempt from rate limiting — must always answer for Docker HEALTHCHECK and load balancers
-- [ ] **SEC-05**: Property-based test (Jqwik) generates request-burst sequences and asserts that requests beyond the configured limit are rejected with 429 — proves the limit holds under fuzzed traffic patterns
-- [ ] **SEC-06**: Existing example-based, BDD, controller slice, and contract tests still pass with the new filter in place
+<!-- (none — Phase 3 was the final phase of the v1 milestone; next milestone or v2 features per ROADMAP v2 list) -->
 
 **Phase 3 — Rate-limit `/api/calculate` with Bucket4j:**
 - [ ] **SEC-01**: Bucket4j filter or interceptor on `/api/calculate` enforces per-IP rate limit (default `10 req/sec`, `60 req/min`) — closes the anonymous-DoS vector identified in CONCERNS.md:129-134
@@ -132,4 +130,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-22 after Phase 2 completion*
+*Last updated: 2026-08-23 after Phase 3 completion (milestone v1 done)*
