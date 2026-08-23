@@ -106,7 +106,7 @@ Once running, access the Swagger UI at:
 ```bash
 curl -X POST http://localhost:9095/api/calculate \
   -H "Content-Type: application/json" \
-  -d '{"savingsAmount":5,"currentPrices":[1,2,5],"futurePrices":[2,3,20]}'
+  -d '{"savings":5,"buyPrices":[1,2,5],"sellPrices":[2,3,20]}'
 ```
 
 ### Health Check

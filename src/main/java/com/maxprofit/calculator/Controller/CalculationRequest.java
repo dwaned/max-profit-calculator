@@ -4,12 +4,15 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-@SuppressWarnings({"checkstyle:JavadocVariable", "checkstyle:DesignForExtension", 
+@SuppressWarnings({"checkstyle:JavadocVariable", "checkstyle:DesignForExtension",
     "checkstyle:FinalParameters", "checkstyle:HiddenField", "checkstyle:MagicNumber"})
 public class CalculationRequest {
+    private static final int MAX_PRICE_LIST_SIZE = 100;
+
     @NotNull(message = "Savings amount is required")
     @Min(value = 1, message = "Savings must be at least 1")
     @Max(value = 1000, message = "Savings must not exceed 1000")
@@ -17,10 +20,12 @@ public class CalculationRequest {
 
     @NotNull(message = "Buy prices are required")
     @NotEmpty(message = "Buy prices cannot be empty")
+    @Size(max = MAX_PRICE_LIST_SIZE, message = "Buy prices must not exceed 100 entries")
     private List<Integer> buyPrices;
 
     @NotNull(message = "Sell prices are required")
     @NotEmpty(message = "Sell prices cannot be empty")
+    @Size(max = MAX_PRICE_LIST_SIZE, message = "Sell prices must not exceed 100 entries")
     private List<Integer> sellPrices;
 
     private List<String> companyNames;

@@ -30,7 +30,7 @@ Scenario: Max Profit with same amount of savings with multiple combinations
   Given I have 10 Euros of savings
   When Array of current stock prices are "5,5,1,9"
   And Array of future stock prices are "9,9,5,5"
-  Then the best combination of indices for max profit is "1,2"
+  Then the best combination of indices for max profit is "0,2"
   And profit is 8 Euros
 
 Scenario: Max Profit with multiple combinations but one with less used savings
@@ -51,5 +51,5 @@ Scenario: Random Scenario
   Given I have 10 Euros of savings
   When Array of current stock prices are "1,1,3,4,2,3,2,4,2,2"
   And Array of future stock prices are "3,2,4,6,4,3,4,4,5,3"
-  Then the best combination of indices for max profit is "0,3,8"
-  And profit is 7 Euros
+  Then the best combination of indices for max profit is "0,1,4,6,8,9"
+  And profit is 11 Euros

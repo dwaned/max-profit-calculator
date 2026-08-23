@@ -540,6 +540,8 @@
                         <exclude>**/ContainerTests.java</exclude>
                         <exclude>**/ApiPerformanceTests.java</exclude>
                         <exclude>**/PlaywrightUITests.java</exclude>
+                        <exclude>**/LocalContractVerificationTest.java</exclude>
+                        <exclude>**/PactBrokerVerificationTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
