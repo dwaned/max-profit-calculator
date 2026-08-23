@@ -47,7 +47,11 @@ See: .planning/PROJECT.md (updated 2026-08-23)
 | Bucket4j token bucket for rate limiting                          | Lightweight (in-memory, no external store), satisfies DoS-vector concern without API-key surface                                                   | ✓ Good (Phase 3 shipped)  |
 | URI endsWith check inside filter (not URL pattern)               | Works in both production (with context path /api) and MockMvc tests (no context path); avoids the FilterRegistrationBean asymmetry                 | ✓ Good                    |
 | TestRateLimitConfig with `refill=1, period=3600`                 | Makes controller-slice tests deterministic — bucket never meaningfully refills during a test, so 11th request reliably returns 429                 | ✓ Good                    |
-| Record for RateLimitProperties (no default constructor)          | Forces Spring binding through the canonical constructor — defaults come from `application.properties`, not a hardcoded fallback in code            | ✓ Good                    |
+| Record for RateLimitProperties (no default constructor) | Forces Spring binding through the canonical constructor — defaults come from `application.properties`, not a hardcoded fallback in code | ✓ Good |
+| **Phase 3 follow-ups** | | |
+| Frontend Dockerfile: node:18-alpine → node:20-alpine | PR #162 — Vite 8.x requires `CustomEvent` (Node 19+). The `Container Testing & Security Scan` workflow had been silently failing since May 2026 because Node 18 in Docker doesn't have it | ✓ Good (merged) |
+| Tomcat override to 10.1.55 | PR #163 — clears 3 critical CVEs (CVE-2026-43512, CVE-2026-41293, CVE-2026-43515 — all CVSS 9.8) flagged by Docker Scout; Spring Boot 3.3.11's BOM honored via `<tomcat.version>` property | ✓ Good (merged) |
+| Wire RateLimitFilterConfig into PlaywrightUITests | PR #164 — SEC-06 follow-up; this `@WebMvcTest`-gated-by-playwright-tests-profile test missed the `@Import` when RateLimitFilter was promoted to @Component in Phase 3. Caught by containers.yml's `mvn test -Pplaywright-tests` step | ✓ Good (merged) |
 
 ## Open Questions
 

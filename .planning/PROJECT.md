@@ -51,7 +51,7 @@ The single trade-off that must always work: given valid input, `Stock.returnIndi
 - ✓ `SEC-03` Thresholds read from `application.properties` under `app.ratelimit.*` — Phase 3 (RateLimitProperties, @ConfigurationProperties record)
 - ✓ `SEC-04` `/api/health` is exempt — Phase 3 (filter checks URI endsWith `/calculate`; `/health` falls through)
 - ✓ `SEC-05` Jqwik property tests on RateLimiterService cover first-N-succeed, independent keys, disabled mode, accepted-count = min(burst, capacity) — Phase 3 (RateLimiterServiceTests.java)
-- ✓ `SEC-06` Existing tests pass with the new filter in place — Phase 3 (47/47 green including Controller slice, BDD, jqwik engine, performance)
+- ✓ `SEC-06` Existing tests pass with the new filter in place — Phase 3 (47/47 green including Controller slice, BDD, jqwik engine, performance; PlaywrightUITests follow-up fixed in PR #164)
 
 ### Active
 
