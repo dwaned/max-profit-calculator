@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CalculatorController.class)
+@Import(RateLimitFilterConfig.class)
 public class CalculatorControllerTest {
     /**
      * The {@link MockMvc} instance that is used to perform HTTP requests against.
