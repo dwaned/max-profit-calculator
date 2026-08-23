@@ -1,10 +1,12 @@
 package com.maxprofit.calculator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maxprofit.calculator.controller.RateLimitFilterConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest
+@Import(RateLimitFilterConfig.class)
 public class PlaywrightUITests {
     @Autowired
     private MockMvc mockMvc;
