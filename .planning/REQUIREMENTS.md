@@ -104,29 +104,29 @@ Explicitly excluded. Documented to prevent scope creep.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| BUG-01 | Phase 1 | Complete |
-| BUG-02 | Phase 1 | Complete |
-| BUG-03 | Phase 1 | Complete |
-| BUG-04 | Phase 1 | Complete |
-| BUG-05 | Phase 1 | Complete |
-| BUG-06 | Phase 1 | Complete |
-| BUG-07 | Phase 1 | Complete |
-| BUG-08 | Phase 1 | Complete |
-| BUG-09 | Phase 1 | Complete |
-| DRIFT-01 | Phase 1 | Complete |
-| ALGO-01 | Phase 2 | Complete |
-| ALGO-02 | Phase 2 | Complete |
-| ALGO-03 | Phase 2 | Complete |
-| ALGO-04 | Phase 2 | Complete |
-| ALGO-05 | Phase 2 | Complete |
-| SEC-01 | Phase 3 | Complete |
-| SEC-02 | Phase 3 | Complete |
-| SEC-03 | Phase 3 | Complete |
-| SEC-04 | Phase 3 | Complete |
-| SEC-05 | Phase 3 | Complete |
-| SEC-06 | Phase 3 | Complete |
+| Requirement | Phase   | Status   |
+|-------------|---------|----------|
+| BUG-01      | Phase 1 | Complete |
+| BUG-02      | Phase 1 | Complete |
+| BUG-03      | Phase 1 | Complete |
+| BUG-04      | Phase 1 | Complete |
+| BUG-05      | Phase 1 | Complete |
+| BUG-06      | Phase 1 | Complete |
+| BUG-07      | Phase 1 | Complete |
+| BUG-08      | Phase 1 | Complete |
+| BUG-09      | Phase 1 | Complete |
+| DRIFT-01    | Phase 1 | Complete |
+| ALGO-01     | Phase 2 | Complete |
+| ALGO-02     | Phase 2 | Complete |
+| ALGO-03     | Phase 2 | Complete |
+| ALGO-04     | Phase 2 | Complete |
+| ALGO-05     | Phase 2 | Complete |
+| SEC-01      | Phase 3 | Complete |
+| SEC-02      | Phase 3 | Complete |
+| SEC-03      | Phase 3 | Complete |
+| SEC-04      | Phase 3 | Complete |
+| SEC-05      | Phase 3 | Complete |
+| SEC-06      | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 21 total
