@@ -526,6 +526,22 @@
                             <goal>testResources</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>copy-frontend-pact</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/test-classes/pacts</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/site/frontend/pacts</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

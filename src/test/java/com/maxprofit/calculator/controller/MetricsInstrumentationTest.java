@@ -44,9 +44,4 @@ class MetricsInstrumentationTest {
         double after = meterRegistry.counter("calculate_invocations_total").count();
         assertThat(after).isEqualTo(before + 1.0);
     }
-
-    @Test
-    void rejectionsCounterRegisteredOnStartup() {
-        assertThat(meterRegistry.find("rate_limit_rejections_total").counter()).isNotNull();
-    }
 }

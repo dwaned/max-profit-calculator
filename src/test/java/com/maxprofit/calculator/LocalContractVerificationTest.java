@@ -28,7 +28,7 @@ public class LocalContractVerificationTest {
     @BeforeAll
     void setup() throws Exception {
         objectMapper = new ObjectMapper();
-        pactFile = objectMapper.readTree(new File("src/test/resources/pacts/frontend-max-profit-calculator-backend.json"));
+        pactFile = objectMapper.readTree(new File("target/test-classes/pacts/frontend-max-profit-calculator-backend.json"));
         interactions = loadInteractions();
     }
 
