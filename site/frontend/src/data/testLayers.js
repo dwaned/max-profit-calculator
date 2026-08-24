@@ -9,12 +9,13 @@ export const testLayers = [
     framework: 'JUnit 5 + Jqwik',
     testCount: 30,
     testClasses: [
-      'ExampleBasedTests',
-      'PropertyBasedStockTests',
-      'CalculationResultTests',
-      'CompanyNameGeneratorTests',
-      'StockInvalidInputTests',
-      'StockLoggingLevelTest'
+      { name: 'ExampleBasedTests', style: 'example' },
+      { name: 'PropertyBasedStockTests', style: 'property-based' },
+      { name: 'CalculationResultTests', style: 'example' },
+      { name: 'CompanyNameGeneratorTests', style: 'example' },
+      { name: 'StockInvalidInputTests', style: 'example' },
+      { name: 'StockLoggingLevelTest', style: 'example' },
+      { name: 'MaxProfit.feature (via RunCucumberTest)', style: 'bdd' }
     ],
     codeExample: `@Test
 void shouldWorkWithThreeIndices() {
@@ -85,9 +86,9 @@ void positiveScenarios(
     framework: 'Pact (Consumer-Driven)',
     testCount: 3,
     testClasses: [
-      'calculate.api.test.js (frontend)',
-      'LocalContractVerificationTest.java',
-      'PactBrokerVerificationTest.java'
+      { name: 'calculate.api.test.js (frontend)', style: 'contract' },
+      { name: 'LocalContractVerificationTest.java', style: 'contract' },
+      { name: 'PactBrokerVerificationTest.java', style: 'contract' }
     ],
     codeExample: `// Frontend generates contract
 describe('POST /api/calculate', () => {
@@ -156,12 +157,12 @@ void verifyContract(PactVerificationContext context) {
     framework: 'Spring Boot Test + MockMvc',
     testCount: 18,
     testClasses: [
-      'CalculatorControllerTest',
-      'CalculatorControllerHttpStatusTest',
-      'CorsPropertiesTest',
-      'MetricsInstrumentationTest',
-      'RateLimiterServiceTests',
-      'WebConfigCorsTest'
+      { name: 'CalculatorControllerTest', style: 'example' },
+      { name: 'CalculatorControllerHttpStatusTest', style: 'example' },
+      { name: 'CorsPropertiesTest', style: 'example' },
+      { name: 'MetricsInstrumentationTest', style: 'example' },
+      { name: 'RateLimiterServiceTests', style: 'property-based' },
+      { name: 'WebConfigCorsTest', style: 'example' }
     ],
     codeExample: `@Test
 void shouldReturn200WhenValidRequest() {
@@ -187,7 +188,7 @@ void shouldReturn200WhenValidRequest() {
     description: 'Test multiple services together using Docker containers. Verify full stack behavior.',
     framework: 'Testcontainers + Docker Compose',
     testCount: 1,
-    testClasses: ['ContainerTests'],
+    testClasses: [{ name: 'ContainerTests', style: 'example' }],
     codeExample: `@Test
 void shouldStartFullStack() {
     docker-compose.up();
@@ -214,7 +215,7 @@ void shouldStartFullStack() {
     description: 'End-to-end browser automation tests. Verify user interactions and UI behavior.',
     framework: 'Playwright',
     testCount: 1,
-    testClasses: ['PlaywrightUITests.java'],
+    testClasses: [{ name: 'PlaywrightUITests.java', style: 'example' }],
     codeExample: `@Test
 void shouldCalculateProfit() {
     page.goto("http://localhost:3000");
@@ -241,7 +242,10 @@ void shouldCalculateProfit() {
     description: 'Verify algorithm execution time, API response time, and memory usage under load. Ensures the system meets performance requirements under various input sizes.',
     framework: 'JUnit 5 + RestAssured',
     testCount: 7,
-    testClasses: ['PerformanceTests', 'ApiPerformanceTests'],
+    testClasses: [
+      { name: 'PerformanceTests', style: 'example' },
+      { name: 'ApiPerformanceTests', style: 'example' }
+    ],
     codeExample: `@Test
 void algorithmShouldCompleteInUnder500msFor50Items() {
     List<Integer> prices = generateRandomPrices(50);

@@ -8,6 +8,27 @@ const bddCodeExample = `Scenario: Max Profit with using all savings
   Then the best combination is "0,1"
   And profit is 8 Euros`;
 
+const STYLE_LABELS = {
+  example: { label: 'Example', classes: 'bg-emerald-700/40 text-emerald-300 border-emerald-700' },
+  'property-based': { label: 'Property-Based', classes: 'bg-cyan-700/40 text-cyan-300 border-cyan-700' },
+  bdd: { label: 'BDD', classes: 'bg-purple-700/40 text-purple-300 border-purple-700' },
+  contract: { label: 'Contract', classes: 'bg-teal-700/40 text-teal-300 border-teal-700' },
+  performance: { label: 'Performance', classes: 'bg-violet-700/40 text-violet-300 border-violet-700' }
+};
+
+function StyleBadge({ style }) {
+  const meta = STYLE_LABELS[style];
+  if (!meta) return null;
+  return (
+    <span
+      data-style={style}
+      className={`px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded border ${meta.classes}`}
+    >
+      {meta.label}
+    </span>
+  );
+}
+
 function LayerDetail({ layerId }) {
   const layer = testLayers.find(l => l.id === layerId);
 
@@ -122,9 +143,10 @@ function LayerDetail({ layerId }) {
               {layer.testClasses.map((cls, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-slate-900 rounded text-sm text-slate-300 font-mono"
+                  className="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 rounded text-sm text-slate-300 font-mono"
                 >
-                  {cls}
+                  {cls.name}
+                  <StyleBadge style={cls.style} />
                 </span>
               ))}
             </div>
