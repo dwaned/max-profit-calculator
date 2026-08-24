@@ -533,7 +533,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.testResourcesDirectory}/pacts</outputDirectory>
+                            <outputDirectory>${project.build.directory}/test-classes/pacts</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/site/frontend/pacts</directory>
