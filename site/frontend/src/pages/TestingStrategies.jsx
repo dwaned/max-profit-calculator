@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import TestPyramid from '../components/TestPyramid/TestPyramid';
 import LayerDetail from '../components/TestPyramid/LayerDetail';
+import CrossCuttingConcerns from '../components/TestPyramid/CrossCuttingConcerns';
 import { testLayers } from '../data/testLayers';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -43,7 +44,8 @@ function TestingStrategies() {
               selectedLayer={selectedLayer}
             />
             <p className="text-center text-sm text-slate-500 mt-4">
-              Click on layers to explore details • Purple = BDD • Cyan = Property-Based
+              Click on layers to explore details • Purple badges mark BDD overlays •
+              Cyan badges mark Property-Based overlays
             </p>
           </motion.div>
 
@@ -59,15 +61,48 @@ function TestingStrategies() {
           </motion.div>
         </div>
 
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-16"
+        >
+          <CrossCuttingConcerns />
+        </motion.section>
+
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
           className="mt-16 text-center text-slate-500"
         >
-          <p>
-            Run tests: <code className="bg-slate-800 px-2 py-1 rounded">mvn test</code>
-          </p>
+          <p className="font-semibold text-slate-400 mb-3">Run tests</p>
+          <div className="flex flex-col items-start gap-2 max-w-xl mx-auto text-left">
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full">
+              mvn test
+            </code>
+            <span className="text-xs">Unit, controller, property-based, contract (Pact broker), and BDD/Cucumber scenarios</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              mvn test -Pcontainer-tests
+            </code>
+            <span className="text-xs">Integration tests with Docker Compose via Testcontainers (requires Docker)</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              mvn test -Pplaywright-tests
+            </code>
+            <span className="text-xs">UI end-to-end tests with Playwright</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              mvn test -Ppitest
+            </code>
+            <span className="text-xs">Mutation testing with PITest</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              cd site/frontend && npm run test:pact
+            </code>
+            <span className="text-xs">Frontend Pact consumer contract tests</span>
+          </div>
         </motion.footer>
       </div>
     </div>
