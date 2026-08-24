@@ -1,0 +1,42 @@
+# Exclude heavy / irrelevant directories from the Docker build context.
+# The site Dockerfile only needs pom.xml + src + site/frontend/, so
+# everything else just wastes upload time and disk on the Docker host.
+
+# Build outputs
+target/
+**/target/
+**/dist/
+**/build/
+
+# Dependencies
+**/node_modules/
+
+# VCS / metadata
+.git/
+.gitignore
+.gitattributes
+
+# IDE / OS noise
+.idea/
+.vscode/
+.DS_Store
+
+# Docs / planning / local artifacts
+.planning/
+.playwright-mcp/
+.superpowers/
+*.md
+!site/frontend/README.md
+
+# CI / infra (Render uses the Dockerfile directly, doesn't need these)
+.github/
+
+# Test outputs already covered by target/
+**/surefire-reports/
+**/cucumber-report/
+
+# Reports dir is generated inside the image, never read from the host
+site/frontend/public/reports/
+
+# Pact files are copied into target/classes at build time
+site/frontend/pacts/

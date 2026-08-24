@@ -15,15 +15,24 @@ mvn spring-boot:run
 
 ## Report Commands
 
+Reports are generated automatically as part of the frontend Docker build
+(multi-stage `site/frontend/Dockerfile` — Maven `verify site` runs before
+the React build, output lands in `site/frontend/public/reports/`).
+
+For a manual local run:
+
 ```bash
-# Generate site reports and copy to frontend
-mvn site
-mkdir -p site/frontend/public/reports/css site/frontend/public/reports/xref site/frontend/public/reports/xref-test site/frontend/public/reports/images
-cp target/site/*.html site/frontend/public/reports/
-cp -r target/site/css site/frontend/public/reports/
-cp -r target/site/xref site/frontend/public/reports/
-cp -r target/site/xref-test site/frontend/public/reports/
-cp -r target/site/images site/frontend/public/reports/
+# Generate all reports (skipping integration tests + slow pitest mutation run)
+mkdir -p target/pit-reports && \
+  printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
+    > target/pit-reports/index.html
+mvn -DskipITs -Dpitest.skip=true verify site
+
+# Copy into the frontend public dir so Vite bundles them into dist/reports/
+cp -r target/site site/frontend/public/reports
+
+# Build the frontend
+cd site/frontend && npm run build
 ```
 
 Then open <http://localhost:5173/reports> in the browser.
