@@ -1,6 +1,8 @@
 package com.maxprofit.calculator.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -54,6 +56,11 @@ class CalculatorControllerHttpStatusTest {
             return new CorsProperties(java.util.List.of(
                     "http://localhost:9095", "http://localhost:5173",
                     "http://localhost:3000", "https://max-profit-frontend.onrender.com"));
+        }
+
+        @Bean
+        public MeterRegistry meterRegistry() {
+            return new SimpleMeterRegistry();
         }
     }
     @Autowired
