@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -81,9 +82,13 @@ class ExampleBasedTests {
 
     @Test
     void shouldReturnEmptyListAndZeroProfitIfOnlyLossCanBeMade() {
+        // Every future price is below the current price at the same index — only a
+        // loss is possible. Note: we use values >= 1 in both lists because the
+        // engine now rejects 0/negative prices (HYG-04); we just can't make
+        // a profit with these inputs.
         CalculationResult result = Stock.returnIndicesMaxProfit(5,
                 Arrays.asList(5, 2, 3),
-                Arrays.asList(1, 0, 2));
+                Arrays.asList(1, 1, 1));
 
         assertEquals(0, result.getMaxProfit());
         assertTrue(result.getIndices().isEmpty());
@@ -150,39 +155,31 @@ class ExampleBasedTests {
     }
 
     @Test
-    void shouldReturnZeroProfitAndResultIndicesIfFuturePricesAreEmpty() {
-        CalculationResult actualReturnIndicesMaxProfitResult =
-                Stock.returnIndicesMaxProfit(1, Collections.singletonList(2),
-                new ArrayList<>());
-        assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
-        assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
+    void shouldThrowWhenFuturePricesAreEmptyButCurrentIsNot() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Stock.returnIndicesMaxProfit(1, Collections.singletonList(2),
+                        new ArrayList<>()));
     }
 
     @Test
-    void shouldReturnZeroProfitAndEmptyIndicesIfSavingsNotEnoughForAnyStock() {
+    void shouldThrowWhenAnyPriceIsNonPositive() {
         ArrayList<Integer> currentPrices = new ArrayList<>(Arrays.asList(2, 3, 4));
         ArrayList<Integer> futurePrices = new ArrayList<>(Arrays.asList(0, 20, 30));
-        CalculationResult actualReturnIndicesMaxProfitResult =
-                Stock.returnIndicesMaxProfit(1, currentPrices, futurePrices);
-        assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
-        assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
+        assertThrows(IllegalArgumentException.class,
+                () -> Stock.returnIndicesMaxProfit(1, currentPrices, futurePrices));
     }
 
     @Test
-    void shouldReturnEmptyIndicesAndZeroProfitIfStockPriceIsNegative() {
-        CalculationResult actualReturnIndicesMaxProfitResult =
-                Stock.returnIndicesMaxProfit(1,
-                Collections.singletonList(0), Collections.singletonList(-1));
-        assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
-        assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
+    void shouldThrowWhenAnyPriceIsNegative() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Stock.returnIndicesMaxProfit(1,
+                        Collections.singletonList(0), Collections.singletonList(-1)));
     }
 
     @Test
-    void shouldReturnErrorCurrentAndFuturePricesAreDifferentSizes() {
-        CalculationResult actualReturnIndicesMaxProfitResult =
-                Stock.returnIndicesMaxProfit(1,
-                Collections.singletonList(1), Arrays.asList(1, 2));
-        assertTrue(actualReturnIndicesMaxProfitResult.getIndices().isEmpty());
-        assertEquals(0, actualReturnIndicesMaxProfitResult.getMaxProfit());
+    void shouldThrowWhenCurrentAndFutureSizesDiffer() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Stock.returnIndicesMaxProfit(1,
+                        Collections.singletonList(1), Arrays.asList(1, 2)));
     }
 }
