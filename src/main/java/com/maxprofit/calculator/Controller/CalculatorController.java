@@ -28,7 +28,7 @@ import java.util.List;
 
 @SuppressWarnings({"checkstyle:JavadocPackage", "checkstyle:LineLength"})
 @RestController
-@CrossOrigin(origins = {"http://localhost:9095", "http://localhost:5173", "http://localhost:3000", "https://max-profit-frontend.onrender.com"})
+@CrossOrigin
 @Tag(name = "Calculator", description = "API for calculating maximum profit from stock prices")
 public class CalculatorController {
 

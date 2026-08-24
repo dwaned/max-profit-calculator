@@ -1,18 +1,2 @@
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
-/megalinter-reports/
-/.idea/
-node_modules/
-site/LiveTerm/node_modules
-.env
-opencode.json
-site/frontend/public/reports/
+# superpowers/sdd/* — plan execution workspaces (git-ignored scratch)
+/.superpowers/
