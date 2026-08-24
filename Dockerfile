@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jdk-alpine AS build
+FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /docker
 COPY pom.xml .
 COPY src src
@@ -7,7 +7,7 @@ COPY checkstyle_suppressions.xml .
 RUN apk add --no-cache maven
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /docker/target/max-profit-calculator-1.0-SNAPSHOT.jar app.jar
 
