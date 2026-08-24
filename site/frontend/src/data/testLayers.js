@@ -7,8 +7,15 @@ export const testLayers = [
     textColor: 'text-emerald-400',
     description: 'Test individual methods and classes in isolation. Fast, focused, and cover core business logic. This layer includes both Example-Based and Property-Based testing approaches.',
     framework: 'JUnit 5 + Jqwik',
-    testCount: 17,
-    testClasses: ['ExampleBasedTests', 'PropertyBasedStockTests'],
+    testCount: 30,
+    testClasses: [
+      'ExampleBasedTests',
+      'PropertyBasedStockTests',
+      'CalculationResultTests',
+      'CompanyNameGeneratorTests',
+      'StockInvalidInputTests',
+      'StockLoggingLevelTest'
+    ],
     codeExample: `@Test
 void shouldWorkWithThreeIndices() {
     CalculationResult result = Stock.returnIndicesMaxProfit(5,
@@ -77,7 +84,11 @@ void positiveScenarios(
     description: 'Verify API contracts between services. Consumer-driven contracts ensure the provider API matches what consumers expect. Frontend generates contracts, backend verifies them.',
     framework: 'Pact (Consumer-Driven)',
     testCount: 3,
-    testClasses: ['calculate.api.test.js (frontend)'],
+    testClasses: [
+      'calculate.api.test.js (frontend)',
+      'LocalContractVerificationTest.java',
+      'PactBrokerVerificationTest.java'
+    ],
     codeExample: `// Frontend generates contract
 describe('POST /api/calculate', () => {
   it('should calculate max profit', async () => {
@@ -143,8 +154,15 @@ void verifyContract(PactVerificationContext context) {
     textColor: 'text-blue-400',
     description: 'Test API endpoints and HTTP contracts. Verify request/response mapping and status codes.',
     framework: 'Spring Boot Test + MockMvc',
-    testCount: 12,
-    testClasses: ['CalculatorControllerTest', 'CalculatorControllerHttpStatusTest'],
+    testCount: 18,
+    testClasses: [
+      'CalculatorControllerTest',
+      'CalculatorControllerHttpStatusTest',
+      'CorsPropertiesTest',
+      'MetricsInstrumentationTest',
+      'RateLimiterServiceTests',
+      'WebConfigCorsTest'
+    ],
     codeExample: `@Test
 void shouldReturn200WhenValidRequest() {
     mockMvc.perform(post("/api/calculate")
@@ -168,7 +186,7 @@ void shouldReturn200WhenValidRequest() {
     textColor: 'text-orange-400',
     description: 'Test multiple services together using Docker containers. Verify full stack behavior.',
     framework: 'Testcontainers + Docker Compose',
-    testCount: 2,
+    testCount: 1,
     testClasses: ['ContainerTests'],
     codeExample: `@Test
 void shouldStartFullStack() {
@@ -196,7 +214,7 @@ void shouldStartFullStack() {
     description: 'End-to-end browser automation tests. Verify user interactions and UI behavior.',
     framework: 'Playwright',
     testCount: 1,
-    testClasses: ['ContainerTests (with site)'],
+    testClasses: ['PlaywrightUITests.java'],
     codeExample: `@Test
 void shouldCalculateProfit() {
     page.goto("http://localhost:3000");
@@ -219,8 +237,9 @@ void shouldCalculateProfit() {
     color: 'bg-purple-500',
     borderColor: 'border-purple-400',
     textColor: 'text-purple-400',
+    crossCutting: true,
     description: 'Verify algorithm execution time, API response time, and memory usage under load. Ensures the system meets performance requirements under various input sizes.',
-    framework: 'JUnit 5',
+    framework: 'JUnit 5 + RestAssured',
     testCount: 7,
     testClasses: ['PerformanceTests', 'ApiPerformanceTests'],
     codeExample: `@Test
@@ -293,27 +312,38 @@ void noOutOfMemoryErrorForMaxInput() {
   }
 ];
 
-export const layerOrder = ['ui', 'performance', 'integration', 'contract', 'controller', 'unit'];
+export const layerOrder = ['ui', 'integration', 'contract', 'controller', 'unit'];
 
 export const bddInfo = {
   name: 'BDD',
-  appliesTo: ['ui', 'integration'],
-  description: 'Behavior-Driven Development is an abstract layer using Gherkin syntax to describe test behavior in human-readable language. It can be applied at ANY testing level (unit, integration, or E2E) depending on what the scenarios describe. Most commonly used at E2E level, but backend-only teams can use it to make use cases and test scenarios readable for non-technical stakeholders. Step definitions abstract the technical implementation details.',
+  appliesTo: ['unit'],
+  scenarioCount: 7,
+  description: 'Behavior-Driven Development uses Gherkin syntax to describe test behavior in human-readable language. In this project, the MaxProfit.feature file exercises the engine logic directly, so the BDD scenarios act as an additional unit-level test suite (7 scenarios). BDD can be applied at any testing level depending on what the scenarios describe. Step definitions abstract the technical implementation details.',
   badge: 'BDD'
 };
 
 export const contractTestingInfo = {
   name: 'Contract Testing',
   appliesTo: ['contract'],
-  description: 'Consumer-Driven Contract Testing allows the frontend (consumer) to define expected API behavior. The backend (provider) then verifies it satisfies these contracts. Enables independent service deployment without integration testing. Uses Pact framework with a broker for contract sharing.',
+  scenarioCount: 3,
+  description: 'Consumer-Driven Contract Testing allows the frontend (consumer) to define expected API behavior. The backend (provider) then verifies it satisfies these contracts. Enables independent service deployment without integration testing. Uses Pact framework with a broker for contract sharing. This project has 1 frontend contract and 2 backend verification tests.',
   badge: 'Contract'
 };
 
 export const propertyBasedInfo = {
   name: 'Property-Based',
   appliesTo: ['unit'],
-  description: 'Property-Based Testing generates thousands of random inputs to verify that invariants (properties) hold true for ALL possible inputs, not just the examples you think of. Uses the Jqwik library. Unlike Example-Based tests that check specific values, Property-Based tests verify the fundamental rules that should always be true.',
+  scenarioCount: 1,
+  description: 'Property-Based Testing generates random inputs to verify that invariants (properties) hold true for ALL possible inputs, not just the examples you think of. Uses the Jqwik library. Unlike Example-Based tests that check specific values, Property-Based tests verify the fundamental rules that should always be true. This project has 1 @Property method (positiveScenarios) in PropertyBasedStockTests.',
   badge: 'Property-Based'
+};
+
+export const performanceInfo = {
+  name: 'Performance',
+  crossCutting: true,
+  scenarioCount: 7,
+  description: 'Performance is a cross-cutting concern that can be measured at any testing level (algorithm execution time, API response time, memory usage). Not a pyramid layer — applied alongside the layer whose non-functional requirements you want to verify. This project uses two suites: PerformanceTests (algorithm + memory) and ApiPerformanceTests (end-to-end API timing via Testcontainers).',
+  badge: 'Performance'
 };
 
 export const testingTechniques = [
