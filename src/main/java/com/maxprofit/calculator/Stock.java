@@ -64,27 +64,29 @@ public final class Stock {
                                                            final List<Integer> currentValue,
                                                            final List<Integer> futureValue,
                                                            final List<String> companyNames) {
-        if (currentValue == null || futureValue == null) {
-            LOGGER.debug("currentValue or futureValue is null");
-            return new CalculationResult(0, new ArrayList<>(), 0, saving, companyNames);
+        if (currentValue == null) {
+            throw new IllegalArgumentException("currentValue must not be null");
+        }
+        if (futureValue == null) {
+            throw new IllegalArgumentException("futureValue must not be null");
         }
 
         final int n = currentValue.size();
 
         if (currentValue.stream().anyMatch(o -> o <= 0)
                 || futureValue.stream().anyMatch(o -> o <= 0)) {
-            LOGGER.debug("Future or current value is 0 or negative");
-            return new CalculationResult(0, new ArrayList<>(), 0, saving, companyNames);
+            throw new IllegalArgumentException("prices must be positive integers");
         }
 
         if (n != futureValue.size()) {
-            LOGGER.debug("Future and current prices list sizes do not match");
-            return new CalculationResult(0, new ArrayList<>(), 0, saving, companyNames);
+            throw new IllegalArgumentException(
+                    "currentValue and futureValue must have the same size (got "
+                            + n + " and " + futureValue.size() + ")");
         }
 
         if (n > MAX_PRICE_LIST_SIZE) {
-            LOGGER.debug("Future and current prices list sizes are too large");
-            return new CalculationResult(0, new ArrayList<>(), 0, saving, companyNames);
+            throw new IllegalArgumentException(
+                    "price lists must not exceed " + MAX_PRICE_LIST_SIZE + " entries (got " + n + ")");
         }
 
         if (n == 0) {

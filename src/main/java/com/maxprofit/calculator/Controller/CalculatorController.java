@@ -29,6 +29,19 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
+/**
+ * REST controller exposing the {@code /api/calculate} and
+ * {@code /api/health} endpoints. {@code /api/calculate} is rate-limited
+ * via {@link com.maxprofit.calculator.controller.RateLimitFilter}; the
+ * filter is registered in {@code RateLimitFilterConfig} for the
+ * {@code /api/calculate} URL pattern only.
+ *
+ * <p>Instruments Micrometer counters/timer so a Prometheus scrape
+ * ({@code /actuator/prometheus}) exposes invocation count, execution
+ * time, and 429-rejection count.
+ *
+ * @author dwaned
+ */
 @SuppressWarnings({"checkstyle:JavadocPackage", "checkstyle:LineLength"})
 @RestController
 @CrossOrigin

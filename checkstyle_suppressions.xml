@@ -5,7 +5,7 @@
 <suppressions>
     <suppress checks=".*" files="**/Test*.java"/>
     <suppress checks=".*" files="**/*Test.java"/>
-    <suppress checks="Javadoc" files="**/*.java"/>
+    <suppress checks="JavadocMethod|JavadocType" files="(?!.*(CalculationRequest|CalculatorController|CalculationResult)\.java).*"/>
     <suppress checks="DesignForExtension" files="**/*.java"/>
     <suppress checks="HiddenField" files="**/*.java"/>
     <suppress checks="FinalParameters" files="**/*.java"/>
