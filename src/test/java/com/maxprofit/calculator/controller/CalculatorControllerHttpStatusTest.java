@@ -48,6 +48,13 @@ class CalculatorControllerHttpStatusTest {
         public RateLimiterService rateLimiterService(final RateLimitProperties properties) {
             return new RateLimiterService(properties);
         }
+
+        @Bean
+        public CorsProperties corsProperties() {
+            return new CorsProperties(java.util.List.of(
+                    "http://localhost:9095", "http://localhost:5173",
+                    "http://localhost:3000", "https://max-profit-frontend.onrender.com"));
+        }
     }
     @Autowired
     private MockMvc mockMvc;
