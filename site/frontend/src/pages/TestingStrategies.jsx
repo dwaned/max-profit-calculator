@@ -44,8 +44,8 @@ function TestingStrategies() {
               selectedLayer={selectedLayer}
             />
             <p className="text-center text-sm text-slate-500 mt-4">
-              Click on layers to explore details • Purple badges mark BDD overlays •
-              Cyan badges mark Property-Based overlays
+              Click on layers to explore details • Each test class is tagged
+              with its testing style (Example / Property-Based / BDD / Contract)
             </p>
           </motion.div>
 
