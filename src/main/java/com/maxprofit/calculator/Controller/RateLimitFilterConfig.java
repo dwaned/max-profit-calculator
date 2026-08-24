@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * (notably {@code /api/health}) are never throttled.
  */
 @Configuration
-@EnableConfigurationProperties(RateLimitProperties.class)
+@EnableConfigurationProperties({RateLimitProperties.class, CorsProperties.class})
 public class RateLimitFilterConfig {
 
     @Bean
