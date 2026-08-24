@@ -8,6 +8,17 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+/**
+ * Inbound request body for {@code POST /api/calculate}. Carries the savings
+ * budget, the buy-price and sell-price lists, and an optional list of
+ * company names to display in the response.
+ *
+ * <p>Bean-validation constraints are enforced by the controller's
+ * {@code @Valid} annotation; see {@code application.properties} for the
+ * corresponding error messages.
+ *
+ * @author dwaned
+ */
 @SuppressWarnings({"checkstyle:JavadocVariable", "checkstyle:DesignForExtension",
     "checkstyle:FinalParameters", "checkstyle:HiddenField", "checkstyle:MagicNumber"})
 public class CalculationRequest {
