@@ -4,6 +4,9 @@ import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.CompanyNameGenerator;
 import com.maxprofit.calculator.Stock;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -31,6 +34,14 @@ import java.util.List;
 @CrossOrigin
 @Tag(name = "Calculator", description = "API for calculating maximum profit from stock prices")
 public class CalculatorController {
+
+    private final Counter invocationsCounter;
+    private final Timer executionTimer;
+
+    public CalculatorController(final MeterRegistry meterRegistry) {
+        this.invocationsCounter = meterRegistry.counter("calculate_invocations_total");
+        this.executionTimer = meterRegistry.timer("calculate_execution_seconds");
+    }
 
     /**
      * Calculates the maximum profit that can be made from a given set of stock
@@ -67,6 +78,8 @@ public class CalculatorController {
     @ResponseStatus(org.springframework.http.HttpStatus.OK)
     public CalculationResult calculate(
             @Valid @RequestBody final CalculationRequest request) {
+        invocationsCounter.increment();
+        Timer.Sample sample = Timer.start();
         try {
             List<String> companyNames = request.getCompanyNames();
             if (companyNames == null || companyNames.isEmpty()) {
@@ -77,6 +90,8 @@ public class CalculatorController {
                     request.getBuyPrices(), request.getSellPrices(), companyNames);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input: " + e.getMessage());
+        } finally {
+            sample.stop(executionTimer);
         }
     }
 

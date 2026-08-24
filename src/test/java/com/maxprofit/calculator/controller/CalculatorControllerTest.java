@@ -3,10 +3,14 @@ package com.maxprofit.calculator.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maxprofit.calculator.CalculationResult;
 import com.maxprofit.calculator.Stock;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,8 +29,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CalculatorController.class)
-@Import(RateLimitFilterConfig.class)
+@Import({RateLimitFilterConfig.class, CalculatorControllerTest.TestConfig.class})
 public class CalculatorControllerTest {
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public MeterRegistry meterRegistry() {
+            return new SimpleMeterRegistry();
+        }
+    }
     /**
      * The {@link MockMvc} instance that is used to perform HTTP requests against.
      */
