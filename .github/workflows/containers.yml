@@ -86,6 +86,13 @@ jobs:
             libharfbuzz-icu0 libsecret-1-0 libhyphen0 \
             libmanette-0.2-0 libgles2 gstreamer1.0-libav
 
+      - name: Install Playwright browsers
+        # playwright-tests only runs PlaywrightUITests, which needs a real
+        # Chromium binary. The standard install command is exposed via the
+        # Playwright CLI; running it via exec:java avoids depending on
+        # playwright being installed globally.
+        run: mvn -B -Pplaywright-tests exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" --no-transfer-progress
+
       - name: Cache Maven dependencies
         uses: actions/cache@v5.0.1
         with:

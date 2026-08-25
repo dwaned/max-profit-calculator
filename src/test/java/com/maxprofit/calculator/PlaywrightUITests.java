@@ -1,48 +1,94 @@
 package com.maxprofit.calculator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maxprofit.calculator.controller.RateLimitFilterConfig;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@ExtendWith(SpringExtension.class)
-@WebMvcTest
-@Import(RateLimitFilterConfig.class)
+/**
+ * End-to-end browser test for the calculator UI.
+ *
+ * <p>Drives the real frontend (not the API) through a real Chromium instance
+ * to confirm the form, the API call, and the results card all render and
+ * work together. Runs under the {@code -Pplaywright-tests} profile which
+ * adds the {@code com.microsoft.playwright:playwright} dependency and gates
+ * this class behind a profile-scoped surefire {@code <include>}.
+ *
+ * <p>The test expects the frontend to be reachable at the URL below
+ * ({@code PLAYWRIGHT_BASE_URL}, defaults to {@code http://localhost:3000}).
+ * In CI the {@code containers.yml} job brings the full stack up via
+ * docker-compose before running {@code mvn test -Pplaywright-tests}.
+ */
+@SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 public class PlaywrightUITests {
-    @Autowired
-    private MockMvc mockMvc;
+    /** Base URL where the React dev server / nginx is reachable. */
+    private static final String BASE_URL = System.getenv().getOrDefault(
+        "PLAYWRIGHT_BASE_URL", "http://localhost:3000"
+    );
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    /** Browser object. */
+    private Browser browser;
+    /** Page object. */
+    private Page page;
 
     /**
-     * Test the calculator endpoint.
+     * Setup the browser and page.
+     */
+    @BeforeEach
+    public void setUp() {
+        browser = Playwright.create().chromium().launch(
+            new BrowserType.LaunchOptions().setHeadless(true)
+        );
+        page = browser.newPage();
+    }
+
+    /**
+     * Close the browser.
+     */
+    @AfterEach
+    public void tearDown() {
+        browser.close();
+    }
+
+    /**
+     * Drive the calculator form with the default sample data
+     * (savings=10, buy=[5,5,10], sell=[15,10,35]) and assert the
+     * algorithm picks stock #2 for max profit of 25.
      */
     @Test
-    public void testCalculateEndpoint() throws Exception {
-        String request = """
-            {
-                "savings": 1,
-                "buyPrices": [1],
-                "sellPrices": [2]
-            }
-            """;
+    public void testCalculateUsingUI() {
+        page.navigate(BASE_URL + "/#/calculator");
 
-        mockMvc.perform(post("/calculate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(request))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.maxProfit").value(1))
-                .andExpect(jsonPath("$.indices[0]").value(0));
+        // Wait for the form to render before touching it. The dev server /
+        // first load can take a few seconds in CI.
+        page.waitForSelector("#savings-amount");
+        page.waitForSelector("button[type='submit']");
+
+        // Fill the form (aria-labels are stable selectors across the
+        // desktop/table and mobile/card layouts).
+        page.fill("#savings-amount", "10");
+        page.locator("input[aria-label='Buy price for stock 1']").fill("5");
+        page.locator("input[aria-label='Buy price for stock 2']").fill("5");
+        page.locator("input[aria-label='Buy price for stock 3']").fill("10");
+        page.locator("input[aria-label='Sell price for stock 1']").fill("15");
+        page.locator("input[aria-label='Sell price for stock 2']").fill("10");
+        page.locator("input[aria-label='Sell price for stock 3']").fill("35");
+
+        // Submit and wait for the result card to render.
+        page.click("button[type='submit']");
+        page.waitForSelector("text=Max Profit");
+
+        // The result is rendered inside the "Max Profit" tile as
+        // `€<value>`. Stock #2 (buy=10, sell=35) is the unique max-profit
+        // pick for this input set.
+        String maxProfitText = page.locator("text=€").first().textContent();
+        Assertions.assertTrue(
+            maxProfitText.contains("25"),
+            "Expected max profit to be €25, got: " + maxProfitText
+        );
     }
 }

@@ -65,12 +65,11 @@ jobs:
         # mvn site aborts if the pitest reporting goal can't find
         # target/pit-reports. Pre-create it with a placeholder so the
         # site plugin still aggregates pitest's section with a stub.
-        # Exclude PlaywrightUITests: its @WebMvcTest fails to load the
-        # ApplicationContext in a clean build because @Import-ed
-        # RateLimitFilterConfig needs a MeterRegistry bean that
-        # @WebMvcTest does not auto-configure. The test passes locally
-        # but not on a clean CI runner. Fix the test (add a @MockBean
-        # MeterRegistry) before re-enabling it here.
+        # PlaywrightUITests is gated behind the -Pplaywright-tests profile
+        # and is not picked up by the default `mvn test` invocation below,
+        # so it does not need to be in the exclusion list. It still belongs
+        # here in the comment so future maintainers don't re-add it
+        # thinking it's missing.
         # Exclude ContainerTests / ApiPerformanceTests (need Docker via
         # Testcontainers — not available on the clean GitHub-hosted
         # runner) and LocalContractVerificationTest / PactBrokerVerificationTest
@@ -80,7 +79,7 @@ jobs:
           printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
             > target/pit-reports/index.html
           mvn -B -DskipITs -Dpitest.skip=true \
-            -Dtest='!PlaywrightUITests,!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
+            -Dtest='!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
             org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent \
             test \
             org.jacoco:jacoco-maven-plugin:0.8.8:report \
