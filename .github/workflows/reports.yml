@@ -1,0 +1,82 @@
+---
+# Regenerates `target/site/*` after `mvn verify site`, copies it into
+# `site/frontend/public/reports/`, and commits the result.
+#
+# Why: Render hosts the frontend as a Static Site, so the multi-stage
+# Dockerfile that runs Maven is ignored. The only path that gets the
+# generated reports into the bundle is to commit them under `public/`,
+# which Vite copies verbatim into `dist/reports/` at build time.
+#
+# Trade-off: the reports go stale between regenerations. They are accurate
+# at the moment of the last green main build; the timestamp in `index.html`
+# makes that obvious.
+
+name: Regenerate Maven reports
+
+on:
+  push:
+    branches: [main]
+    # Only run when source / config changes — never when only the generated
+    # reports directory changed (that would be a feedback loop).
+    paths:
+      - "src/**"
+      - "pom.xml"
+      - "checkstyle.xml"
+      - "checkstyle_suppressions.xml"
+  workflow_dispatch:
+
+concurrency:
+  group: reports-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-reports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5.1.0
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Generate Maven reports
+        # mvn site aborts if the pitest reporting goal can't find
+        # target/pit-reports. Pre-create it with a placeholder so the
+        # site plugin still aggregates pitest's section with a stub.
+        run: |
+          mkdir -p target/pit-reports
+          printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
+            > target/pit-reports/index.html
+          mvn -B -DskipITs -Dpitest.skip=true verify site -q
+
+      - name: Copy reports into site/frontend/public/reports
+        run: |
+          rm -rf site/frontend/public/reports
+          cp -r target/site site/frontend/public/reports
+
+      - name: Commit and push if changed
+        # [skip ci] keeps this auto-commit from re-triggering the workflow
+        # itself; `paths` above already excludes the reports dir, but the
+        # [skip ci] tag is belt-and-suspenders.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- site/frontend/public/reports; then
+            echo "Reports unchanged, nothing to commit"
+            exit 0
+          fi
+          git add site/frontend/public/reports
+          git commit -m "chore(reports): regenerate Maven site reports [skip ci]"
+          git push
