@@ -22,6 +22,22 @@ jobs:
   frontend-contract-tests:
     runs-on: [self-hosted, osx, arm64, pact-broker]
     steps:
+      # Clean up deeply-nested leftover artifacts from previous runs. Earlier
+      # MegaLinter versions with APPLY_FIXES=commit wrote fresh
+      # `megalinter-reports/updated_sources/` dirs on every run without cleaning
+      # up the previous one; after several PRs the path exceeded the
+      # filesystem 4096-char limit and `actions/checkout`'s clean:true step
+      # started failing with ENAMETOOLONG. Wipe any leftover megalinter-reports
+      # before checkout, tolerating ENAMETOOLONG on the deepest paths (git's
+      # clean-up will then succeed on the rest).
+      - name: Prune stale mega-linter artifacts
+        run: |
+          if [ -d megalinter-reports ]; then
+            # Shallow rmdir works without descending into the over-deep paths.
+            find megalinter-reports -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null || true
+            rmdir megalinter-reports 2>/dev/null || rm -rf megalinter-reports 2>/dev/null || true
+          fi
+
       - name: Start Pact Broker
         run: |
           cd ~/pact-broker-docker && docker-compose up -d
@@ -60,6 +76,13 @@ jobs:
     runs-on: [self-hosted, osx, arm64, pact-broker]
     needs: frontend-contract-tests
     steps:
+      - name: Prune stale mega-linter artifacts
+        run: |
+          if [ -d megalinter-reports ]; then
+            find megalinter-reports -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null || true
+            rmdir megalinter-reports 2>/dev/null || rm -rf megalinter-reports 2>/dev/null || true
+          fi
+
       - name: Start Pact Broker
         run: |
           cd ~/pact-broker-docker && docker-compose up -d
@@ -107,6 +130,13 @@ jobs:
     runs-on: [self-hosted, osx, arm64, pact-broker]
     needs: [frontend-contract-tests, backend-contract-tests]
     steps:
+      - name: Prune stale mega-linter artifacts
+        run: |
+          if [ -d megalinter-reports ]; then
+            find megalinter-reports -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null || true
+            rmdir megalinter-reports 2>/dev/null || rm -rf megalinter-reports 2>/dev/null || true
+          fi
+
       - name: Start Pact Broker
         run: |
           cd ~/pact-broker-docker && docker-compose up -d

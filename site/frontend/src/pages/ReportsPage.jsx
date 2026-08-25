@@ -88,8 +88,8 @@ function ReportsPage() {
         {
           id: 'pitest',
           name: 'Mutation Test Report',
-          description: 'PITest mutation testing results',
-          file: 'pitest/index.html',
+          description: 'PITest mutation testing results (skipped in frontend build, placeholder shown)',
+          file: 'pit-reports/index.html',
         },
       ],
     },

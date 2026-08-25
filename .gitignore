@@ -1,2 +1,6 @@
 # superpowers/sdd/* — plan execution workspaces (git-ignored scratch)
 /.superpowers/
+
+# MegaLinter output. APPLY_FIXES is disabled (see .mega-linter.yml) but the
+# directory is still created on every run and must never be committed.
+megalinter-reports/
