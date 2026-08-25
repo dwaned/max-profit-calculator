@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Stock.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">max-profit-calculator</a> &gt; <a href="index.source.html" class="el_package">com.maxprofit.calculator</a> &gt; <span class="el_source">Stock.java</span></div><h1>Stock.java</h1><pre class="source lang-java linenums">package com.maxprofit.calculator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Engine for the Max Profit Calculator.
+ *
+ * &lt;p&gt;{@link #returnIndicesMaxProfit(int, List, List)} solves the bounded
+ * knapsack problem: given a budget ({@code savings}) and two equal-length
+ * lists of buy/sell prices, return the subset of indices with the maximum
+ * {@code Σ(sell − buy)} that fits in the budget. Ties on profit are broken
+ * by preferring the subset with the smallest {@code Σ(buy)}, which
+ * corresponds to the project requirement &quot;System chooses the max profit
+ * with the least amount of savings used.&quot;
+ *
+ * &lt;p&gt;Complexity is O(n · savings) — a 1-D dynamic program over the savings
+ * axis with one forward pass per item and a linear backtrack. The previous
+ * brute-force permutation approach was O(2^n) and only fit within
+ * performance budgets because the input cap of {@value #MAX_PRICE_LIST_SIZE}
+ * keeps 2^100 impractical.
+ */
+@SuppressWarnings({&quot;checkstyle:LineLength&quot;, &quot;checkstyle:OperatorWrap&quot;})
+public final class Stock {
+
+    @SuppressWarnings({&quot;checkstyle:VisibilityModifier&quot;, &quot;checkstyle:JavadocVariable&quot;})
+<span class="fc" id="L32">    private static final Logger LOGGER = LoggerFactory.getLogger(Stock.class);</span>
+
+    @SuppressWarnings({&quot;checkstyle:VisibilityModifier&quot;, &quot;checkstyle:JavadocVariable&quot;})
+    private static final int MAX_PRICE_LIST_SIZE = 100;
+
+    private Stock() {
+    }
+
+    /**
+     * Returns the combination of indices which yields the largest profit.
+     *
+     * @param saving       the amount of savings (budget)
+     * @param currentValue list of current prices for stocks
+     * @param futureValue  list of future prices for stocks
+     * @return the {@link CalculationResult} describing the chosen subset
+     */
+    public static CalculationResult returnIndicesMaxProfit(final int saving,
+                                                           final List&lt;Integer&gt; currentValue,
+                                                           final List&lt;Integer&gt; futureValue) {
+<span class="fc" id="L51">        return returnIndicesMaxProfit(saving, currentValue, futureValue, null);</span>
+    }
+
+    /**
+     * Returns the combination of indices which yields the largest profit.
+     *
+     * @param saving       the amount of savings (budget)
+     * @param currentValue list of current prices for stocks
+     * @param futureValue  list of future prices for stocks
+     * @param companyNames optional list of company names for each stock (filtered to the chosen indices)
+     * @return the {@link CalculationResult} describing the chosen subset
+     */
+    public static CalculationResult returnIndicesMaxProfit(final int saving,
+                                                           final List&lt;Integer&gt; currentValue,
+                                                           final List&lt;Integer&gt; futureValue,
+                                                           final List&lt;String&gt; companyNames) {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (currentValue == null) {</span>
+<span class="fc" id="L68">            throw new IllegalArgumentException(&quot;currentValue must not be null&quot;);</span>
+        }
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (futureValue == null) {</span>
+<span class="fc" id="L71">            throw new IllegalArgumentException(&quot;futureValue must not be null&quot;);</span>
+        }
+
+<span class="fc" id="L74">        final int n = currentValue.size();</span>
+
+<span class="fc bfc" id="L76" title="All 4 branches covered.">        if (currentValue.stream().anyMatch(o -&gt; o &lt;= 0)</span>
+<span class="fc bfc" id="L77" title="All 4 branches covered.">                || futureValue.stream().anyMatch(o -&gt; o &lt;= 0)) {</span>
+<span class="fc" id="L78">            throw new IllegalArgumentException(&quot;prices must be positive integers&quot;);</span>
+        }
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (n != futureValue.size()) {</span>
+<span class="fc" id="L82">            throw new IllegalArgumentException(</span>
+                    &quot;currentValue and futureValue must have the same size (got &quot;
+<span class="fc" id="L84">                            + n + &quot; and &quot; + futureValue.size() + &quot;)&quot;);</span>
+        }
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (n &gt; MAX_PRICE_LIST_SIZE) {</span>
+<span class="fc" id="L88">            throw new IllegalArgumentException(</span>
+                    &quot;price lists must not exceed &quot; + MAX_PRICE_LIST_SIZE + &quot; entries (got &quot; + n + &quot;)&quot;);
+        }
+
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (n == 0) {</span>
+<span class="fc" id="L93">            return new CalculationResult(0, new ArrayList&lt;&gt;(), 0, saving, companyNames);</span>
+        }
+
+        // dp[i][c] = maximum profit achievable with the first i items (items 0..i-1)
+// using exactly c savings. Standard 0/1 knapsack 2-D table — easier to reason
+// about for backtracking than the 1-D optimised form, and bounded by
+// {@code priceListMaxSize=100} × savings ≤ 1000.
+<span class="fc" id="L100">        final int[][] dp = new int[n + 1][saving + 1];</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int i = 0; i &lt;= n; i++) {</span>
+<span class="fc" id="L102">            Arrays.fill(dp[i], Integer.MIN_VALUE);</span>
+        }
+<span class="fc" id="L104">        dp[0][0] = 0;</span>
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int i = 1; i &lt;= n; i++) {</span>
+<span class="fc" id="L107">            final int cost = currentValue.get(i - 1);</span>
+<span class="fc" id="L108">            final int profit = futureValue.get(i - 1) - currentValue.get(i - 1);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            for (int c = 0; c &lt;= saving; c++) {</span>
+                // Option A: skip item i-1.
+<span class="fc" id="L111">                dp[i][c] = dp[i - 1][c];</span>
+                // Option B: include item i-1 if it fits.
+<span class="fc bfc" id="L113" title="All 4 branches covered.">                if (c &gt;= cost &amp;&amp; dp[i - 1][c - cost] != Integer.MIN_VALUE) {</span>
+<span class="fc" id="L114">                    final int included = dp[i - 1][c - cost] + profit;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                    if (included &gt; dp[i][c]) {</span>
+<span class="fc" id="L116">                        dp[i][c] = included;</span>
+                    }
+                }
+            }
+        }
+
+        // Find the maximum profit, and the smallest cost achieving it (tie-break).
+<span class="fc" id="L123">        int bestProfit = Integer.MIN_VALUE;</span>
+<span class="fc" id="L124">        int minCost = -1;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (int c = 0; c &lt;= saving; c++) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            if (dp[n][c] &gt; bestProfit) {</span>
+<span class="fc" id="L127">                bestProfit = dp[n][c];</span>
+<span class="fc" id="L128">                minCost = c;</span>
+            }
+        }
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (bestProfit &lt;= 0) {</span>
+            // No profitable combination — the empty set has profit 0 by construction.
+<span class="fc" id="L134">            return new CalculationResult(0, new ArrayList&lt;&gt;(), 0, saving, companyNames);</span>
+        }
+
+        // Backtrack from dp[n][minCost]. Item i-1 is in the chosen subset iff the
+        // state differs from the previous row (i.e. including item i-1 strictly
+        // improved the dp value at this state).
+<span class="fc" id="L140">        final List&lt;Integer&gt; selected = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L141">        int c = minCost;</span>
+<span class="fc bfc" id="L142" title="All 4 branches covered.">        for (int i = n; i &gt; 0 &amp;&amp; c &gt; 0; i--) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            if (dp[i][c] != dp[i - 1][c]) {</span>
+<span class="fc" id="L144">                selected.add(i - 1);</span>
+<span class="fc" id="L145">                c -= currentValue.get(i - 1);</span>
+            }
+        }
+<span class="fc" id="L148">        Collections.sort(selected);</span>
+
+<span class="fc" id="L150">        final int remaining = saving - minCost;</span>
+
+<span class="fc" id="L152">        List&lt;String&gt; filteredCompanyNames = null;</span>
+<span class="pc bpc" id="L153" title="1 of 4 branches missed.">        if (companyNames != null &amp;&amp; !selected.isEmpty()) {</span>
+<span class="fc" id="L154">            filteredCompanyNames = new ArrayList&lt;&gt;(selected.size());</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            for (Integer index : selected) {</span>
+<span class="pc bpc" id="L156" title="2 of 4 branches missed.">                if (index &gt;= 0 &amp;&amp; index &lt; companyNames.size()) {</span>
+<span class="fc" id="L157">                    filteredCompanyNames.add(companyNames.get(index));</span>
+                }
+<span class="fc" id="L159">            }</span>
+        }
+
+<span class="fc" id="L162">        return new CalculationResult(bestProfit, selected, minCost, remaining, filteredCompanyNames);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
