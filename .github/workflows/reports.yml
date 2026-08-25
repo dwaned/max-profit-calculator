@@ -101,5 +101,4 @@ jobs:
 
           Re-runs \`mvn verify site\` and commits the output under
           \`site/frontend/public/reports/\` so Vite ships it at \`/reports/*\`
-          on the deployed site." \
-            --label "automated-pr"
+          on the deployed site."
