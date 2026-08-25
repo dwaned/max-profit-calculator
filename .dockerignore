@@ -25,6 +25,7 @@ target/
 .planning/
 .playwright-mcp/
 .superpowers/
+megalinter-reports/
 *.md
 !site/frontend/README.md
 

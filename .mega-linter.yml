@@ -7,7 +7,15 @@ DISABLE:
   - COPYPASTE
   - SPELL
 
-APPLY_FIXES: all
+# APPLY_FIXES is disabled: each run used to commit a fresh
+# `megalinter-reports/updated_sources/` directory back to the branch, and
+# MegaLinter does not clean up the previous run's output before writing the
+# next one. After several PRs the path became deeply nested
+# (megalinter-reports/updated_sources/megalinter-reports/updated_sources/...)
+# and exceeded the filesystem 4096-char limit, causing every subsequent
+# `actions/checkout` with `clean: true` to fail with ENAMETOOLONG.
+# Manual fixes are still encouraged — they just don't get auto-committed.
+APPLY_FIXES: none
 
 DISABLE_LINTERS:
   - REPOSITORY_TRIVY
