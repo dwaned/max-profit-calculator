@@ -65,6 +65,11 @@ jobs:
         # mvn site aborts if the pitest reporting goal can't find
         # target/pit-reports. Pre-create it with a placeholder so the
         # site plugin still aggregates pitest's section with a stub.
+        # Activate -Pplaywright-tests so PlaywrightUITests is included in
+        # surefire-report.html alongside the other unit/controller tests.
+        # The class is misnamed — it uses @WebMvcTest + MockMvc, no real
+        # browser is launched — so it works fine on a CI runner with no
+        # playwright browsers installed.
         run: |
           mkdir -p target/pit-reports
           printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
@@ -73,6 +78,7 @@ jobs:
             org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent \
             test \
             org.jacoco:jacoco-maven-plugin:0.8.8:report \
+            -Pplaywright-tests \
             site -q
 
       - name: Copy reports into site/frontend/public/reports
