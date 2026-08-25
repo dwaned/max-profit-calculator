@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>RateLimitFilter xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/com/maxprofit/calculator/controller/RateLimitFilter.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> com.maxprofit.calculator.controller;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> jakarta.servlet.FilterChain;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> jakarta.servlet.ServletException;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> jakarta.servlet.http.HttpServletRequest;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> jakarta.servlet.http.HttpServletResponse;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.springframework.http.HttpStatus;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.springframework.http.MediaType;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.springframework.stereotype.Component;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.springframework.web.filter.OncePerRequestFilter;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment"> * Servlet filter that enforces per-IP rate limiting on the {@code /api/calculate}</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment"> * endpoint via {@link RateLimiterService}.</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;When the bucket has tokens, the request is forwarded to the controller</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * chain. When the bucket is empty, the filter responds directly with HTTP 429</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> * and a JSON body of the form {@code {"message": "Rate limit exceeded"}}.</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;The filter checks the request URI internally so only {@code /api/calculate}</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * is rate-limited; other endpoints (notably {@code /api/health}) are passed</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * through unconditionally. Client identification prefers {@code X-Forwarded-For}</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * (Render / load balancer proxy) over {@code request.getRemoteAddr()}.</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  @Component
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="RateLimitFilter" href="../../../../com/maxprofit/calculator/controller/RateLimitFilter.html#RateLimitFilter">RateLimitFilter</a> <strong class="jxr_keyword">extends</strong> OncePerRequestFilter {
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOGGER = LoggerFactory.getLogger(RateLimitFilter.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String X_FORWARDED_FOR = <span class="jxr_string">"X-Forwarded-For"</span>;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CALCULATE_PATH = <span class="jxr_string">"/api/calculate"</span>;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="RateLimiterService" href="../../../../com/maxprofit/calculator/controller/RateLimiterService.html#RateLimiterService">RateLimiterService</a> limiter;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> <a name="RateLimitFilter" href="../../../../com/maxprofit/calculator/controller/RateLimitFilter.html#RateLimitFilter">RateLimitFilter</a>(<strong class="jxr_keyword">final</strong> <a name="RateLimiterService" href="../../../../com/maxprofit/calculator/controller/RateLimiterService.html#RateLimiterService">RateLimiterService</a> limiter) {
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">this</strong>.limiter = limiter;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      }
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      @Override
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> doFilterInternal(<strong class="jxr_keyword">final</strong> HttpServletRequest request,
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>                                      <strong class="jxr_keyword">final</strong> HttpServletResponse response,
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>                                      <strong class="jxr_keyword">final</strong> FilterChain chain) <strong class="jxr_keyword">throws</strong> ServletException, IOException {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <strong class="jxr_keyword">if</strong> (!isRateLimited(request)) {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>              chain.doFilter(request, response);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>              <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">final</strong> String clientKey = clientKey(request);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">if</strong> (limiter.tryAcquire(clientKey)) {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              chain.doFilter(request, response);
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>              LOGGER.warn(<span class="jxr_string">"Rate limit exceeded for client {}"</span>, clientKey);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>              response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>              response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>              response.getWriter().write(<span class="jxr_string">"{\&quot;message\&quot;: \&quot;Rate limit exceeded\&quot;}"</span>);
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          }
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * @return {@code true} iff the request URI is the {@code /api/calculate}</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     *         endpoint and should be rate-limited. Uses {@code endsWith} so the</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     *         filter works whether or not a servlet context path is configured</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     *         (production has context path {@code /api}; MockMvc tests do not).</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isRateLimited(<strong class="jxr_keyword">final</strong> HttpServletRequest request) {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          String uri = request.getRequestURI();
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">return</strong> uri != <strong class="jxr_keyword">null</strong> &amp;&amp; uri.endsWith(<span class="jxr_string">"/calculate"</span>);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      }
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * Resolves the per-request client key. Honours {@code X-Forwarded-For} so</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * the filter behaves correctly behind Render's reverse proxy / load balancer.</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * @param request the inbound servlet request</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     * @return the client IP (or proxy-resolved address)</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">static</strong> String clientKey(<strong class="jxr_keyword">final</strong> HttpServletRequest request) {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          String forwarded = request.getHeader(X_FORWARDED_FOR);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">if</strong> (forwarded != <strong class="jxr_keyword">null</strong> &amp;&amp; !forwarded.isBlank()) {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">int</strong> comma = forwarded.indexOf(',');
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>              <strong class="jxr_keyword">return</strong> (comma &gt;= 0 ? forwarded.substring(0, comma) : forwarded).trim();
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          }
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">return</strong> request.getRemoteAddr();
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2026. All rights reserved.</div>
+</body>
+</html>
