@@ -70,10 +70,14 @@ jobs:
         # [skip ci] keeps this auto-commit from re-triggering the workflow
         # itself; `paths` above already excludes the reports dir, but the
         # [skip ci] tag is belt-and-suspenders.
+        # Use `git status --porcelain` (not `git diff --quiet`) because the
+        # reports directory is brand new on the first run — `git diff` only
+        # sees tracked files, so it would report "no changes" and silently
+        # skip the very first commit we actually want.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- site/frontend/public/reports; then
+          if [ -z "$(git status --porcelain -- site/frontend/public/reports)" ]; then
             echo "Reports unchanged, nothing to commit"
             exit 0
           fi
