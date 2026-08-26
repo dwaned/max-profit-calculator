@@ -22,6 +22,11 @@ import org.junit.jupiter.api.Test;
  * ({@code PLAYWRIGHT_BASE_URL}, defaults to {@code http://localhost:3000}).
  * In CI the {@code containers.yml} job brings the full stack up via
  * docker-compose before running {@code mvn test -Pplaywright-tests}.
+ *
+ * <p>The default surefire config in {@code pom.xml} excludes this class so
+ * it does not run under {@code mvn test} (where there is no browser binary
+ * and no frontend). The reports workflow likewise excludes it explicitly
+ * via {@code -Dtest='…,!PlaywrightUITests, …'}.
  */
 @SuppressWarnings({"checkstyle:LineLength", "checkstyle:magicnumber"})
 public class PlaywrightUITests {
