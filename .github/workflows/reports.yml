@@ -65,11 +65,13 @@ jobs:
         # mvn site aborts if the pitest reporting goal can't find
         # target/pit-reports. Pre-create it with a placeholder so the
         # site plugin still aggregates pitest's section with a stub.
-        # PlaywrightUITests is gated behind the -Pplaywright-tests profile
-        # and is not picked up by the default `mvn test` invocation below,
-        # so it does not need to be in the exclusion list. It still belongs
-        # here in the comment so future maintainers don't re-add it
-        # thinking it's missing.
+        # PlaywrightUITests is excluded by default surefire config in
+        # pom.xml (no profile required), but `-Dtest=…` overrides that
+        # exclusion so we re-add it here. The test needs (a) a real
+        # Chromium binary and (b) the frontend at PLAYWRIGHT_BASE_URL
+        # — neither is available on the clean GitHub-hosted runner.
+        # The Playwright test runs in containers.yml instead, which
+        # brings up the full stack via docker-compose.
         # Exclude ContainerTests / ApiPerformanceTests (need Docker via
         # Testcontainers — not available on the clean GitHub-hosted
         # runner) and LocalContractVerificationTest / PactBrokerVerificationTest
@@ -79,7 +81,7 @@ jobs:
           printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
             > target/pit-reports/index.html
           mvn -B -DskipITs -Dpitest.skip=true \
-            -Dtest='!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
+            -Dtest='!PlaywrightUITests,!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
             org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent \
             test \
             org.jacoco:jacoco-maven-plugin:0.8.8:report \
