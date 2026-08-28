@@ -87,9 +87,17 @@ jobs:
           VITE_API_URL: "http://localhost:8080"  # not used in build, but kept for parity
 
       - name: Install Playwright browser
-        # Playwright Java SDK needs the Chromium binary downloaded to
-        # ~/.cache/ms-playwright/. Same approach as containers.yml.
-        run: mvn -B -Pplaywright-tests exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" --no-transfer-progress
+        # Playwright Java SDK reads the Chromium binary from
+        # ~/.cache/ms-playwright/. The npm-shipped @playwright/test CLI
+        # installs that binary cleanly without needing to wire the test
+        # scope playwright dependency into `mvn exec:java`'s classpath
+        # (the Java SDK is test-scope and exec:java doesn't honour that).
+        working-directory: site/frontend
+        run: |
+          if [ ! -d "node_modules/@playwright/test" ]; then
+            npm install --no-save @playwright/test@1.49.0
+          fi
+          npx playwright install chromium
 
       - name: Wait for vite preview
         run: |
