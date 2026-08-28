@@ -12,6 +12,13 @@
 # pushes to main get rejected with GH013. The workflow therefore pushes
 # to a throwaway `chore/reports-<sha>` branch and opens a PR.
 #
+# Playwright: the workflow builds the frontend with `vite build`, then
+# serves the static output via `vite preview` on a known port so the
+# Playwright UI test can drive the real production bundle (not dev
+# server) and its results land in surefire-report.html alongside the
+# other tests. Chromium is downloaded by the playwright CLI in the
+# `Install Playwright browser` step.
+#
 # Trade-off: reports go stale between regenerations. They are accurate
 # at the moment of the last green main build; the timestamp in `index.html`
 # makes that obvious.
@@ -28,6 +35,7 @@ on:
       - "pom.xml"
       - "checkstyle.xml"
       - "checkstyle_suppressions.xml"
+      - "site/frontend/**"
   workflow_dispatch:
 
 concurrency:
@@ -41,7 +49,7 @@ permissions:
 jobs:
   regenerate-reports:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
 
     steps:
       - name: Checkout
@@ -57,7 +65,46 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Generate Maven reports
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: site/frontend/package-lock.json
+
+      - name: Build the frontend
+        working-directory: site/frontend
+        run: npm ci && npm run build
+
+      - name: Start vite preview (background)
+        # `vite preview` serves the production build on :4173. The Playwright
+        # test points at PLAYWRIGHT_BASE_URL=http://127.0.0.1:4173. We run
+        # it in the background so the workflow can continue; `wait-on`
+        # below blocks until the server is actually accepting connections.
+        working-directory: site/frontend
+        run: npx vite preview --port 4173 --host 127.0.0.1 &
+        env:
+          VITE_API_URL: "http://localhost:8080"  # not used in build, but kept for parity
+
+      - name: Install Playwright browser
+        # Playwright Java SDK needs the Chromium binary downloaded to
+        # ~/.cache/ms-playwright/. Same approach as containers.yml.
+        run: mvn -B -Pplaywright-tests exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" --no-transfer-progress
+
+      - name: Wait for vite preview
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://127.0.0.1:4173/ > /dev/null; then
+              echo "Frontend ready on :4173"
+              exit 0
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
+          echo "Frontend did not become ready in 30s"
+          exit 1
+
+      - name: Generate Maven reports (incl. Playwright UI test)
         # The prepare-agent goal has to be invoked explicitly because the
         # pom only declares jacoco in <reporting>, not in <build>. Without
         # it no target/jacoco.exec is created and the site plugin has
@@ -65,23 +112,21 @@ jobs:
         # mvn site aborts if the pitest reporting goal can't find
         # target/pit-reports. Pre-create it with a placeholder so the
         # site plugin still aggregates pitest's section with a stub.
-        # PlaywrightUITests is excluded by default surefire config in
-        # pom.xml (no profile required), but `-Dtest=…` overrides that
-        # exclusion so we re-add it here. The test needs (a) a real
-        # Chromium binary and (b) the frontend at PLAYWRIGHT_BASE_URL
-        # — neither is available on the clean GitHub-hosted runner.
-        # The Playwright test runs in containers.yml instead, which
-        # brings up the full stack via docker-compose.
-        # Exclude ContainerTests / ApiPerformanceTests (need Docker via
-        # Testcontainers — not available on the clean GitHub-hosted
-        # runner) and LocalContractVerificationTest / PactBrokerVerificationTest
-        # (need a Pact broker URL — also not available).
+        # PlaywrightUITests is INCLUDED here — the previous workflow
+        # version excluded it because no browser / frontend was available.
+        # Now that we build + serve the frontend in this job, the test
+        # runs and its result lands in surefire-report.html.
+        # ContainerTests / ApiPerformanceTests / LocalContractVerificationTest
+        # / PactBrokerVerificationTest still need Docker / a Pact broker
+        # and are excluded.
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
         run: |
           mkdir -p target/pit-reports
           printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
             > target/pit-reports/index.html
           mvn -B -DskipITs -Dpitest.skip=true \
-            -Dtest='!PlaywrightUITests,!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
+            -Dtest='!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
             org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent \
             test \
             org.jacoco:jacoco-maven-plugin:0.8.8:report \
@@ -123,6 +168,7 @@ jobs:
             --title "chore(reports): regenerate Maven site reports" \
             --body "Auto-generated by the \`Regenerate Maven reports\` workflow.
 
-          Re-runs \`mvn verify site\` and commits the output under
+          Re-runs \`mvn verify site\` (including the Playwright UI test
+          against \`vite preview\` on :4173) and commits the output under
           \`site/frontend/public/reports/\` so Vite ships it at \`/reports/*\`
           on the deployed site."

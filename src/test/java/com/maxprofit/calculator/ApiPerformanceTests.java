@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.lessThan;
  * mvn test -Dtest=ApiPerformanceTests -Pcontainer-tests
  * </pre>
  * 
- * @see PerformanceTests for algorithm-level performance tests
+ * @see AlgorithmBenchmarksTests for in-process algorithm benchmarks
  */
 @Testcontainers
 @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength", "checkstyle:VisibilityModifier"})
