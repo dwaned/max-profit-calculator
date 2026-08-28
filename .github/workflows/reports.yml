@@ -87,16 +87,15 @@ jobs:
           VITE_API_URL: "http://localhost:8080"  # not used in build, but kept for parity
 
       - name: Install Playwright browser
-        # Playwright Java SDK reads the Chromium binary from
-        # ~/.cache/ms-playwright/. The npm-shipped @playwright/test CLI
-        # installs that binary cleanly without needing to wire the test
-        # scope playwright dependency into `mvn exec:java`'s classpath
-        # (the Java SDK is test-scope and exec:java doesn't honour that).
+        # Playwright reads the Chromium binary from ~/.cache/ms-playwright/.
+        # The npm-shipped @playwright/test CLI installs that binary cleanly
+        # without needing to wire the test-scope playwright dependency into
+        # `mvn exec:java`'s classpath. The same browser is then reused by
+        # both the Maven Java test and the Node.js @playwright/test run
+        # below — no second download.
         working-directory: site/frontend
         run: |
-          if [ ! -d "node_modules/@playwright/test" ]; then
-            npm install --no-save @playwright/test@1.49.0
-          fi
+          npm ci
           npx playwright install chromium
 
       - name: Wait for vite preview
@@ -112,7 +111,7 @@ jobs:
           echo "Frontend did not become ready in 30s"
           exit 1
 
-      - name: Generate Maven reports (incl. Playwright UI test)
+      - name: Generate Maven reports (incl. Playwright Java test)
         # The prepare-agent goal has to be invoked explicitly because the
         # pom only declares jacoco in <reporting>, not in <build>. Without
         # it no target/jacoco.exec is created and the site plugin has
@@ -140,10 +139,38 @@ jobs:
             org.jacoco:jacoco-maven-plugin:0.8.8:report \
             site -q
 
-      - name: Copy reports into site/frontend/public/reports
+      - name: Run Playwright Node tests (HTML reporter)
+        # The Java SDK test only writes one row to surefire-report.html.
+        # The official Playwright HTML reporter (the one used by
+        # `npx playwright test`) produces a self-contained
+        # playwright-report/ bundle with per-test traces, screenshots,
+        # network logs and the same interactive UI as the official
+        # @playwright/test runner. We ship that bundle as
+        # public/playwright-report/ so the Reports page can link to it.
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+          CI: "1"  # disables html reporter's "open browser" behaviour
+        working-directory: site/frontend
+        run: |
+          npx playwright test --reporter=html || true
+          # Don't fail the job if the HTML reporter run had a flake —
+          # the surefire run above is the source of truth.
+
+      - name: Copy reports into site/frontend/public
         run: |
           rm -rf site/frontend/public/reports
+          rm -rf site/frontend/public/playwright-report
           cp -r target/site site/frontend/public/reports
+          # The Playwright HTML reporter writes to playwright-report/ at
+          # site/frontend/ (the playwright.config.js runs from there
+          # with outputFolder: './playwright-report'). The HTML
+          # reporter's index.html references its own assets via
+          # relative paths (./data/, ./trace/), so the bundle must
+          # sit at the root of the deployed tree at /playwright-report/
+          # for those relative links to resolve.
+          if [ -d site/frontend/playwright-report ]; then
+            cp -r site/frontend/playwright-report site/frontend/public/playwright-report
+          fi
 
       - name: Open PR with regenerated reports
         # Use `git status --porcelain` (not `git diff --quiet`) because the

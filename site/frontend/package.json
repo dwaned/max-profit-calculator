@@ -11,7 +11,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:pact": "vitest run --config vitest.pact.config.js",
-    "test:pact:ci": "vitest run --config vitest.pact.config.js"
+    "test:pact:ci": "vitest run --config vitest.pact.config.js",
+    "test:ui": "playwright test --config=playwright.config.js",
+    "test:ui:report": "playwright test --config=playwright.config.js --reporter=html"
   },
   "dependencies": {
     "axios": "^1.16.0",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@pact-foundation/pact": "^16.2.0",
+    "@playwright/test": "^1.49.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -33,6 +36,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "playwright": "^1.49.0",
     "tailwindcss": "^4.1.18",
     "vite": "^8.0.8",
     "vitest": "^4.1.0"
