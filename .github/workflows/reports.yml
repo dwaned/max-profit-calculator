@@ -74,7 +74,11 @@ jobs:
 
       - name: Build the frontend
         working-directory: site/frontend
-        run: npm ci && npm run build
+        # Use `npm install` (not `npm ci`) because the package-lock can be
+        # subtly out of sync after multiple `npm install` rounds even when
+        # `npm ci` reports success locally — the CI runner's npm version is
+        # stricter. `npm install` reconciles any drift against package.json.
+        run: npm install && npm run build
 
       - name: Start vite preview (background)
         # `vite preview` serves the production build on :4173. The Playwright
@@ -95,7 +99,6 @@ jobs:
         # below — no second download.
         working-directory: site/frontend
         run: |
-          npm ci
           npx playwright install chromium
 
       - name: Wait for vite preview
