@@ -1,6 +1,20 @@
 # superpowers/sdd/* — plan execution workspaces (git-ignored scratch)
 /.superpowers/
 
+# Planning scratch from opencode/Claude worktrees
+.planning/
+
+# Playwright MCP server logs / snapshots from local browser testing
+.playwright-mcp/
+
+# Maven build outputs — never commit
+target/
+
+# Maven site reports generated into the source tree by mistake (the
+# workflow copies these into site/frontend/public/reports/ which IS
+# tracked; never commit anything under target/site/ directly)
+target/site/
+
 # MegaLinter output. APPLY_FIXES is disabled (see .mega-linter.yml) but the
 # directory is still created on every run and must never be committed.
 megalinter-reports/

@@ -62,7 +62,7 @@ function ReportsPage() {
       name: 'Performance Tests',
       color: 'bg-purple-500',
       icon: '⚡',
-      description: 'Algorithm execution time and memory profiling tests',
+      description: 'End-to-end API response time under load (ApiPerformanceTests, via Testcontainers) and in-process algorithm benchmarks — execution time and memory profile at various input sizes (AlgorithmBenchmarksTests). Run separately: `-Pcontainer-tests` for the API suite, `-Pperformance-tests` for the benchmark suite.',
       reports: [
         {
           id: 'surefire-performance',

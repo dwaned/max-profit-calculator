@@ -239,11 +239,11 @@ void shouldCalculateProfit() {
     borderColor: 'border-purple-400',
     textColor: 'text-purple-400',
     crossCutting: true,
-    description: 'Verify algorithm execution time, API response time, and memory usage under load. Ensures the system meets performance requirements under various input sizes.',
+    description: 'Two distinct test suites both live under the Performance umbrella. ApiPerformanceTests measures real end-to-end API response time under load (Testcontainers + RestAssured); AlgorithmBenchmarksTests measures the in-process algorithm’s execution time and memory profile at various input sizes. Run separately via `-Pperformance-tests` or `-Pcontainer-tests`.',
     framework: 'JUnit 5 + RestAssured',
     testCount: 7,
     testClasses: [
-      { name: 'PerformanceTests', style: 'example' },
+      { name: "AlgorithmBenchmarksTests", style: "example" },
       { name: 'ApiPerformanceTests', style: 'example' }
     ],
     codeExample: `@Test
@@ -346,7 +346,7 @@ export const performanceInfo = {
   name: 'Performance',
   crossCutting: true,
   scenarioCount: 7,
-  description: 'Performance is a cross-cutting concern that can be measured at any testing level (algorithm execution time, API response time, memory usage). Not a pyramid layer — applied alongside the layer whose non-functional requirements you want to verify. This project uses two suites: PerformanceTests (algorithm + memory) and ApiPerformanceTests (end-to-end API timing via Testcontainers).',
+  description: 'Performance is a cross-cutting concern that can be measured at any testing level (API response time, throughput, resource usage, algorithm execution time, memory profile). Not a pyramid layer — applied alongside the layer whose non-functional requirements you want to verify. This project uses two suites: AlgorithmBenchmarksTests (in-process algorithm + memory profile) and ApiPerformanceTests (end-to-end API timing via Testcontainers).',
   badge: 'Performance'
 };
 

@@ -197,7 +197,7 @@
                                 <exclude>**/PropertyBasedStockTests.java</exclude>
                                 <exclude>**/RunCucumberTest.java</exclude>
                                 <exclude>**/PlaywrightUITests.java</exclude>
-                                <exclude>**/PerformanceTests.java</exclude>
+                                <exclude>**/AlgorithmBenchmarksTests.java</exclude>
                             </excludes>
                         </configuration>
                         <executions>
@@ -249,7 +249,7 @@
                         <version>3.0.0-M7</version>
                         <configuration>
                             <includes>
-                                <include>**/PerformanceTests.java</include>
+                                <include>**/AlgorithmBenchmarksTests.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/ExampleBasedTests.java</exclude>
@@ -257,6 +257,7 @@
                                 <exclude>**/RunCucumberTest.java</exclude>
                                 <exclude>**/PlaywrightUITests.java</exclude>
                                 <exclude>**/ContainerTests.java</exclude>
+                        <exclude>**/AlgorithmBenchmarksTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                             </excludes>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
@@ -286,8 +287,9 @@
                                 <exclude>**/CalculatorControllerHttpStatusTest.java</exclude>
                                 <exclude>**/PlaywrightUITests.java</exclude>
                                 <exclude>**/ContainerTests.java</exclude>
+                        <exclude>**/AlgorithmBenchmarksTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
-                                <exclude>**/PerformanceTests.java</exclude>
+                                <exclude>**/AlgorithmBenchmarksTests.java</exclude>
                             </excludes>
                             <systemPropertyVariables>
                                 <pactbrokerurl>${pactbrokerurl:}</pactbrokerurl>
@@ -559,6 +561,7 @@
                     </properties>
                     <excludes>
                         <exclude>**/ContainerTests.java</exclude>
+                        <exclude>**/AlgorithmBenchmarksTests.java</exclude>
                         <exclude>**/ApiPerformanceTests.java</exclude>
                         <exclude>**/PlaywrightUITests.java</exclude>
                         <exclude>**/LocalContractVerificationTest.java</exclude>
