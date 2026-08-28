@@ -15,21 +15,23 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Algorithm benchmarks for the Max Profit Calculator.
+ * Stress tests for the {@link Stock#returnIndicesMaxProfit} algorithm.
  *
- * <p>This test class measures the {@link Stock#returnIndicesMaxProfit} algorithm
- * itself in isolation — no Spring context, no HTTP. Useful for catching
- * polynomial-vs-brute-force regressions; not a substitute for true
- * performance testing, which is {@link ApiPerformanceTests}.
- *
- * <p>What is verified:
+ * <p>Pure in-process tests — no Spring context, no HTTP. They measure
+ * how the algorithm holds up under increasingly heavy inputs:
  * <ul>
- *   <li>Algorithm execution time for various input sizes</li>
- *   <li>Memory usage under load</li>
- *   <li>No OutOfMemoryError conditions</li>
+ *   <li>Execution time at the maximum allowed input size (100 stocks)</li>
+ *   <li>Memory usage at the maximum allowed input size</li>
+ *   <li>No {@link OutOfMemoryError} at the maximum allowed input size</li>
  * </ul>
  *
- * <p><b>Test Thresholds:</b>
+ * <p>These are not "performance tests" in the usual sense
+ * (response time, throughput, latency) — that is
+ * {@link ApiPerformanceTests}. Stress tests push the system past
+ * expected operating conditions to catch robustness issues (OOM,
+ * runaway allocations, runaway time).
+ *
+ * <p><b>Thresholds:</b>
  * <ul>
  *   <li>5 items: &lt; 10ms</li>
  *   <li>10 items: &lt; 100ms</li>
@@ -45,13 +47,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * <p><b>Running these tests:</b>
  * <pre>
- * mvn test -Dtest=AlgorithmBenchmarksTests
+ * mvn test -Dtest=StressTests
  * </pre>
- *
- * @see ApiPerformanceTests for end-to-end API response time
  */
 @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength", "checkstyle:VisibilityModifier"})
-class AlgorithmBenchmarksTests {
+class StressTests {
 
     private static final int SMALL_SIZE = 5;
     private static final int MEDIUM_SIZE = 10;

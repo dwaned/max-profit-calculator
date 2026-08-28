@@ -243,7 +243,7 @@ void shouldCalculateProfit() {
     framework: 'JUnit 5 + RestAssured',
     testCount: 7,
     testClasses: [
-      { name: "AlgorithmBenchmarksTests", style: "example" },
+      { name: 'StressTests', style: 'example' },
       { name: 'ApiPerformanceTests', style: 'example' }
     ],
     codeExample: `@Test
@@ -346,7 +346,7 @@ export const performanceInfo = {
   name: 'Performance',
   crossCutting: true,
   scenarioCount: 7,
-  description: 'Performance is a cross-cutting concern that can be measured at any testing level (API response time, throughput, resource usage, algorithm execution time, memory profile). Not a pyramid layer — applied alongside the layer whose non-functional requirements you want to verify. This project uses two suites: AlgorithmBenchmarksTests (in-process algorithm + memory profile) and ApiPerformanceTests (end-to-end API timing via Testcontainers).',
+  description: 'Performance is a cross-cutting concern that can be measured at any testing level (API response time, throughput, resource usage, algorithm execution time, memory profile). Not a pyramid layer — applied alongside the layer whose non-functional requirements you want to verify. This project uses two suites: StressTests (in-process algorithm robustness at max input size) and ApiPerformanceTests (end-to-end API timing via Testcontainers).',
   badge: 'Performance'
 };
 

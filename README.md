@@ -32,7 +32,7 @@ This project includes comprehensive performance tests to verify the algorithm me
 
 ### Test Types
 
-#### Algorithm Benchmarks (`AlgorithmBenchmarksTests.java`)
+#### Stress Tests (`StressTests.java`)
 - **5 items**: < 10ms
 - **10 items**: < 100ms
 - **50 items**: < 500ms (primary requirement)
@@ -47,8 +47,8 @@ This project includes comprehensive performance tests to verify the algorithm me
 ### Running Performance Tests
 
 ```bash
-# Run algorithm & memory benchmarks (no Docker required)
-mvn test -Dtest=AlgorithmBenchmarksTests
+# Run algorithm stress tests (no Docker required)
+mvn test -Dtest=StressTests
 
 # Run API performance tests (requires Docker)
 mvn test -Dtest=ApiPerformanceTests -Pcontainer-tests
