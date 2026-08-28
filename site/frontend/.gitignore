@@ -17,8 +17,8 @@ dist-ssr
 # lives at site/frontend/public/playwright-report/, which the reports
 # workflow regenerates from scratch via `cp -r` and must therefore be
 # tracked by git so Render picks it up.
-playwright-report
-test-results
+/playwright-report
+/test-results
 
 # Editor directories and files
 .vscode/*
