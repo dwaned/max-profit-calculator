@@ -76,12 +76,16 @@ public class PlaywrightUITests {
         // Fill the form (aria-labels are stable selectors across the
         // desktop/table and mobile/card layouts).
         page.fill("#savings-amount", "10");
-        page.locator("input[aria-label='Buy price for stock 1']").fill("5");
-        page.locator("input[aria-label='Buy price for stock 2']").fill("5");
-        page.locator("input[aria-label='Buy price for stock 3']").fill("10");
-        page.locator("input[aria-label='Sell price for stock 1']").fill("15");
-        page.locator("input[aria-label='Sell price for stock 2']").fill("10");
-        page.locator("input[aria-label='Sell price for stock 3']").fill("35");
+        // The default form starts with three rows. The aria-labels include the
+        // company name when present (e.g. "Buy price for Acme Corp"); fall
+        // back to a generic label otherwise. nth() is positional and survives
+        // either form.
+        page.locator("input[type='number'][aria-label*='Buy price']").nth(0).fill("5");
+        page.locator("input[type='number'][aria-label*='Buy price']").nth(1).fill("5");
+        page.locator("input[type='number'][aria-label*='Buy price']").nth(2).fill("10");
+        page.locator("input[type='number'][aria-label*='Sell price']").nth(0).fill("15");
+        page.locator("input[type='number'][aria-label*='Sell price']").nth(1).fill("10");
+        page.locator("input[type='number'][aria-label*='Sell price']").nth(2).fill("35");
 
         // Submit and wait for the result card to render.
         page.click("button[type='submit']");
