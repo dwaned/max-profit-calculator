@@ -279,7 +279,18 @@ function ReportsPage() {
                     {activeCategory.reports.map(report => (
                       <a
                         key={report.id}
-                        href={`/reports/${report.file}`}
+                        // Most reports live under /reports/ (the Maven site
+                        // bundle copied to public/reports). The Playwright
+                        // HTML reporter, however, is copied to public/playwright-report
+                        // — at the root of the deployed tree — so its internal
+                        // ./data and ./trace relative links resolve correctly.
+                        // Reports with `external: true` carry a full root
+                        // path (e.g. `/playwright-report/index.html`).
+                        href={
+                          report.external
+                            ? `/${report.file}`
+                            : `/reports/${report.file}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
