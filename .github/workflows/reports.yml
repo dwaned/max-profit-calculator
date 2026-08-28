@@ -192,7 +192,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
-          git add site/frontend/public/reports
+          # Add both the Maven site bundle and the Playwright HTML
+          # reporter bundle. `git add <dir>` only matches tracked files
+          # inside that dir, so we also need to add the playwright-report
+          # dir explicitly — it is a sibling of public/reports, not a
+          # child. Use a single `git add` with both paths so the commit
+          # is atomic.
+          git add site/frontend/public/reports site/frontend/public/playwright-report
           git commit -m "chore(reports): regenerate Maven site reports"
           # Force-push because the reports dir is committed on top of the
           # current main SHA on every run; the SHA used in the branch
