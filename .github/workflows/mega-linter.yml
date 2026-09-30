@@ -1,101 +1,54 @@
 ---
 # MegaLinter GitHub Action configuration file
 # More info at https://megalinter.io
+# Linter selection lives in .mega-linter.yml. Automatic fixes are off: they
+# used to be committed back to PR branches and caused runaway nested
+# megalinter-reports/ directories (ENAMETOOLONG on checkout).
 name: MegaLinter
 run-name: MegaLinter checks
 
 on:
-  # Trigger mega-linter at every push. Action will also be visible from Pull Requests to main
-  # push: # Comment this line to trigger action only on pull-requests (not recommended if you don't pay for GH Actions)
   pull_request:
-    branches: [master, main]
-
-env: # Comment env block if you do not want to apply fixes
-  # APPLY_FIXES is disabled. Each run used to commit a fresh
-  # `megalinter-reports/updated_sources/` directory back to the branch without
-  # cleaning up the previous run's output. After several PRs the path became
-  # deeply nested and started hitting the filesystem 4096-char path limit,
-  # causing every subsequent `actions/checkout` with `clean: true` to fail
-  # with ENAMETOOLONG. Manual fixes are still encouraged — they just don't
-  # get auto-committed.
-  APPLY_FIXES: "none"
-  APPLY_FIXES_EVENT: "none"
-  APPLY_FIXES_MODE: "none"
+    branches: [main]
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   build:
     name: MegaLinter
     runs-on: ubuntu-latest
-
     permissions:
+      contents: read
+      # MegaLinter posts its summary as a PR comment.
       issues: write
       pull-requests: write
-
     steps:
-      # Git Checkout
       - name: Checkout Code
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
+          # Full history so MegaLinter can diff the PR against main.
+          fetch-depth: 0
+          persist-credentials: false
 
-      # MegaLinter
       - name: MegaLinter
         id: ml
-        # You can override MegaLinter flavor used to have faster performances
-        # More info at https://megalinter.io/flavors/
-        uses: oxsecurity/megalinter@v8.4.2
+        uses: oxsecurity/megalinter@9949bad031045f366be2467e00e8371a7328a2e2 # v10.1.0
         env:
-          # All available variables are described in documentation
-          # https://megalinter.io/configuration/
-          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+          # Lints only the files changed in the PR; see https://megalinter.io/configuration/
+          VALIDATE_ALL_CODEBASE: false
+          # Read-only token; zizmor uses it to resolve referenced actions.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
-          DISABLE: COPYPASTE,SPELL # Uncomment to disable copy-paste and spell checks
-          APPLY_FIXES: all
-          APPLY_FIXES_EVENT: pull_request
-          APPLY_FIXES_MODE: commit
 
-      # Upload MegaLinter artifacts
-      - name: Archive production artifacts
+      - name: Archive MegaLinter reports
         if: ${{ success() || failure() }}
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: MegaLinter reports
           path: |
             megalinter-reports
             mega-linter.log
-
-      # Create pull request if applicable (for now works only on PR from same repository, not from forks)
-      - name: Create Pull Request with applied fixes
-        id: cpr
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
-        uses: peter-evans/create-pull-request@v5.0.2
-        with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          commit-message: "[MegaLinter] Apply linters automatic fixes"
-          title: "[MegaLinter] Apply linters automatic fixes"
-          labels: bot
-      - name: Create PR output
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-
-      # Push new commit if applicable (for now works only on PR from same repository, not from forks)
-      - name: Prepare commit
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
-        run: sudo chown -Rc $UID .git/
-      - name: Commit and push applied linter fixes
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
-        uses: stefanzweifel/git-auto-commit-action@v5.0.0
-        with:
-          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-          commit_message: "[MegaLinter] Apply linters fixes"
