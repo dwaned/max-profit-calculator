@@ -71,9 +71,6 @@ cd site/frontend && npx pact-broker publish pacts/ --broker-base-url=https://no-
 # Run mutation testing with PITest
 mvn test -Ppitest
 
-# Run with SonarQube analysis
-mvn verify -Psonar
-
 # Run OWASP dependency check
 mvn verify -Pdependency-check
 ```
@@ -128,7 +125,7 @@ mvn site
 - Log errors appropriately with SLF4J at appropriate levels
 
 ### Testing
-- Use JUnit 5 (Jupiter) for all tests
+- Use JUnit Jupiter (JUnit 6) for all tests
 - Test classes: PascalCase ending with `Tests` or `Test`
 - Test methods: descriptive camelCase starting with `should`
 - Use `@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})` in test classes

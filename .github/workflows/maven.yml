@@ -40,9 +40,12 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Run All Unit Tests (including API HTTP Status)
+      - name: Build and test (checkstyle, all default tests, coverage gate)
+        # `verify` runs every test in the default suite (unit, property-based,
+        # API/security, BDD) and JaCoCo's coverage check; previously only four
+        # hand-picked test classes ran here.
         run: |
-          mvn clean test -Dtest="ExampleBasedTests,PropertyBasedStockTests,CalculatorControllerTest,CalculatorControllerHttpStatusTest"
+          mvn -B clean verify
           TESTS_TOTAL=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           TESTS_FAILED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
           {
@@ -106,8 +109,9 @@ jobs:
         if: always()
         run: |
           mvn test -Dtest="RunCucumberTest"
-          CUCUMBER_TOTAL=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
-          CUCUMBER_FAILED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          CUCUMBER_XML=target/surefire-reports/TEST-com.maxprofit.calculator.RunCucumberTest.xml
+          CUCUMBER_TOTAL=$(grep -m1 -o 'tests="[0-9]*"' "$CUCUMBER_XML" | grep -o '[0-9]*')
+          CUCUMBER_FAILED=$(grep -m1 -o 'failures="[0-9]*"' "$CUCUMBER_XML" | grep -o '[0-9]*')
           {
             echo "### Cucumber BDD Scenarios Results"
             echo "- Total Scenarios: $CUCUMBER_TOTAL"

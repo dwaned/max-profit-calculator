@@ -1,163 +1,129 @@
 # max-profit-calculator
-[![MegaLinter](https://github.com/dwaned/max-profit-calculator/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/dwaned/max-profit-calculator/actions/workflows/mega-linter.yml)
 
-_This was a coding test for an SDET interview process._
+[![Build & tests](https://github.com/dwaned/max-profit-calculator/actions/workflows/maven.yml/badge.svg)](https://github.com/dwaned/max-profit-calculator/actions/workflows/maven.yml)
+[![Frontend CI](https://github.com/dwaned/max-profit-calculator/actions/workflows/frontend.yml/badge.svg)](https://github.com/dwaned/max-profit-calculator/actions/workflows/frontend.yml)
+[![Contract tests](https://github.com/dwaned/max-profit-calculator/actions/workflows/contract-tests.yml/badge.svg)](https://github.com/dwaned/max-profit-calculator/actions/workflows/contract-tests.yml)
+[![Containers](https://github.com/dwaned/max-profit-calculator/actions/workflows/containers.yml/badge.svg)](https://github.com/dwaned/max-profit-calculator/actions/workflows/containers.yml)
 
-```
-TLDR: This repository serves as a learning project and a testing ground for exploring and implementing various software testing strategies.
-It features a simple "Max Profit Calculator" application as the subject of these tests.
-The goal is to demonstrate different testing approaches and their effectiveness in ensuring code quality and correctness.
-```
+_This started as a coding test for an SDET interview process._
 
-## Project Description
+It is now a learning project and testing ground for software testing strategies.
+A small "Max Profit Calculator" (Spring Boot API + React UI) is the system under test,
+and the repository demonstrates many testing levels around it, from property-based
+and mutation testing to consumer-driven contracts and browser tests.
 
-The Max Profit Calculator determines the maximum profit that can be obtained by buying and selling a stock once, given an array of stock prices where each index represents a point in time.
+- **App:** <https://max-profit-frontend.onrender.com>
+- **API:** <https://max-profit-calculator.onrender.com/api> ([Swagger UI](https://max-profit-calculator.onrender.com/api/swagger-ui.html))
+- **Test reports:** <https://dwaned.github.io/max-profit-calculator/reports/> (Maven site: tests, coverage, mutation, checkstyle) and the [Playwright report](https://dwaned.github.io/max-profit-calculator/playwright-report/)
 
-## Testing Strategies
+The Render free tier sleeps when idle, so the first request can take ~30 s.
 
-This project showcases a range of testing strategies, including:
+## The problem
 
-* **Unit Testing:** Using JUnit to test individual units (classes and methods) of the application in isolation.
-* **Integration Testing:**  Verifying the interaction between different components of the application.
-* **End-to-End Testing:** Employing Cucumber to test the application's behavior from start to finish, simulating user interactions.
-* **Property-Based Testing:** Utilizing Jqwik to generate test cases based on properties and constraints, enabling broader test coverage.
-* **Mutation Testing:** Applying PITest to assess the effectiveness of the test suite by introducing small changes to the code and checking if tests can detect them.
-* **Performance Testing:** Verifying algorithm execution time, API response time, and memory usage under load.
+Given the current price and a (fictitiously known) future price for a list of stocks,
+and an amount of savings, choose which stocks to buy so that the total profit is as
+large as possible without spending more than the savings. Each stock can be bought at
+most once, so this is a **0/1 knapsack** problem, solved with dynamic programming in
+O(n · savings) (`Stock.java`).
 
-## Performance Testing
+**Inputs**
+- `savings`: the budget (integer)
+- `buyPrices`: current prices, one per stock, identified by index
+- `sellPrices`: future prices, matched to `buyPrices` by index
+- `companyNames` (optional): display names; random ones are generated when omitted
 
-## Performance Testing
+**Outputs**
+- `indices`: the chosen stocks (0-based)
+- `maxProfit`, `savingsUsed`, `remainingSavings`, `companyNames`
 
-This project includes comprehensive performance tests to verify the algorithm meets its performance requirements.
+**Example:** savings `5`, buy `[4,1,3]`, sell `[5,2,6]` → indices `[1,2]`, profit `4`
+(spending 4 of the 5). Indices `0` and `1` would give a profit of 2; index `0` alone, 1.
 
-### Test Types
+### Business rules
 
-#### Stress Tests (`StressTests.java`)
-- **5 items**: < 10ms
-- **10 items**: < 100ms
-- **50 items**: < 500ms (primary requirement)
-- **100 items (boundary)**: < 10s
-- **Memory usage**: < 512MB for max input
-- **No OutOfMemoryError** for maximum input
+- Among combinations with the maximum profit, the one using the **least savings** is returned.
+- If no combination makes a profit, the result is an empty list with profit `0`.
+- Savings: 1–1000. Prices: 1–1000. Stocks per request: 1–100. Company names: up to 100, each up to 100 characters.
 
-#### API Performance Tests (`ApiPerformanceTests.java`)
-- **API response time**: < 500ms for 50 stocks (end-to-end requirement)
-- Uses Testcontainers to test the full application stack
+## Architecture
 
-### Running Performance Tests
+| Part | Stack | Where it runs |
+|---|---|---|
+| Backend API | Java 25, Spring Boot 4.1 (Spring MVC, validation, actuator, springdoc), Bucket4j | Render web service (`Dockerfile`), behind Cloudflare |
+| Frontend | React 19, Vite, Tailwind CSS, framer-motion | Render static site (`site/frontend`) |
+| Test reports | Maven site + Playwright HTML report | GitHub Pages (`.github/workflows/reports.yml`) |
 
-```bash
-# Run algorithm stress tests (no Docker required)
-mvn test -Dtest=StressTests
+The API is served under the `/api` context path on port 9095:
 
-# Run API performance tests (requires Docker)
-mvn test -Dtest=ApiPerformanceTests -Pcontainer-tests
+- `POST /api/calculate`: the calculation. Invalid input returns `400` with `{"message": "Invalid input: …"}`.
+- `GET /api/health`: returns `OK`.
+- `GET /api/swagger-ui.html` and `/api/v3/api-docs`: OpenAPI docs.
+- `GET /api/actuator/health` and `/api/actuator/prometheus`: health and metrics.
 
-# Run all tests including performance
-mvn test
-```
+`/api/calculate` is rate limited per client IP (10 requests, refilling 10 per second).
+Behind Cloudflare the client IP comes from `CF-Connecting-IP`. CORS allows the
+production frontend and the local development origins (`app.cors.allowed-origins`).
 
-### Performance Thresholds
+## Running locally
 
-| Input Size         | Threshold | Test Type       |
-|--------------------|-----------|-----------------|
-| 5 items            | < 10ms    | Algorithm       |
-| 10 items           | < 100ms   | Algorithm       |
-| 50 items           | < 500ms   | Algorithm & API |
-| 100 items          | < 10s     | Algorithm       |
-| Memory (100 items) | < 512MB   | Memory          |
-
-## Tools and Technologies
-
-* **Java:** The primary programming language for the application.
-* **JUnit:**  Framework for unit testing.
-* **Cucumber:** Framework for behavior-driven development and end-to-end testing.
-* **Jqwik:**  Library for property-based testing.
-* **PITest:**  Mutation testing tool.
-* **Maven:** Build automation tool.
-* **Swagger/OpenAPI:** API documentation.
-* **GitHub Actions:**  Continuous integration and continuous delivery (CI/CD) platform for automating the build, test, and deployment pipeline.
-* **Testcontainers:** Docker-based integration testing.
-* **Checkstyle:** Code style enforcement.
-
-## Getting Started
-
-1. **Clone the repository:** `git clone https://github.com/dwaned/max-profit-calculator.git`
-2. **Build the project:**  `mvn clean install`
-3. **Run the tests:** `mvn test -Pcontainertest`
-
-## Running the Application
+Requirements: Java 25, Maven 3.9+, Node.js 24 (for the frontend), Docker (optional).
 
 ```bash
-# Start the service
+# Backend on http://localhost:9095/api
 mvn spring-boot:run
+
+# Frontend dev server on http://localhost:5173 (proxies /api to :9095)
+cd site/frontend && npm ci && npm run dev
+
+# Or everything in Docker: API on :9095, UI on http://localhost:3000
+docker compose up --build
 ```
-
-The service runs on port **9095** with context path `/api`.
-
-### API Documentation
-
-Once running, access the Swagger UI at:
-
-- **`http://localhost:9095/api/swagger-ui.html`**
-
-### Example API Call
 
 ```bash
 curl -X POST http://localhost:9095/api/calculate \
   -H "Content-Type: application/json" \
-  -d '{"savings":5,"buyPrices":[1,2,5],"sellPrices":[2,3,20]}'
+  -d '{"savings":5,"buyPrices":[4,1,3],"sellPrices":[5,2,6]}'
 ```
 
-### Health Check
+## Testing
+
+See [TESTING_LEVELS.md](TESTING_LEVELS.md) for every test suite, the tools it uses, how to
+run it and where CI runs it. In short:
 
 ```bash
-curl http://localhost:9095/api/health
-# Returns: OK
+mvn verify                    # checkstyle, unit, property-based, API/security and BDD tests + coverage gate
+mvn test -Ppitest             # mutation testing (fails below a 90% mutation score)
+mvn test -Pperformance-tests  # algorithm stress tests
+mvn test -Pcontract-tests     # Pact provider verification (needs the API running on :9095)
+mvn test -Pplaywright-tests   # browser test (needs the UI running; PLAYWRIGHT_BASE_URL)
+mvn test -Pcontainer-tests    # Testcontainers + API performance (needs Docker)
+
+cd site/frontend
+npm run lint && npm run test:run   # ESLint + Vitest unit tests
+npm run test:pact                  # Pact consumer tests
+npm run test:ui                    # Playwright end-to-end tests (needs the UI running)
 ```
 
------
+### Performance thresholds
 
-**Challenge:**
-- Given 2 Arrays containing the current price and the forecasted future price of a set of stocks,
-- When a value of savings is entered
-- Then the system should output which combination of indices from the first Array to choose so that with the available savings amount, the maximum profit is returned.
+| Input size | Threshold | Test |
+|---|---|---|
+| 5 items | < 10 ms | `StressTests` |
+| 10 items | < 100 ms | `StressTests` |
+| 50 items | < 500 ms | `StressTests`, `ApiPerformanceTests` (end-to-end through the API) |
+| 100 items | < 10 s | `StressTests` |
+| Memory, 100 items | < 512 MB | `StressTests` |
 
-**The inputs are:**
-- Savings: An Integer representing a monetary value
-- Current Prices: A list of 1 or more stock prices, only identified by the index in the list
-- Future Prices: Yeah... in this fictitious world, the system knows the future expected prices of the stock
-    corresponding by index to the current prices list.
+## CI/CD
 
-**The outputs are:**
-- A list of 0 or more indices corresponding to the combination of current prices stocks that would give the
-    maximum profit based on the available savings
-- An integer value of the maximum profit returned with the combination of indices
+| Workflow | When | What |
+|---|---|---|
+| `maven.yml` | PRs, `main` | `mvn verify`, mutation testing, Cucumber report; OWASP dependency check and dependency-graph submission on `main` |
+| `frontend.yml` | PRs, `main` | ESLint, Vitest, production build |
+| `contract-tests.yml` | same-repo PRs, `main` | Pact consumer tests → Pact Broker → provider verification → `can-i-deploy` (self-hosted runner) |
+| `containers.yml` | `main` | Builds both images, Docker Scout (fails on critical CVEs), Playwright against the running stack |
+| `reports.yml` | `main` | Builds the Maven site and Playwright report and deploys them to GitHub Pages |
+| `mega-linter.yml` | PRs | MegaLinter, including zizmor for GitHub Actions security |
 
-**Example:**
-
-- Savings value: 5
-- Current prices Array [4,1,3]
-- Future prices Array [5,2,6]
-
-Result should be [1,2] (Remember that starting index is 0)
-Choosing indices at 1 and 2 will return profit of 4, even if total used amount is 4 (from the savings of 5)
-Choosing indices at 0 and 1 would give return profit of 2.
-Choosing only index 4 would give return profit of 1.
-No other combinations is possible.
-
-
-## **"Business Requirements"**
-
-
-To be able to better solve the challenge, I have decided to come up with these requirements to help me define the
-code and tests better.
-
-- System chooses the max profit with the least amount of savings used.
-- If multiple combinations with same amount of savings exist, it returns them all.
-- If loss is only possible, return empty list and max profit 0.
-- Savings is a positive Integer only.
-- Min/Max Stock Price - 1 to 1000
-- Min/Max Savings - 1 to 1000
-- Min/Max Stocks in list - 1 to 100
-
+Dependabot opens weekly update PRs for Maven, npm, GitHub Actions and Docker images.
+All actions are pinned to commit SHAs.

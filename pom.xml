@@ -38,7 +38,6 @@
         <!-- Jackson 2 still arrives in tests through Pact; keep it past the CVEs
              fixed in 2.21.6 (Boot 4.1.1 manages 2.21.5). -->
         <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
-        <sonar-maven-plugin.version>5.8.0.7211</sonar-maven-plugin.version>
         <json.version>20250107</json.version>
     </properties>
 
@@ -71,30 +70,6 @@
     </dependencyManagement>
 
     <profiles>
-        <profile>
-            <id>sonar</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonarsource.scanner.maven</groupId>
-                        <artifactId>sonar-maven-plugin</artifactId>
-                        <version>${sonar-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>sonar</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sonar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
        <profile>
            <id>pitest</id>
            <build>
