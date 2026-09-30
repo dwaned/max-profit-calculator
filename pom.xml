@@ -25,7 +25,7 @@
         <jacoco.version>0.8.15</jacoco.version>
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <jqwik.version>1.7.3</jqwik.version>
-        <cucumber.version>7.14.0</cucumber.version>
+        <cucumber.version>8.0.2</cucumber.version>
         <pitest.version>1.30.0</pitest.version>
         <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
         <playwright.version>1.49.0</playwright.version>
