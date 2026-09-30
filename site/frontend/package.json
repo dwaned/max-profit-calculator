@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@pact-foundation/pact": "^16.2.0",
+    "@pact-foundation/pact": "^17.1.4",
     "@playwright/test": "^1.49.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
