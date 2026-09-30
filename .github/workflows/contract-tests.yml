@@ -20,6 +20,9 @@ name: Contract Tests
 
 jobs:
   frontend-contract-tests:
+    # Never run fork PR code on the self-hosted runner (public repo): only
+    # pushes, manual runs and PRs from branches in this repository.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, osx, arm64, pact-broker]
     steps:
       # Clean up deeply-nested leftover artifacts from previous runs. Earlier
@@ -73,6 +76,7 @@ jobs:
             --tag=latest
 
   backend-contract-tests:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, osx, arm64, pact-broker]
     needs: frontend-contract-tests
     steps:
@@ -126,7 +130,16 @@ jobs:
           annotate_notice: false
           fail_on_failure: false
 
+      - name: Stop Backend
+        if: always()
+        run: |
+          if [ -f backend.pid ]; then
+            kill "$(cat backend.pid)" 2>/dev/null || true
+            rm -f backend.pid
+          fi
+
   can-i-deploy:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, osx, arm64, pact-broker]
     needs: [frontend-contract-tests, backend-contract-tests]
     steps:
