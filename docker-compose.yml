@@ -13,9 +13,7 @@ services:
       retries: 5
   site:
     build:
-      # Context is the project root so the multi-stage Dockerfile can read
-      # pom.xml + src for the reports stage, then copy site/frontend/ for the
-      # React build stage.
+      # Context is the project root; the Dockerfile copies site/frontend/.
       context: .
       dockerfile: site/frontend/Dockerfile
       args:
@@ -27,10 +25,7 @@ services:
     depends_on:
       - app
     healthcheck:
-      # Probe the SPA root first (always 200), then a report file if present.
-      # `|| true` keeps the container healthy even if the Maven reports stage
-      # fails to generate — the React app still loads.
-      test: ["CMD-SHELL", "curl --fail http://localhost:80/ && curl --fail http://localhost:80/reports/checkstyle.html || exit 0"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:80/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

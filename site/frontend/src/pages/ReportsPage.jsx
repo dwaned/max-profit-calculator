@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReportsAvailable } from '../utils/reports';
+import { reportUrl, useReportsAvailable } from '../utils/reports';
 
 function ReportsPage() {
   usePageTitle('Reports');
@@ -232,8 +232,8 @@ function ReportsPage() {
                 mvn site
               </code>
               <p className="text-xs text-slate-400 mt-2">
-                Then copy to <code className="text-cyan-400">site/frontend/public/reports/</code> before
-                rebuilding the frontend.
+                Output lands in <code className="text-cyan-400">target/site/</code>. CI publishes it to
+                GitHub Pages on every change to <code className="text-cyan-400">main</code>.
               </p>
             </div>
           </motion.div>
@@ -267,11 +267,9 @@ function ReportsPage() {
                       Reports are not available in this deployment.
                     </p>
                     <p>
-                      They are generated locally by running{' '}
-                      <code className="text-cyan-400">mvn site</code> and copying the output to{' '}
-                      <code className="text-cyan-400">site/frontend/public/reports/</code> before
-                      rebuilding the frontend. The deployed static site on Render free tier
-                      doesn&apos;t include them.
+                      Reports are published to GitHub Pages by CI and could not be reached. Run{' '}
+                      <code className="text-cyan-400">mvn site</code> to generate them locally in{' '}
+                      <code className="text-cyan-400">target/site/</code>.
                     </p>
                   </div>
                 ) : (
@@ -279,18 +277,10 @@ function ReportsPage() {
                     {activeCategory.reports.map(report => (
                       <a
                         key={report.id}
-                        // Most reports live under /reports/ (the Maven site
-                        // bundle copied to public/reports). The Playwright
-                        // HTML reporter, however, is copied to public/playwright-report
-                        // — at the root of the deployed tree — so its internal
-                        // ./data and ./trace relative links resolve correctly.
-                        // Reports with `external: true` carry a full root
-                        // path (e.g. `/playwright-report/index.html`).
-                        href={
-                          report.external
-                            ? `/${report.file}`
-                            : `/reports/${report.file}`
-                        }
+                        // The Playwright HTML report sits at the Pages root
+                        // (`external: true`) so its relative ./data and ./trace
+                        // links resolve; everything else is under /reports/.
+                        href={reportUrl(report.file, { external: report.external })}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"

@@ -1,6 +1,6 @@
 # Exclude heavy / irrelevant directories from the Docker build context.
-# The site Dockerfile only needs pom.xml + src + site/frontend/, so
-# everything else just wastes upload time and disk on the Docker host.
+# The app Dockerfile needs pom.xml + src and the frontend Dockerfile needs
+# site/frontend/, so everything else just wastes upload time and disk.
 
 # Build outputs
 target/
@@ -36,7 +36,7 @@ megalinter-reports/
 **/surefire-reports/
 **/cucumber-report/
 
-# Reports dir is generated inside the image, never read from the host
+# Generated reports are published to GitHub Pages, never baked into images
 site/frontend/public/reports/
 
 # Pact files are copied into target/classes at build time

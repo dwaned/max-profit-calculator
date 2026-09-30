@@ -10,10 +10,10 @@
 # Maven build outputs — never commit
 target/
 
-# Maven site reports generated into the source tree by mistake (the
-# workflow copies these into site/frontend/public/reports/ which IS
-# tracked; never commit anything under target/site/ directly)
+# Maven site reports (published to GitHub Pages by reports.yml, never committed)
 target/site/
+site/frontend/public/reports/
+site/frontend/public/playwright-report/
 
 # MegaLinter output. APPLY_FIXES is disabled (see .mega-linter.yml) but the
 # directory is still created on every run and must never be committed.

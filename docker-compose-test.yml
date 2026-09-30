@@ -14,8 +14,7 @@ services:
 
   frontend:
     build:
-      # Project root context: the multi-stage Dockerfile reads pom.xml + src
-      # for the reports stage, then site/frontend/ for the React build.
+      # Context is the project root; the Dockerfile copies site/frontend/.
       context: .
       dockerfile: site/frontend/Dockerfile
       args:
