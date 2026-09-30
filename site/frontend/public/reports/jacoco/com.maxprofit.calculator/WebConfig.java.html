@@ -17,11 +17,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(final CorsRegistry registry) {
-<span class="fc" id="L20">        registry.addMapping(&quot;/api/**&quot;)</span>
-<span class="fc" id="L21">                .allowedOrigins(corsProperties.allowedOrigins().toArray(new String[0]))</span>
-<span class="fc" id="L22">                .allowedMethods(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;DELETE&quot;, &quot;OPTIONS&quot;)</span>
-<span class="fc" id="L23">                .allowedHeaders(&quot;*&quot;)</span>
-<span class="fc" id="L24">                .allowCredentials(false);</span>
-<span class="fc" id="L25">    }</span>
+        // Mappings are relative to the servlet context path (/api), so &quot;/**&quot;
+        // covers every API endpoint.
+<span class="fc" id="L22">        registry.addMapping(&quot;/**&quot;)</span>
+<span class="fc" id="L23">                .allowedOrigins(corsProperties.allowedOrigins().toArray(new String[0]))</span>
+<span class="fc" id="L24">                .allowedMethods(&quot;GET&quot;, &quot;POST&quot;, &quot;OPTIONS&quot;)</span>
+<span class="fc" id="L25">                .allowedHeaders(&quot;*&quot;)</span>
+<span class="fc" id="L26">                .allowCredentials(false);</span>
+<span class="fc" id="L27">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

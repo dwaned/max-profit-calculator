@@ -53,13 +53,14 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>              webConfig.addCorsMappings(registry);
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>              verify(registry).addMapping(<span class="jxr_string">"/api/**"</span>);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>              verify(registration).allowedOrigins(eq(<strong class="jxr_keyword">new</strong> String[]{
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>                      <span class="jxr_string">"https://app.example.com"</span>, <span class="jxr_string">"http://localhost:9095"</span>}));
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>              verify(registration).allowCredentials(eq(false));
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          });
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      }
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>              verify(registry).addMapping(<span class="jxr_string">"/**"</span>);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>              verify(registration).allowedMethods(eq(<strong class="jxr_keyword">new</strong> String[]{<span class="jxr_string">"GET"</span>, <span class="jxr_string">"POST"</span>, <span class="jxr_string">"OPTIONS"</span>}));
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>              verify(registration).allowedOrigins(eq(<strong class="jxr_keyword">new</strong> String[]{
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>                      <span class="jxr_string">"https://app.example.com"</span>, <span class="jxr_string">"http://localhost:9095"</span>}));
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              verify(registration).allowCredentials(eq(false));
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          });
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2026. All rights reserved.</div>
