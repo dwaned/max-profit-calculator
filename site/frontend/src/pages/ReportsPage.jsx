@@ -90,7 +90,7 @@ function ReportsPage() {
       name: 'Performance Tests',
       color: 'bg-purple-500',
       icon: '⚡',
-      description: 'End-to-end API response time under load — verifies the API endpoint responds in < 500ms for 50 stocks, via Testcontainers. The empty result here is expected: ApiPerformanceTests requires Docker, which the clean reports workflow does not have. Run with \`-Pcontainer-tests\` to populate this report.',
+      description: 'End-to-end API response time under load — verifies the API endpoint responds in < 500ms for 50 stocks, via Testcontainers. The empty result here is expected: ApiPerformanceTests requires Docker, which the clean reports workflow does not have. Run with `-Pcontainer-tests` to populate this report.',
       reports: [
         {
           id: 'xref-performance',
