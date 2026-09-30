@@ -12,11 +12,13 @@
 # pushes to main get rejected with GH013. The workflow therefore pushes
 # to a throwaway `chore/reports-<sha>` branch and opens a PR.
 #
-# Playwright: the workflow builds the frontend with `vite build`, then
-# serves the static output via `vite preview` on a known port so the
-# Playwright UI test can drive the real production bundle (not dev
-# server) and its results land in surefire-report.html alongside the
-# other tests. Chromium is downloaded by the playwright CLI in the
+# Playwright: the workflow builds the frontend with `vite build`, starts
+# the backend jar on :9095, then serves the static output via `vite
+# preview`, which proxies /api to that backend (preview.proxy defaults to
+# server.proxy in vite.config.js). The Playwright UI test therefore drives
+# the real production bundle against a local backend — not the deployed
+# Render one, whose cold starts made the test time out — and its results
+# land in surefire-report.html alongside the other tests. Chromium is downloaded by the playwright CLI in the
 # `Install Playwright browser` step.
 #
 # Trade-off: reports go stale between regenerations. They are accurate
@@ -49,26 +51,26 @@ permissions:
 jobs:
   regenerate-reports:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5.1.0
+        uses: actions/setup-java@v6.0.1
         with:
           java-version: "17"
           distribution: "temurin"
           cache: maven
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.0.0
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
           cache-dependency-path: site/frontend/package-lock.json
 
@@ -79,6 +81,24 @@ jobs:
         # `npm ci` reports success locally — the CI runner's npm version is
         # stricter. `npm install` reconciles any drift against package.json.
         run: npm install && npm run build
+        env:
+          # Same-origin API calls, proxied by `vite preview` to :9095.
+          VITE_API_URL: /api
+
+      - name: Start backend
+        run: |
+          mvn -B -q package -DskipTests
+          nohup java -jar target/max-profit-calculator-1.0-SNAPSHOT.jar > backend.log 2>&1 &
+          for i in {1..60}; do
+            if curl -sf http://localhost:9095/api/health > /dev/null; then
+              echo "Backend ready on :9095"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Backend did not become ready in 60s"
+          cat backend.log
+          exit 1
 
       - name: Start vite preview (background)
         # `vite preview` serves the production build on :4173. The Playwright
@@ -87,8 +107,6 @@ jobs:
         # below blocks until the server is actually accepting connections.
         working-directory: site/frontend
         run: npx vite preview --port 4173 --host 127.0.0.1 &
-        env:
-          VITE_API_URL: "http://localhost:8080"  # not used in build, but kept for parity
 
       - name: Install Playwright browser
         # Playwright reads the Chromium binary from ~/.cache/ms-playwright/.
@@ -183,6 +201,13 @@ jobs:
             echo "Reports unchanged, nothing to do"
             exit 0
           fi
+
+          # Each run supersedes earlier report PRs; close them so they don't pile up.
+          gh pr list --state open --json number,headRefName \
+            -q '.[] | select(.headRefName | startswith("chore/reports-")) | .number' |
+            while read -r pr; do
+              gh pr close "$pr" --delete-branch --comment "Superseded by a newer reports regeneration."
+            done
 
           BRANCH="chore/reports-${GITHUB_SHA::7}"
           git config user.name "github-actions[bot]"

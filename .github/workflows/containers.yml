@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -95,7 +95,7 @@ jobs:
         run: mvn -B -Pplaywright-tests exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.classpathScope=test -Dexec.args="install chromium" --no-transfer-progress
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v5.0.1
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.m2/repository
           key: "${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}"
@@ -109,7 +109,7 @@ jobs:
         run: mvn test -Pplaywright-tests
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2.24.0
         if: always()
         with:
           files: |
@@ -120,7 +120,7 @@ jobs:
 
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: test-results
           path: |

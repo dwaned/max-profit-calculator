@@ -105,6 +105,8 @@
                             <targetTests>
                                 <param>com.maxprofit.calculator*</param>
                             </targetTests>
+                            <!-- Fail below this mutation score (currently ~97%). -->
+                            <mutationThreshold>90</mutationThreshold>
                            <excludedTestClasses>
                                  <param>*.PlaywrightUITests*</param>
                            </excludedTestClasses>
