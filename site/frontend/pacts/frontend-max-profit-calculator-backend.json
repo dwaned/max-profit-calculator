@@ -16,21 +16,9 @@
         },
         "body": {
           "savings": 10,
-          "buyPrices": [
-            5,
-            5,
-            10
-          ],
-          "sellPrices": [
-            15,
-            10,
-            35
-          ],
-          "companyNames": [
-            "Acme Corp",
-            "Globex Inc",
-            "Initech"
-          ]
+          "buyPrices": [5, 5, 10],
+          "sellPrices": [15, 10, 35],
+          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
         }
       },
       "response": {
@@ -40,14 +28,10 @@
         },
         "body": {
           "maxProfit": 25,
-          "indices": [
-            2
-          ],
+          "indices": [2],
           "savingsUsed": 10,
           "remainingSavings": 0,
-          "companyNames": [
-            "Initech"
-          ]
+          "companyNames": ["Initech"]
         }
       }
     },
@@ -61,16 +45,8 @@
         },
         "body": {
           "savings": -10,
-          "buyPrices": [
-            5,
-            5,
-            10
-          ],
-          "sellPrices": [
-            15,
-            10,
-            35
-          ]
+          "buyPrices": [5, 5, 10],
+          "sellPrices": [15, 10, 35]
         }
       },
       "response": {
