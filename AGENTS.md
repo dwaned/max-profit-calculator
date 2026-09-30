@@ -18,8 +18,8 @@ mvn spring-boot:run
 CI publishes the reports to GitHub Pages on every relevant push to `main`
 (`.github/workflows/reports.yml`):
 
-- Maven site: <https://dwaned.github.io/max-profit-calculator/reports/>
-- Playwright HTML report: <https://dwaned.github.io/max-profit-calculator/playwright-report/>
+- Maven site: `https://dwaned.github.io/max-profit-calculator/reports/`
+- Playwright HTML report: `https://dwaned.github.io/max-profit-calculator/playwright-report/`
 
 The frontend's Reports page links there (override with `VITE_REPORTS_URL`).
 Generated reports are never committed.
