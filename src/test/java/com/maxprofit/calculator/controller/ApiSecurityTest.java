@@ -67,25 +67,33 @@ class ApiSecurityTest {
     @Test
     @DisplayName("Forged X-Forwarded-For entries do not give a client a fresh bucket")
     void forgedForwardedForDoesNotBypassRateLimit() {
-        // The request arrives from loopback, a trusted proxy, so Tomcat takes
-        // the right-most untrusted hop (198.51.100.7) as the client. Changing
-        // the forged left-hand entry must not reset that client's bucket.
+        // Requests arrive from loopback, a trusted proxy, carrying the client IP
+        // in CF-Connecting-IP (as Cloudflare/nginx set it). X-Forwarded-For is
+        // ignored, so rotating it must not reset the client's bucket.
         for (int i = 0; i < 3; i++) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-Forwarded-For", "203.0.113." + i + ", 198.51.100.7");
-            assertThat(postCalculate(VALID_BODY, headers).getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(postCalculate(VALID_BODY, client("198.51.100.7", "203.0.113." + i))
+                    .getStatusCode()).isEqualTo(HttpStatus.OK);
         }
+        assertThat(postCalculate(VALID_BODY, client("198.51.100.7", "203.0.113.200"))
+                .getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
+
+        // A different client IP still has its own bucket.
+        assertThat(postCalculate(VALID_BODY, client("198.51.100.8", "203.0.113.201"))
+                .getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private static HttpHeaders client(final String clientIp, final String forgedForwardedFor) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Forwarded-For", "203.0.113.200, 198.51.100.7");
-        ResponseEntity<String> response = postCalculate(VALID_BODY, headers);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
+        headers.add("CF-Connecting-IP", clientIp);
+        headers.add("X-Forwarded-For", forgedForwardedFor);
+        return headers;
     }
 
     @Test
     @DisplayName("Prices above the maximum are rejected with a message body")
     void priceAboveMaximumRejected() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Forwarded-For", "198.51.100.20");
+        headers.add("CF-Connecting-IP", "198.51.100.20");
         ResponseEntity<String> response = postCalculate(
                 "{\"savings\":10,\"buyPrices\":[5],\"sellPrices\":[2000000000]}", headers);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -96,7 +104,7 @@ class ApiSecurityTest {
     @DisplayName("A null price is rejected with 400, not a 500")
     void nullPriceRejected() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Forwarded-For", "198.51.100.21");
+        headers.add("CF-Connecting-IP", "198.51.100.21");
         ResponseEntity<String> response = postCalculate(
                 "{\"savings\":10,\"buyPrices\":[5,null],\"sellPrices\":[6,7]}", headers);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -107,7 +115,7 @@ class ApiSecurityTest {
     @DisplayName("Missing savings is reported as required")
     void missingSavingsRejected() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Forwarded-For", "198.51.100.22");
+        headers.add("CF-Connecting-IP", "198.51.100.22");
         ResponseEntity<String> response = postCalculate(
                 "{\"buyPrices\":[5],\"sellPrices\":[6]}", headers);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -118,7 +126,7 @@ class ApiSecurityTest {
     @DisplayName("Mismatched list sizes return the real reason in the message body")
     void mismatchedSizesReturnMessage() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Forwarded-For", "198.51.100.23");
+        headers.add("CF-Connecting-IP", "198.51.100.23");
         ResponseEntity<String> response = postCalculate(
                 "{\"savings\":10,\"buyPrices\":[5,6],\"sellPrices\":[7]}", headers);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -129,7 +137,7 @@ class ApiSecurityTest {
     @DisplayName("Malformed JSON returns a message body")
     void malformedJsonReturnsMessage() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Forwarded-For", "198.51.100.24");
+        headers.add("CF-Connecting-IP", "198.51.100.24");
         ResponseEntity<String> response = postCalculate("{not json", headers);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isEqualTo("{\"message\":\"Invalid input: malformed request body\"}");
