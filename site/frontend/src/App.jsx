@@ -15,6 +15,7 @@ import HomePage from './pages/HomePage';
 import ReportsPage from './pages/ReportsPage';
 import { usePageTitle } from './hooks/usePageTitle';
 import { shouldShowApiFooter } from './utils/apiFooter';
+import { requestCalculation } from './api/calculator';
 
 // Default to 25s — Render's free tier cold start usually completes in 30-60s
 // but the user's request is much more likely to succeed after the first warm-up.
@@ -128,17 +129,14 @@ function CalculatorPage() {
   const [history, setHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [errorTimeout, setErrorTimeout] = useState(false);
   const [coldStartWarningShown, setColdStartWarningShown] = useState(false);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
   const abortRef = useRef(null);
-  const timeoutRef = useRef(null);
   const loadingStartedAtRef = useRef(null);
 
   const calculate = async ({ savings, buyPrices, sellPrices, companyNames }) => {
     setIsLoading(true);
     setError(null);
-    setErrorTimeout(false);
     loadingStartedAtRef.current = Date.now();
 
     // Cold-start hint: if we've been "Calculating..." for >5s on the very
@@ -147,42 +145,17 @@ function CalculatorPage() {
       setColdStartWarningShown(true);
     }, 5_000);
 
-    // Hard request timeout so the UI never hangs silently (#7).
+    // Lets unmount cancel the request; requestCalculation enforces the hard
+    // timeout so the UI never hangs silently (#7).
     const controller = new AbortController();
     abortRef.current = controller;
-    timeoutRef.current = setTimeout(() => {
-      controller.abort();
-      setErrorTimeout(true);
-    }, API_REQUEST_TIMEOUT_MS);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/calculate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ savings, buyPrices, sellPrices, companyNames }),
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        let errorMessage;
-        if (response.status === 500) {
-          errorMessage = 'Service is currently unavailable. Please ensure the backend is running.';
-        } else {
-          errorMessage = 'Something went wrong. Please check your input values and try again.';
-          try {
-            const text = await response.text();
-            if (text) {
-              const errorData = JSON.parse(text);
-              errorMessage = errorData.message || errorMessage;
-            }
-          } catch {
-            errorMessage = 'Unable to connect to the server. Please make sure the backend is running.';
-          }
-        }
-        throw new Error(errorMessage);
-      }
-
-      const data = await response.json();
+      const data = await requestCalculation(
+        API_BASE_URL,
+        { savings, buyPrices, sellPrices, companyNames },
+        { timeoutMs: API_REQUEST_TIMEOUT_MS, signal: controller.signal },
+      );
       setResult(data);
       setColdStartWarningShown(false);
 
@@ -191,19 +164,13 @@ function CalculatorPage() {
         ...prev.slice(0, 9),
       ]);
     } catch (err) {
-      if (err.name === 'AbortError') {
-        if (errorTimeout) {
-          setError('The API took too long to respond. The backend may be waking up on the free tier — please try again in a moment.');
-        }
-        // Otherwise the abort was triggered by an unmount/newer request — silent.
-      } else {
+      // An AbortError means the component unmounted — nothing to show.
+      if (err.name !== 'AbortError') {
         setError(err.message || 'An unexpected error occurred. Please try again.');
         setResult(null);
       }
     } finally {
       clearTimeout(coldTimer);
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
       abortRef.current = null;
       setIsLoading(false);
     }
@@ -212,7 +179,6 @@ function CalculatorPage() {
   // Cancel any in-flight request when the component unmounts.
   useEffect(() => () => {
     if (abortRef.current) abortRef.current.abort();
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
   }, []);
 
   const handleSampleSelect = (sample) => {

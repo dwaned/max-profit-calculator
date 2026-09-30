@@ -5,7 +5,9 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // Generated output: Maven site reports and the Playwright HTML report are
+  // copied into public/ at build time and are not project source.
+  globalIgnores(['dist', 'public/reports', 'public/playwright-report', 'playwright-report', 'test-results']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -24,6 +26,13 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+  {
+    // Tooling config runs in Node, not the browser.
+    files: ['*.config.js'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
 ])
