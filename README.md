@@ -120,7 +120,7 @@ npm run test:ui                    # Playwright end-to-end tests (needs the UI r
 |---|---|---|
 | `maven.yml` | PRs, `main` | `mvn verify`, mutation testing, Cucumber report; OWASP dependency check and dependency-graph submission on `main` |
 | `frontend.yml` | PRs, `main` | ESLint, Vitest, production build |
-| `contract-tests.yml` | same-repo PRs, `main` | Pact consumer tests → Pact Broker → provider verification → `can-i-deploy` (self-hosted runner) |
+| `contract-tests.yml` | PRs, `main` | Pact consumer tests → Pact Broker (service container) → provider verification → `can-i-deploy` |
 | `containers.yml` | `main` | Builds both images, Docker Scout (fails on critical CVEs), Playwright against the running stack |
 | `reports.yml` | `main` | Builds the Maven site and Playwright report and deploys them to GitHub Pages |
 | `mega-linter.yml` | PRs | MegaLinter, including zizmor for GitHub Actions security |
