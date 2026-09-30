@@ -24,13 +24,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.15</jacoco.version>
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
-        <jqwik.version>1.7.3</jqwik.version>
+        <jqwik.version>1.10.1</jqwik.version>
         <cucumber.version>7.14.0</cucumber.version>
         <pitest.version>1.30.0</pitest.version>
         <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
-        <playwright.version>1.49.0</playwright.version>
+        <playwright.version>1.63.0</playwright.version>
         <datafaker.version>2.7.0</datafaker.version>
-        <pact.version>4.6.20</pact.version>
+        <pact.version>4.7.5</pact.version>
         <!-- Override versions bundled by the Spring Boot parent that still carry
              known CVEs (flagged by Dependabot). Drop each once the parent catches up. -->
         <tomcat.version>10.1.60</tomcat.version>
@@ -41,7 +41,7 @@
         <httpclient5.version>5.6.4</httpclient5.version>
         <httpcore5.version>5.4.4</httpcore5.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
-        <testcontainers.version>1.20.4</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <json.version>20250107</json.version>
     </properties>
 
@@ -288,7 +288,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.6.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -325,7 +325,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.9.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -443,7 +443,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.9.1</version>
+                <version>3.22.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -640,7 +640,7 @@
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-api</artifactId>
-            <version>3.3.6</version>
+            <version>3.7.1</version>
             <scope>test</scope>
         </dependency>
 
