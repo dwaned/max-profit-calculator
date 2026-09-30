@@ -1,7 +1,7 @@
 package com.maxprofit.calculator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -12,7 +12,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,8 +65,8 @@ public class LocalContractVerificationTest {
     }
 
     private void verifyInteraction(Interaction interaction) throws Exception {
-        String path = interaction.request.get("path").asText();
-        String method = interaction.request.get("method").asText();
+        String path = interaction.request.get("path").asString();
+        String method = interaction.request.get("method").asString();
         
         HttpResponse<String> response;
         if ("POST".equalsIgnoreCase(method)) {
@@ -88,8 +87,8 @@ public class LocalContractVerificationTest {
         if (interaction.response.has("body")) {
             JsonNode expectedBody = interaction.response.get("body");
             
-            if (expectedBody.isTextual()) {
-                assertEquals(expectedBody.asText(), response.body(), 
+            if (expectedBody.isString()) {
+                assertEquals(expectedBody.asString(), response.body(), 
                     "Body mismatch in " + interaction.description);
             } else {
                 JsonNode actualBody = objectMapper.readTree(response.body());
@@ -99,20 +98,18 @@ public class LocalContractVerificationTest {
     }
 
     private void verifyBody(JsonNode expected, JsonNode actual, String description) {
-        if (expected.isTextual()) {
-            assertEquals(expected.asText(), actual.asText(), "Body mismatch in " + description);
+        if (expected.isString()) {
+            assertEquals(expected.asString(), actual.asString(), "Body mismatch in " + description);
             return;
         }
         
         if (expected.isObject()) {
-            Iterator<String> fieldNames = expected.fieldNames();
-            while (fieldNames.hasNext()) {
-                String fieldName = fieldNames.next();
+            for (String fieldName : expected.propertyNames()) {
                 JsonNode expectedValue = expected.get(fieldName);
                 JsonNode actualValue = actual.get(fieldName);
                 
                 if (expectedValue != null && expectedValue.has("matcher")) {
-                    String matcher = expectedValue.get("matcher").asText();
+                    String matcher = expectedValue.get("matcher").asString();
                     if ("type".equals(matcher)) {
                         assertNotNull(actualValue, "Field '" + fieldName + "' should exist in " + description);
                     } else if ("integer".equals(matcher) || "number".equals(matcher)) {
@@ -157,7 +154,7 @@ public class LocalContractVerificationTest {
         JsonNode response;
 
         Interaction(JsonNode node) {
-            this.description = node.get("description").asText();
+            this.description = node.get("description").asString();
             this.request = node.get("request");
             this.response = node.get("response");
         }

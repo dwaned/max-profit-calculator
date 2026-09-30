@@ -94,8 +94,8 @@ mvn site
 ## Code Style Guidelines
 
 ### Java Version
-- **Java 17** is required
-- Target and source compatibility is set to 17 in pom.xml
+- **Java 25** (LTS) is required; Spring Boot 4.1
+- `java.version` in pom.xml sets the compiler release
 
 ### Imports
 - Use explicit imports (no wildcard imports)
@@ -171,7 +171,7 @@ mvn site
 ### Security
 - Use OWASP dependency check to scan for vulnerabilities
 - Keep dependencies updated
-- Tomcat version is pinned to address CVEs
+- Dependabot opens weekly update PRs; transitive versions with CVEs are pinned in pom.xml
 
 ### Project Structure
 ```

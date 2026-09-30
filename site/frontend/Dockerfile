@@ -4,7 +4,7 @@
 # not bundled: the Reports page links to GitHub Pages.
 
 # Stage 1: Build the React frontend.
-FROM node:22-alpine AS frontend
+FROM node:24-alpine AS frontend
 WORKDIR /app
 
 COPY site/frontend/package*.json ./

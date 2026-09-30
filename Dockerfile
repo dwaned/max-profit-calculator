@@ -1,19 +1,22 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
+FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /docker
+# Resolve dependencies in their own layer so source-only changes reuse it.
 COPY pom.xml .
+RUN mvn -B -q dependency:go-offline -DskipTests
 COPY src src
 COPY checkstyle.xml .
 COPY checkstyle_suppressions.xml .
-RUN apk add --no-cache maven
-RUN mvn clean package -DskipTests
+RUN mvn -B clean package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=build /docker/target/max-profit-calculator-1.0-SNAPSHOT.jar app.jar
 
-RUN apk add --no-cache curl
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup -S userA && adduser -S userA -G userA
+RUN groupadd --system userA && useradd --system --gid userA userA
 
 USER userA
 
