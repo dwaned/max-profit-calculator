@@ -23,29 +23,37 @@ import java.util.List;
     "checkstyle:FinalParameters", "checkstyle:HiddenField", "checkstyle:MagicNumber"})
 public class CalculationRequest {
     private static final int MAX_PRICE_LIST_SIZE = 100;
+    private static final int MAX_PRICE = 1000;
+    private static final int MAX_COMPANY_NAME_LENGTH = 100;
 
     @NotNull(message = "Savings amount is required")
     @Min(value = 1, message = "Savings must be at least 1")
     @Max(value = 1000, message = "Savings must not exceed 1000")
-    private int savings;
+    private Integer savings;
 
     @NotNull(message = "Buy prices are required")
     @NotEmpty(message = "Buy prices cannot be empty")
     @Size(max = MAX_PRICE_LIST_SIZE, message = "Buy prices must not exceed 100 entries")
-    private List<Integer> buyPrices;
+    private List<@NotNull(message = "Buy prices must not contain empty values")
+        @Min(value = 1, message = "Buy prices must be at least 1")
+        @Max(value = MAX_PRICE, message = "Buy prices must not exceed 1000") Integer> buyPrices;
 
     @NotNull(message = "Sell prices are required")
     @NotEmpty(message = "Sell prices cannot be empty")
     @Size(max = MAX_PRICE_LIST_SIZE, message = "Sell prices must not exceed 100 entries")
-    private List<Integer> sellPrices;
+    private List<@NotNull(message = "Sell prices must not contain empty values")
+        @Min(value = 1, message = "Sell prices must be at least 1")
+        @Max(value = MAX_PRICE, message = "Sell prices must not exceed 1000") Integer> sellPrices;
 
-    private List<String> companyNames;
+    @Size(max = MAX_PRICE_LIST_SIZE, message = "Company names must not exceed 100 entries")
+    private List<@Size(max = MAX_COMPANY_NAME_LENGTH,
+        message = "Company names must not exceed 100 characters") String> companyNames;
 
-    public int getSavings() {
+    public Integer getSavings() {
         return savings;
     }
 
-    public void setSavings(int savings) {
+    public void setSavings(Integer savings) {
         this.savings = savings;
     }
 
