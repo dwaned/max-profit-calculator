@@ -18,6 +18,8 @@ services:
       # React build stage.
       context: .
       dockerfile: site/frontend/Dockerfile
+      args:
+        VITE_API_URL: /api
     expose:
       - 80
     ports:

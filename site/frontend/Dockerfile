@@ -30,6 +30,12 @@ RUN npm ci
 COPY site/frontend/ ./
 COPY --from=reports /build/target/site ./public/reports
 
+# Optional API base URL baked into the bundle. docker-compose passes "/api"
+# so the UI talks to the local backend through the nginx proxy below; when
+# unset, App.jsx falls back to the deployed Render backend.
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 RUN npm run build
 
 # Stage 3: Serve dist via nginx
