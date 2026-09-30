@@ -2,7 +2,7 @@
 
 # Stage 1: Generate Maven reports (checkstyle, surefire, jacoco, xref, etc.)
 # Runs from the project root so it can read pom.xml + src.
-FROM maven:3.9-eclipse-temurin-17 AS reports
+FROM maven:3-eclipse-temurin-26 AS reports
 WORKDIR /build
 
 COPY pom.xml checkstyle.xml checkstyle_suppressions.xml ./
