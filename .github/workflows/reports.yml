@@ -115,10 +115,8 @@ jobs:
           exit 1
 
       - name: Generate Maven reports (incl. Playwright Java test)
-        # The prepare-agent goal has to be invoked explicitly because the
-        # pom only declares jacoco in <reporting>, not in <build>. Without
-        # it no target/jacoco.exec is created and the site plugin has
-        # nothing to render into jacoco/index.html.
+        # JaCoCo's agent and report run as part of the build (see pom.xml),
+        # so target/jacoco.exec exists before the site renders it.
         # mvn site aborts if the pitest reporting goal can't find
         # target/pit-reports. Pre-create it with a placeholder so the
         # site plugin still aggregates pitest's section with a stub.
@@ -137,9 +135,7 @@ jobs:
             > target/pit-reports/index.html
           mvn -B -DskipITs -Dpitest.skip=true \
             -Dtest='!ContainerTests,!ApiPerformanceTests,!LocalContractVerificationTest,!PactBrokerVerificationTest' \
-            org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent \
             test \
-            org.jacoco:jacoco-maven-plugin:0.8.8:report \
             site -q
 
       - name: Run Playwright Node tests (HTML reporter)
