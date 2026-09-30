@@ -22,7 +22,7 @@ permissions:
 jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     steps:
       - name: Checkout repository
@@ -85,23 +85,14 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Install Playwright dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libwoff1 libvpx9 libevent-2.1-7t64 libopus0 \
-            libgstreamer-plugins-base1.0-0 libgstreamer-gl1.0-0 \
-            libgstreamer-plugins-bad1.0-0 libflite1 libavif16 \
-            libharfbuzz-icu0 libsecret-1-0 libhyphen0 \
-            libmanette-0.2-0 libgles2 gstreamer1.0-libav
-
       - name: Install Playwright browsers
         # playwright-tests only runs PlaywrightUITests, which needs a real
         # Chromium binary. The standard install command is exposed via the
         # Playwright CLI; running it via exec:java avoids depending on
-        # playwright being installed globally. Playwright is a test-scope
+        # playwright being installed globally. --with-deps installs only the
+        # system libraries Chromium needs. Playwright is a test-scope
         # dependency, so exec:java needs classpathScope=test to load it.
-        run: mvn -B -Pplaywright-tests exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.classpathScope=test -Dexec.args="install chromium" --no-transfer-progress
+        run: mvn -B -Pplaywright-tests exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.classpathScope=test -Dexec.args="install --with-deps chromium" --no-transfer-progress
 
       - name: Cache Maven dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
