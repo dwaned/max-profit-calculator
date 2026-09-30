@@ -1,5 +1,0 @@
-<http>
-    <headers>
-        <content-security-policy policy-directives="script-src 'self'"/>
-    </headers>
-</http>

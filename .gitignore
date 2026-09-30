@@ -18,3 +18,6 @@ site/frontend/public/playwright-report/
 # MegaLinter output. APPLY_FIXES is disabled (see .mega-linter.yml) but the
 # directory is still created on every run and must never be committed.
 megalinter-reports/
+
+# jqwik property-test database (recreated on every run)
+.jqwik-database

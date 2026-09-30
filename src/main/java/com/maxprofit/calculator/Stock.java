@@ -19,8 +19,8 @@ import java.util.List;
  * corresponds to the project requirement "System chooses the max profit
  * with the least amount of savings used."
  *
- * <p>Complexity is O(n · savings) — a 1-D dynamic program over the savings
- * axis with one forward pass per item and a linear backtrack. The previous
+ * <p>Complexity is O(n · savings) — a 2-D dynamic program (items × savings)
+ * with one pass per item and a linear backtrack. The previous
  * brute-force permutation approach was O(2^n) and only fit within
  * performance budgets because the input cap of {@value #MAX_PRICE_LIST_SIZE}
  * keeps 2^100 impractical.
