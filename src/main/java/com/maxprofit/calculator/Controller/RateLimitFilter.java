@@ -24,9 +24,9 @@ import java.io.IOException;
  * <p>The filter checks the request URI internally so only {@code /api/calculate}
  * is rate-limited; other endpoints (notably {@code /api/health}) are passed
  * through unconditionally. Clients are identified by {@code request.getRemoteAddr()};
- * behind a proxy, Tomcat's {@code RemoteIpValve} ({@code server.forward-headers-strategy=native})
- * resolves it from {@code X-Forwarded-For}, trusting only internal proxy hops so
- * a client cannot choose its own key by sending a forged header.
+ * behind a proxy, Tomcat's {@code RemoteIpValve} resolves it from
+ * {@code CF-Connecting-IP} (see {@code application.properties}), honoured only
+ * on requests from internal proxies, so a client cannot choose its own key.
  */
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
