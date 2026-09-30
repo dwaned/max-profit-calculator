@@ -14,8 +14,10 @@ services:
 
   frontend:
     build:
-      context: site/frontend
-      dockerfile: Dockerfile
+      # Project root context: the multi-stage Dockerfile reads pom.xml + src
+      # for the reports stage, then site/frontend/ for the React build.
+      context: .
+      dockerfile: site/frontend/Dockerfile
     ports:
       - "3000:80"
     depends_on:
