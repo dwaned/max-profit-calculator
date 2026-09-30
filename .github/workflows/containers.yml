@@ -78,6 +78,13 @@ jobs:
           summary: true
           exit-code: true
 
+      - name: Set up JDK 25
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          java-version: "25"
+          distribution: "temurin"
+          cache: maven
+
       - name: Install Playwright dependencies
         run: |
           sudo apt-get update
