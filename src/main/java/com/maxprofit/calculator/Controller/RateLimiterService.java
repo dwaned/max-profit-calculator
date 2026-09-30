@@ -1,24 +1,32 @@
 package com.maxprofit.calculator.controller;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 
 import java.time.Duration;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Per-key token-bucket rate limiter backed by Bucket4j.
  *
  * <p>Each key (typically a client IP) gets its own {@link Bucket} created on
- * first use and cached for the lifetime of the service. When
+ * first use. Buckets idle for longer than {@link #IDLE_EXPIRY} are evicted and
+ * the cache is capped at {@link #MAX_TRACKED_CLIENTS} entries, so memory stays
+ * bounded however many distinct clients appear. When
  * {@link RateLimitProperties#enabled()} is {@code false} {@link #tryAcquire}
  * always returns {@code true}.
  */
 public class RateLimiterService {
 
+    static final Duration IDLE_EXPIRY = Duration.ofMinutes(10);
+    static final long MAX_TRACKED_CLIENTS = 100_000;
+
     private final RateLimitProperties properties;
-    private final ConcurrentMap<String, Bucket> buckets = new ConcurrentHashMap<>();
+    private final Cache<String, Bucket> buckets = Caffeine.newBuilder()
+            .expireAfterAccess(IDLE_EXPIRY)
+            .maximumSize(MAX_TRACKED_CLIENTS)
+            .build();
 
     public RateLimiterService(final RateLimitProperties properties) {
         this.properties = properties;
@@ -35,7 +43,7 @@ public class RateLimiterService {
         if (!properties.enabled()) {
             return true;
         }
-        Bucket bucket = buckets.computeIfAbsent(key, k -> newBucket());
+        Bucket bucket = buckets.get(key, k -> newBucket());
         return bucket.tryConsume(1);
     }
 

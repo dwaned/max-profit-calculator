@@ -23,14 +23,15 @@ import java.io.IOException;
  *
  * <p>The filter checks the request URI internally so only {@code /api/calculate}
  * is rate-limited; other endpoints (notably {@code /api/health}) are passed
- * through unconditionally. Client identification prefers {@code X-Forwarded-For}
- * (Render / load balancer proxy) over {@code request.getRemoteAddr()}.
+ * through unconditionally. Clients are identified by {@code request.getRemoteAddr()};
+ * behind a proxy, Tomcat's {@code RemoteIpValve} ({@code server.forward-headers-strategy=native})
+ * resolves it from {@code X-Forwarded-For}, trusting only internal proxy hops so
+ * a client cannot choose its own key by sending a forged header.
  */
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitFilter.class);
-    private static final String X_FORWARDED_FOR = "X-Forwarded-For";
     private static final String CALCULATE_PATH = "/api/calculate";
 
     private final RateLimiterService limiter;
@@ -70,18 +71,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Resolves the per-request client key. Honours {@code X-Forwarded-For} so
-     * the filter behaves correctly behind Render's reverse proxy / load balancer.
+     * Resolves the per-request client key.
      *
      * @param request the inbound servlet request
-     * @return the client IP (or proxy-resolved address)
+     * @return the client IP, as resolved by the servlet container
      */
     static String clientKey(final HttpServletRequest request) {
-        String forwarded = request.getHeader(X_FORWARDED_FOR);
-        if (forwarded != null && !forwarded.isBlank()) {
-            int comma = forwarded.indexOf(',');
-            return (comma >= 0 ? forwarded.substring(0, comma) : forwarded).trim();
-        }
         return request.getRemoteAddr();
     }
 }

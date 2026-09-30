@@ -45,7 +45,8 @@ class WebConfigCorsTest {
 
             webConfig.addCorsMappings(registry);
 
-            verify(registry).addMapping("/api/**");
+            verify(registry).addMapping("/**");
+            verify(registration).allowedMethods(eq(new String[]{"GET", "POST", "OPTIONS"}));
             verify(registration).allowedOrigins(eq(new String[]{
                     "https://app.example.com", "http://localhost:9095"}));
             verify(registration).allowCredentials(eq(false));
