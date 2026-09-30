@@ -1,55 +1,43 @@
 ---
-# Regenerates `target/site/*` after `mvn verify site`, copies it into
-# `site/frontend/public/reports/`, and opens a PR with the result.
-#
-# Why: Render hosts the frontend as a Static Site, so the multi-stage
-# Dockerfile that runs Maven is ignored. The only path that gets the
-# generated reports into the bundle is to commit them under `public/`,
-# which Vite copies verbatim into `dist/reports/` at build time.
-#
-# Why a PR (not a direct push): the repo has a branch protection rule
-# requiring changes to main to go through a pull request. Direct bot
-# pushes to main get rejected with GH013. The workflow therefore pushes
-# to a throwaway `chore/reports-<sha>` branch and opens a PR.
+# Builds the Maven site reports and the Playwright HTML report, then
+# publishes both to GitHub Pages:
+#   https://dwaned.github.io/max-profit-calculator/reports/
+#   https://dwaned.github.io/max-profit-calculator/playwright-report/
+# The frontend's Reports page links there (VITE_REPORTS_URL), so the
+# generated output is never committed to the repository.
 #
 # Playwright: the workflow builds the frontend with `vite build`, starts
 # the backend jar on :9095, then serves the static output via `vite
 # preview`, which proxies /api to that backend (preview.proxy defaults to
 # server.proxy in vite.config.js). The Playwright UI test therefore drives
-# the real production bundle against a local backend — not the deployed
-# Render one, whose cold starts made the test time out — and its results
-# land in surefire-report.html alongside the other tests. Chromium is downloaded by the playwright CLI in the
-# `Install Playwright browser` step.
-#
-# Trade-off: reports go stale between regenerations. They are accurate
-# at the moment of the last green main build; the timestamp in `index.html`
-# makes that obvious.
+# the real production bundle against a local backend, and its results
+# land in surefire-report.html alongside the other tests.
 
 name: Regenerate Maven reports
 
 on:
   push:
     branches: [main]
-    # Only run when source / config changes — never when only the generated
-    # reports directory changed (that would be a feedback loop).
+    # Only when something that feeds the reports changes.
     paths:
       - "src/**"
       - "pom.xml"
       - "checkstyle.xml"
       - "checkstyle_suppressions.xml"
       - "site/frontend/**"
+      - ".github/workflows/reports.yml"
   workflow_dispatch:
 
+# One Pages deployment at a time; let an in-progress one finish.
 concurrency:
-  group: reports-${{ github.ref }}
+  group: pages
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  regenerate-reports:
+  build-reports:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -162,8 +150,8 @@ jobs:
         # `npx playwright test`) produces a self-contained
         # playwright-report/ bundle with per-test traces, screenshots,
         # network logs and the same interactive UI as the official
-        # @playwright/test runner. We ship that bundle as
-        # public/playwright-report/ so the Reports page can link to it.
+        # @playwright/test runner. It is published to Pages at
+        # /playwright-report/ so the Reports page can link to it.
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
           CI: "1"  # disables html reporter's "open browser" behaviour
@@ -173,67 +161,32 @@ jobs:
           # Don't fail the job if the HTML reporter run had a flake —
           # the surefire run above is the source of truth.
 
-      - name: Copy reports into site/frontend/public
+      - name: Assemble Pages site
         run: |
-          rm -rf site/frontend/public/reports
-          rm -rf site/frontend/public/playwright-report
-          cp -r target/site site/frontend/public/reports
-          # The Playwright HTML reporter writes to playwright-report/ at
-          # site/frontend/ (the playwright.config.js runs from there
-          # with outputFolder: './playwright-report'). The HTML
-          # reporter's index.html references its own assets via
-          # relative paths (./data/, ./trace/), so the bundle must
-          # sit at the root of the deployed tree at /playwright-report/
-          # for those relative links to resolve.
+          mkdir -p pages
+          cp -r target/site pages/reports
           if [ -d site/frontend/playwright-report ]; then
-            cp -r site/frontend/playwright-report site/frontend/public/playwright-report
+            cp -r site/frontend/playwright-report pages/playwright-report
           fi
+          printf '%s\n' '<!DOCTYPE html><meta charset="utf-8"><title>Max Profit Calculator reports</title>' \
+            '<meta http-equiv="refresh" content="0; url=reports/index.html">' \
+            '<a href="reports/index.html">Maven site reports</a>' > pages/index.html
 
-      - name: Open PR with regenerated reports
-        # Use `git status --porcelain` (not `git diff --quiet`) because the
-        # reports directory is brand new on the first run — `git diff` only
-        # sees tracked files, so it would report "no changes" and silently
-        # skip the very first commit we actually want.
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -z "$(git status --porcelain -- site/frontend/public/reports)" ]; then
-            echo "Reports unchanged, nothing to do"
-            exit 0
-          fi
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: pages
 
-          # Each run supersedes earlier report PRs; close them so they don't pile up.
-          gh pr list --state open --json number,headRefName \
-            -q '.[] | select(.headRefName | startswith("chore/reports-")) | .number' |
-            while read -r pr; do
-              gh pr close "$pr" --delete-branch --comment "Superseded by a newer reports regeneration."
-            done
-
-          BRANCH="chore/reports-${GITHUB_SHA::7}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
-          # Add both the Maven site bundle and the Playwright HTML
-          # reporter bundle. `git add <dir>` only matches tracked files
-          # inside that dir, so we also need to add the playwright-report
-          # dir explicitly — it is a sibling of public/reports, not a
-          # child. Use a single `git add` with both paths so the commit
-          # is atomic.
-          git add site/frontend/public/reports site/frontend/public/playwright-report
-          git commit -m "chore(reports): regenerate Maven site reports"
-          # Force-push because the reports dir is committed on top of the
-          # current main SHA on every run; the SHA used in the branch
-          # name is the main tip at trigger time but main has usually
-          # moved on (other PRs merged) by the time the workflow runs.
-          git push --force-with-lease origin "$BRANCH"
-
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "chore(reports): regenerate Maven site reports" \
-            --body "Auto-generated by the \`Regenerate Maven reports\` workflow.
-
-          Re-runs \`mvn verify site\` (including the Playwright UI test
-          against \`vite preview\` on :4173) and commits the output under
-          \`site/frontend/public/reports/\` so Vite ships it at \`/reports/*\`
-          on the deployed site."
+  deploy-reports:
+    needs: build-reports
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5.0.1

@@ -15,9 +15,14 @@ mvn spring-boot:run
 
 ## Report Commands
 
-Reports are generated automatically as part of the frontend Docker build
-(multi-stage `site/frontend/Dockerfile` — Maven `verify site` runs before
-the React build, output lands in `site/frontend/public/reports/`).
+CI publishes the reports to GitHub Pages on every relevant push to `main`
+(`.github/workflows/reports.yml`):
+
+- Maven site: <https://dwaned.github.io/max-profit-calculator/reports/>
+- Playwright HTML report: <https://dwaned.github.io/max-profit-calculator/playwright-report/>
+
+The frontend's Reports page links there (override with `VITE_REPORTS_URL`).
+Generated reports are never committed.
 
 For a manual local run:
 
@@ -27,15 +32,9 @@ mkdir -p target/pit-reports && \
   printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
     > target/pit-reports/index.html
 mvn -DskipITs -Dpitest.skip=true verify site
-
-# Copy into the frontend public dir so Vite bundles them into dist/reports/
-cp -r target/site site/frontend/public/reports
-
-# Build the frontend
-cd site/frontend && npm run build
 ```
 
-Then open <http://localhost:5173/reports> in the browser.
+Then open `target/site/index.html` in the browser.
 
 ## Test Commands
 
