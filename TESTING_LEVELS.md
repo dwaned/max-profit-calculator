@@ -50,9 +50,10 @@ CI: `maven.yml` (part of `mvn verify`, plus an HTML report artifact).
 - **Provider:** `LocalContractVerificationTest` verifies the backend against that file, and
   `PactBrokerVerificationTest` against the Pact Broker (`mvn test -Pcontract-tests`, with the
   API running on :9095).
-- CI: `contract-tests.yml` publishes to a Pact Broker, verifies the provider and runs
-  `can-i-deploy`. It runs on a self-hosted runner, only for pushes, manual runs and PRs from
-  branches in this repository.
+- CI: `contract-tests.yml` runs all of this in one job on a GitHub-hosted runner: the
+  consumer tests publish to a Pact Broker running as a service container (SQLite, fresh for
+  each run), the provider is verified against it, and `can-i-deploy` checks that this
+  commit's frontend and backend are compatible.
 
 ## 7. Performance tests
 

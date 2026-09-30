@@ -1,5 +1,11 @@
-# Contract Tests Workflow
-# Runs Pact contract tests using self-hosted Pact Broker on Mac Mini
+---
+# Consumer-driven contract tests (Pact) on a GitHub-hosted runner, in one job:
+#   frontend consumer tests -> publish pacts to a Pact Broker
+#   -> verify the backend (provider) against them -> can-i-deploy.
+# The broker is a service container that lives only for this job (SQLite, no
+# state between runs), so every check is about this commit's pacts.
+
+name: Contract Tests
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,36 +20,33 @@ on:
 permissions:
   contents: read
 
-name: Contract Tests
-
 jobs:
-  frontend-contract-tests:
-    # Never run fork PR code on the self-hosted runner (public repo): only
-    # pushes, manual runs and PRs from branches in this repository.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, osx, arm64, pact-broker]
+  contract-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      checks: write  # Contract Test Results check run
+
+    services:
+      pact-broker:
+        image: pactfoundation/pact-broker:3.0.0-pactbroker2.121.2
+        ports:
+          - 9292:9292
+        env:
+          PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite3
+        # 127.0.0.1, not localhost: localhost resolves to ::1 in the image and
+        # the broker only listens on IPv4.
+        options: >-
+          --health-cmd "wget -qO- http://127.0.0.1:9292/diagnostic/status/heartbeat || exit 1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 24
+
+    env:
+      PACT_BROKER_BASE_URL: http://localhost:9292
+
     steps:
-      # Clean up deeply-nested leftover artifacts from previous runs. Earlier
-      # MegaLinter versions with APPLY_FIXES=commit wrote fresh
-      # `megalinter-reports/updated_sources/` dirs on every run without cleaning
-      # up the previous one; after several PRs the path exceeded the
-      # filesystem 4096-char limit and `actions/checkout`'s clean:true step
-      # started failing with ENAMETOOLONG. Wipe any leftover megalinter-reports
-      # before checkout, tolerating ENAMETOOLONG on the deepest paths (git's
-      # clean-up will then succeed on the rest).
-      - name: Prune stale mega-linter artifacts
-        run: |
-          if [ -d megalinter-reports ]; then
-            # Shallow rmdir works without descending into the over-deep paths.
-            find megalinter-reports -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null || true
-            rmdir megalinter-reports 2>/dev/null || rm -rf megalinter-reports 2>/dev/null || true
-          fi
-
-      - name: Start Pact Broker
-        run: |
-          cd ~/pact-broker-docker && docker-compose up -d
-          sleep 10
-
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -56,50 +59,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: site/frontend/package-lock.json
 
-      - name: Install frontend dependencies
-        working-directory: site/frontend
-        run: npm ci
-
-      - name: Run Frontend Pact Tests
-        working-directory: site/frontend
-        run: npm run test:pact
-        env:
-          VITE_API_URL: http://localhost:3000
-
-      - name: Publish Pacts to Broker
-        working-directory: site/frontend
-        run: |  # zizmor: ignore[adhoc-packages] pinned CLI, not a project dependency
-          npm install -g @pact-foundation/pact-cli@18.1.2
-          pact-broker publish pacts/ \
-            --broker-base-url=http://localhost:8080 \
-            --consumer-app-version=${{ github.sha }} \
-            --tag=latest
-
-  backend-contract-tests:
-    permissions:
-      contents: read
-      checks: write  # Contract Test Results check run
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, osx, arm64, pact-broker]
-    needs: frontend-contract-tests
-    steps:
-      - name: Prune stale mega-linter artifacts
-        run: |
-          if [ -d megalinter-reports ]; then
-            find megalinter-reports -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null || true
-            rmdir megalinter-reports 2>/dev/null || rm -rf megalinter-reports 2>/dev/null || true
-          fi
-
-      - name: Start Pact Broker
-        run: |
-          cd ~/pact-broker-docker && docker-compose up -d
-          sleep 10
-
-      - name: Checkout Repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
       - name: Set up JDK 25
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
@@ -107,26 +66,51 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Build App
-        run: mvn package -DskipTests
+      - name: Install Pact CLI
+        run: npm install -g @pact-foundation/pact-cli@18.1.2  # zizmor: ignore[adhoc-packages] pinned CLI, not a project dependency
 
-      - name: Start Backend
+      # --- Consumer ---
+      - name: Run frontend Pact tests
+        working-directory: site/frontend
         run: |
-          java -jar target/*.jar &
-          echo $! > backend.pid
-          sleep 30
-          curl -s http://localhost:9095/api/health || exit 1
+          npm ci
+          npm run test:pact
 
-      - name: Run Broker Contract Tests
+      - name: Publish pacts to the broker
+        working-directory: site/frontend
         run: |
-          mvn test -Pcontract-tests \
-            -Dpactbroker.host=http://localhost:8080 \
-            -Dpact.provider.version=${{ github.sha }} \
+          pact-broker publish pacts/ \
+            --broker-base-url="$PACT_BROKER_BASE_URL" \
+            --consumer-app-version="$GITHUB_SHA" \
+            --tag=latest
+
+      # --- Provider ---
+      - name: Build and start the backend
+        run: |
+          mvn -B -q package -DskipTests
+          nohup java -jar target/max-profit-calculator-1.0-SNAPSHOT.jar > backend.log 2>&1 &
+          for i in {1..60}; do
+            if curl -sf http://localhost:9095/api/health > /dev/null; then
+              echo "Backend ready on :9095"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Backend did not become ready in 60s"
+          cat backend.log
+          exit 1
+
+      - name: Verify the provider against the broker
+        run: |
+          mvn -B test -Pcontract-tests \
+            -Dpactbroker.host="$PACT_BROKER_BASE_URL" \
+            -Dpact.provider.version="$GITHUB_SHA" \
             -Dpact.verifier.publishResults=true
 
-      - name: Report Contract Test Results
+      - name: Report contract test results
+        # Fork PRs get a read-only token, so they can't create the check run.
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
-        if: always()
         with:
           report_paths: "**/target/surefire-reports/TEST-*.xml"
           check_name: "Contract Test Results"
@@ -135,41 +119,10 @@ jobs:
           annotate_notice: false
           fail_on_failure: true
 
-      - name: Stop Backend
-        if: always()
+      # --- Compatibility ---
+      - name: Can I deploy?
         run: |
-          if [ -f backend.pid ]; then
-            kill "$(cat backend.pid)" 2>/dev/null || true
-            rm -f backend.pid
-          fi
-
-  can-i-deploy:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, osx, arm64, pact-broker]
-    needs: [frontend-contract-tests, backend-contract-tests]
-    steps:
-      - name: Prune stale mega-linter artifacts
-        run: |
-          if [ -d megalinter-reports ]; then
-            find megalinter-reports -maxdepth 1 -mindepth 1 -exec rm -rf {} + 2>/dev/null || true
-            rmdir megalinter-reports 2>/dev/null || rm -rf megalinter-reports 2>/dev/null || true
-          fi
-
-      - name: Start Pact Broker
-        run: |
-          cd ~/pact-broker-docker && docker-compose up -d
-          sleep 10
-
-      - name: Install Pact CLI
-        run: npm install -g @pact-foundation/pact-cli@18.1.2  # zizmor: ignore[adhoc-packages] pinned CLI, not a project dependency
-
-      # Check if the latest versions of all pacticipants are mutually compatible
-      # This is a "can I merge" check without recording any deployment
-      - name: Can I Deploy (Compatibility Check)
-        run: |
-          pact broker can-i-deploy \
-            --broker-base-url=http://localhost:8080 \
-            --pacticipant frontend \
-            --latest \
-            --pacticipant max-profit-calculator-backend \
-            --latest
+          pact-broker can-i-deploy \
+            --broker-base-url="$PACT_BROKER_BASE_URL" \
+            --pacticipant frontend --version "$GITHUB_SHA" \
+            --pacticipant max-profit-calculator-backend --version "$GITHUB_SHA"
