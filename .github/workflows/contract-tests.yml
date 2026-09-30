@@ -35,8 +35,10 @@ jobs:
           - 9292:9292
         env:
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite3
+        # 127.0.0.1, not localhost: localhost resolves to ::1 in the image and
+        # the broker only listens on IPv4.
         options: >-
-          --health-cmd "wget -qO- http://localhost:9292/diagnostic/status/heartbeat || exit 1"
+          --health-cmd "wget -qO- http://127.0.0.1:9292/diagnostic/status/heartbeat || exit 1"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 24
