@@ -78,7 +78,7 @@ jobs:
         run: |
           mvn -B -q package -DskipTests
           nohup java -jar target/max-profit-calculator-1.0-SNAPSHOT.jar > backend.log 2>&1 &
-          for i in {1..60}; do
+          for _ in {1..60}; do
             if curl -sf http://localhost:9095/api/health > /dev/null; then
               echo "Backend ready on :9095"
               exit 0
