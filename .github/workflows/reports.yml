@@ -169,6 +169,11 @@ jobs:
           if [ -d site/frontend/playwright-report ]; then
             cp -r site/frontend/playwright-report pages/playwright-report
           fi
+          # BDD acceptance scenarios (run against the UI in the Maven step above)
+          if [ -f target/cucumber-report/report.html ]; then
+            mkdir -p pages/cucumber-report
+            cp target/cucumber-report/report.html pages/cucumber-report/index.html
+          fi
           printf '%s\n' '<!DOCTYPE html><meta charset="utf-8"><title>Max Profit Calculator reports</title>' \
             '<meta http-equiv="refresh" content="0; url=reports/index.html">' \
             '<a href="reports/index.html">Maven site reports</a>' > pages/index.html

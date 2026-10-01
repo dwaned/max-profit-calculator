@@ -91,12 +91,12 @@ See [TESTING_LEVELS.md](TESTING_LEVELS.md) for every test suite, the tools it us
 run it and where CI runs it. In short:
 
 ```bash
-mvn verify                    # checkstyle, unit, property-based, API/security, BDD and stress tests + coverage gate
+mvn verify                    # checkstyle, unit, property-based, web layer, integration and stress tests + coverage gate
 mvn test -Ppitest             # mutation testing (fails below a 90% mutation score)
 mvn test -Pperformance-tests  # algorithm stress tests
 mvn test -Pcontract-tests     # Pact provider verification (needs the API running on :9095)
-mvn test -Pplaywright-tests   # browser test (needs the UI running; PLAYWRIGHT_BASE_URL)
-mvn test -Pcontainer-tests    # Testcontainers + API performance (needs Docker)
+mvn test -Pplaywright-tests   # UI test + BDD acceptance scenarios (needs the UI running; PLAYWRIGHT_BASE_URL)
+mvn test -Pcontainer-tests    # system tests + API performance via Testcontainers (needs Docker)
 
 cd site/frontend
 npm run lint && npm run test:run   # ESLint + Vitest unit tests
@@ -123,11 +123,11 @@ after a warm-up, always at the maximum budget (savings 1000):
 
 | Workflow | When | What |
 |---|---|---|
-| `maven.yml` | PRs, `main` | `mvn verify`, mutation testing, Cucumber report; OWASP dependency check and dependency-graph submission on `main` |
+| `maven.yml` | PRs, `main` | `mvn verify`, mutation testing; OWASP dependency check and dependency-graph submission on `main` |
 | `frontend.yml` | PRs, `main` | ESLint, Vitest, production build |
 | `contract-tests.yml` | PRs, `main` | Pact consumer tests → Pact Broker (service container) → provider verification → `can-i-deploy` |
-| `containers.yml` | `main` | Builds both images, Docker Scout (fails on critical CVEs), Playwright against the running stack |
-| `reports.yml` | `main` | Builds the Maven site and Playwright report and deploys them to GitHub Pages |
+| `containers.yml` | `main` | Builds both images, Docker Scout (fails on critical CVEs), Playwright UI test and BDD acceptance scenarios against the running stack |
+| `reports.yml` | `main` | Builds the Maven site, Cucumber and Playwright reports and deploys them to GitHub Pages |
 | `mega-linter.yml` | PRs | MegaLinter, including zizmor for GitHub Actions security |
 
 Dependabot opens weekly update PRs for Maven, npm, GitHub Actions and Docker images.

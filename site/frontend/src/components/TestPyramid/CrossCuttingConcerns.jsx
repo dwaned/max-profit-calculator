@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { testLayers } from '../../data/testLayers';
+import { testLayers, layerTestCount } from '../../data/testLayers';
 
 const STYLE_LABELS = {
   example: { label: 'Example', classes: 'bg-emerald-700/40 text-emerald-300 border-emerald-700' },
@@ -37,8 +37,9 @@ function CrossCuttingConcerns() {
       </h2>
       <p className="text-slate-400 text-center mb-8 max-w-2xl mx-auto">
         Some testing concerns apply across multiple pyramid layers rather than
-        living in one specific band. Performance is the canonical example — you
-        measure response time, memory, and throughput wherever it matters.
+        living in one specific band. Performance is the canonical example: each
+        requirement is checked at the level where it lives, from algorithm timing
+        and memory in unit tests to API latency against the deployed stack.
       </p>
 
       <div
@@ -69,7 +70,7 @@ function CrossCuttingConcerns() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
               <div className="text-xs uppercase text-slate-500 mb-1">Test Count</div>
-              <div className="text-2xl font-bold text-purple-400">{performance.testCount}</div>
+              <div className="text-2xl font-bold text-purple-400">{layerTestCount(performance)}</div>
             </div>
             <div className="bg-slate-900 rounded-lg p-4 border border-slate-700 md:col-span-2">
               <div className="text-xs uppercase text-slate-500 mb-2">Test Classes</div>
@@ -80,6 +81,7 @@ function CrossCuttingConcerns() {
                     className="inline-flex items-center gap-2 px-3 py-1 bg-slate-950 rounded text-sm text-slate-300 font-mono"
                   >
                     {cls.name}
+                    <span className="text-slate-500">{cls.count}</span>
                     <StyleBadge style={cls.style} />
                   </span>
                 ))}

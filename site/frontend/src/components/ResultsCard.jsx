@@ -6,13 +6,13 @@ export default function ResultsCard({ result }) {
   const selectedCompanies = indices?.map(idx => companyNames?.[idx]).filter(Boolean) || [];
 
   return (
-    <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
+    <div data-testid="results" className="bg-slate-800 rounded-xl p-6 border border-slate-700">
       <h3 className="text-lg font-semibold text-white mb-4">Results</h3>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-slate-900 rounded-lg p-4">
           <div className="text-sm text-slate-400 mb-1">Max Profit</div>
-          <div className="text-2xl font-bold text-green-400">
+          <div data-testid="max-profit" className="text-2xl font-bold text-green-400">
             €{maxProfit}
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function ResultsCard({ result }) {
       {indices?.length > 0 && (
         <div className="mt-4 bg-slate-900 rounded-lg p-4">
           <div className="text-sm text-slate-400 mb-2">Buy Indices</div>
-          <div className="flex flex-wrap gap-2">
+          <div data-testid="buy-indices" className="flex flex-wrap gap-2">
             {indices.map((idx) => (
               <span
                 key={idx}
@@ -72,7 +72,7 @@ export default function ResultsCard({ result }) {
       )}
 
       {indices?.length === 0 && (
-        <div className="mt-4 bg-slate-900 rounded-lg p-4 text-center">
+        <div data-testid="no-profit" className="mt-4 bg-slate-900 rounded-lg p-4 text-center">
           <div className="text-slate-400">No profitable stocks found</div>
         </div>
       )}

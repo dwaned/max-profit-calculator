@@ -3,7 +3,7 @@ package com.maxprofit.calculator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -19,18 +19,19 @@ import static org.hamcrest.Matchers.equalTo;
 public class ContainerTests {
 
     private static final int APP_PORT = 9095;
-    private static final int SITE_PORT = 3000;
+    // Container port of the nginx frontend (docker-compose-test.yml maps it to 3000 on the host).
+    private static final int FRONTEND_PORT = 80;
 
     @Container
-    private final DockerComposeContainer<?> environment = new DockerComposeContainer<>(
+    private final ComposeContainer environment = new ComposeContainer(
             new File("docker-compose-test.yml"))
         .withExposedService("app", APP_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)))
-        .withExposedService("site", SITE_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)));
+        .withExposedService("frontend", FRONTEND_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)));
 
     @Test
     public void testAppAndSite() throws org.json.JSONException {
         Integer appPort = environment.getServicePort("app", APP_PORT);
-        Integer sitePort = environment.getServicePort("site", SITE_PORT);
+        Integer sitePort = environment.getServicePort("frontend", FRONTEND_PORT);
 
         System.out.println("App port: " + appPort);
         System.out.println("Site port: " + sitePort);

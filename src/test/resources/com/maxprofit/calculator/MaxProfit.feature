@@ -1,9 +1,13 @@
 @Cucumber
-Feature: Max Profit Calculator Engine logic
+Feature: Choosing the most profitable stocks for my savings
 
-  This feature contains Regression tests that ensure the Max Profit Calculator logic is not modified unexpectedly.
-  Tests do not make use of the UI or the API, but rather test the logic of the Max Profit Calculator Engine.
-  The main usage for these tests is to present the expected behavior of the Max Profit Calculator in a readable format.
+  As an investor using the Max Profit Calculator
+  I want to enter my savings and the current and future prices of some stocks
+  So that I know which stocks to buy for the highest profit
+
+  These scenarios are the acceptance criteria agreed by the Product Owner, QA and
+  developers. They are automated end-to-end: each step drives the calculator in a
+  real browser, exactly as a user would.
 
 Scenario: Max Profit obtained without using all savings
   Given I have 6 Euros of savings

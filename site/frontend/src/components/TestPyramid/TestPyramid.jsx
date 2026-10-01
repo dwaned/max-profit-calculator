@@ -1,5 +1,9 @@
 import { motion } from 'framer-motion';
-import { testLayers, layerOrder, bddInfo, propertyBasedInfo } from '../../data/testLayers';
+import { testLayers, layerOrder, layerTestCount, bddInfo, propertyBasedInfo } from '../../data/testLayers';
+
+// Widths grow from the narrow top layer to the full-width base.
+const TOP_WIDTH = 45;
+const widthFor = (index) => TOP_WIDTH + (index * (100 - TOP_WIDTH)) / (layerOrder.length - 1);
 
 function TestPyramid({ onLayerSelect, selectedLayer }) {
   return (
@@ -20,32 +24,29 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
 
             return (
               <div key={layer.id} className="relative w-full flex justify-center">
-                {/* BDD badge on the right */}
+                {/* BDD badge just right of its layer, arrow pointing at the layer */}
                 {hasBdd && (
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full pr-2 flex items-center">
-                    <svg 
-                      className="w-8 h-8 text-purple-400" 
-                      viewBox="0 0 40 40"
-                    >
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 flex items-center"
+                    style={{ left: `${50 + widthFor(index) / 2}%` }}
+                  >
+                    <svg className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400" viewBox="0 0 40 40">
                       <defs>
                         <marker
                           id="arrowhead-bdd"
                           markerWidth="6"
                           markerHeight="6"
-                          refX="5"
+                          refX="1"
                           refY="3"
                           orient="auto"
                         >
-                          <polygon 
-                            points="0 0, 6 3, 0 6" 
-                            fill="#a855f7" 
-                          />
+                          <polygon points="6 0, 0 3, 6 6" fill="#a855f7" />
                         </marker>
                       </defs>
                       <line
-                        x1="0"
+                        x1="38"
                         y1="20"
-                        x2="32"
+                        x2="6"
                         y2="20"
                         stroke="#a855f7"
                         strokeWidth="2"
@@ -57,56 +58,10 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5 + index * 0.1 }}
-                      className="ml-1 px-2 py-1 bg-purple-600 text-white text-xs font-bold rounded whitespace-nowrap"
+                      className="px-2 py-1 bg-purple-600 text-white text-xs font-bold rounded whitespace-nowrap"
                     >
                       {bddInfo.name}
                     </motion.span>
-                  </div>
-                )}
-
-                {/* Property-Based badge on the left — kept inside the padded
-                    container so the pill can never overflow the viewport edge
-                    (#11). The outer wrapper has px-4 sm:px-12 for that room. */}
-                {hasPropertyBased && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center">
-                    <motion.span
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.5 + index * 0.1 }}
-                      className="mr-1 px-2 py-1 bg-cyan-600 text-white text-xs font-bold rounded whitespace-nowrap"
-                    >
-                      {propertyBasedInfo.name}
-                    </motion.span>
-                    <svg
-                      className="w-8 h-8 text-cyan-400"
-                      viewBox="0 0 40 40"
-                    >
-                      <defs>
-                        <marker
-                          id="arrowhead-pb"
-                          markerWidth="6"
-                          markerHeight="6"
-                          refX="1"
-                          refY="3"
-                          orient="auto"
-                        >
-                          <polygon
-                            points="6 0, 0 3, 6 6"
-                            fill="#06b6d4"
-                          />
-                        </marker>
-                      </defs>
-                      <line
-                        x1="32"
-                        y1="20"
-                        x2="0"
-                        y2="20"
-                        stroke="#06b6d4"
-                        strokeWidth="2"
-                        strokeDasharray="4 2"
-                        markerEnd="url(#arrowhead-pb)"
-                      />
-                    </svg>
                   </div>
                 )}
 
@@ -120,7 +75,7 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
                     ${isSelected ? 'ring-2 ring-white' : ''}
                   `}
                   style={{
-                    width: `${60 + (index * 10)}%`,
+                    width: `${widthFor(index)}%`,
                   }}
                   whileHover={{ scale: 1.02, opacity: 1 }}
                   whileTap={{ scale: 0.98 }}
@@ -128,11 +83,23 @@ function TestPyramid({ onLayerSelect, selectedLayer }) {
                   animate={{ opacity: shouldDim ? 0.3 : 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
-                  <span className="text-white font-semibold">
-                    {layer.name}
+                  {/* The base layer is full width, so its technique badge sits inside it
+                      (hidden on very small screens; the details panel shows it too) */}
+                  {hasPropertyBased && (
+                    <motion.span
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5 + index * 0.1 }}
+                      className="absolute left-3 hidden sm:inline-block px-2 py-0.5 bg-cyan-600 text-white text-xs font-bold rounded whitespace-nowrap"
+                    >
+                      {propertyBasedInfo.name}
+                    </motion.span>
+                  )}
+                  <span className="text-white font-semibold text-sm sm:text-base">
+                    {layer.shortName || layer.name}
                   </span>
                   <span className="absolute right-3 text-white/70 text-xs">
-                    {layer.testCount}
+                    {layerTestCount(layer)}
                   </span>
                 </motion.button>
               </div>

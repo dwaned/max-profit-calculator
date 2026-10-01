@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { testLayers, bddInfo, propertyBasedInfo } from '../../data/testLayers';
+import { testLayers, layerTestCount, bddInfo, propertyBasedInfo } from '../../data/testLayers';
 
-const bddCodeExample = `Scenario: Max Profit with using all savings
+// From MaxProfit.feature (automated through the UI by steps/StepDefinitions.java)
+const bddCodeExample = `Scenario: Max Profit obtained with using all savings
   Given I have 10 Euros of savings
   When Array of current stock prices are "5,5,1"
   And Array of future stock prices are "9,9,4"
-  Then the best combination is "0,1"
+  Then the best combination of indices for max profit is "0,1"
   And profit is 8 Euros`;
 
 const STYLE_LABELS = {
@@ -77,7 +78,7 @@ function LayerDetail({ layerId }) {
             {layer.description}
           </p>
 
-          {/* Show sub-tests for Unit layer */}
+          {/* Testing approaches within the layer, when it has more than one */}
           {showSubTests && (
             <div className="mb-6 space-y-4">
               <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
@@ -137,7 +138,7 @@ function LayerDetail({ layerId }) {
 
           <div className="mb-6">
             <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Test Classes
+              Test Classes ({layerTestCount(layer)} tests)
             </h4>
             <div className="flex flex-wrap gap-2">
               {layer.testClasses.map((cls, i) => (
@@ -146,6 +147,7 @@ function LayerDetail({ layerId }) {
                   className="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 rounded text-sm text-slate-300 font-mono"
                 >
                   {cls.name}
+                  <span className="text-slate-500">{cls.count}</span>
                   <StyleBadge style={cls.style} />
                 </span>
               ))}
