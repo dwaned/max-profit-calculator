@@ -26,9 +26,12 @@ function bandPoints(index) {
 
 /**
  * The testing pyramid as a drawing: each band is a focusable button. Up/down
- * arrow keys move between layers; Enter or Space selects.
+ * arrow keys move between layers; Enter or Space selects. Without a
+ * selectedLayer (e.g. on the home page) every band is a plain link-like button
+ * and arrow keys only move focus.
  */
 export default function PyramidDiagram({ selectedLayer, onSelect }) {
+  const selectable = selectedLayer !== undefined;
   const bandRefs = useRef([]);
 
   const handleKeyDown = (event, index, layerId) => {
@@ -39,7 +42,7 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
       event.preventDefault();
       const next = event.key === 'ArrowUp' ? index - 1 : index + 1;
       if (next >= 0 && next < layerOrder.length) {
-        onSelect(layerOrder[next]);
+        if (selectable) onSelect(layerOrder[next]);
         bandRefs.current[next]?.focus();
       }
     }
@@ -73,7 +76,7 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
                 ref={(el) => { bandRefs.current[index] = el; }}
                 role="button"
                 tabIndex={0}
-                aria-pressed={selected}
+                aria-pressed={selectable ? selected : undefined}
                 aria-label={`${layer.name}: ${layer.question} ${count} tests.`}
                 onClick={() => onSelect(layerId)}
                 onKeyDown={(event) => handleKeyDown(event, index, layerId)}
@@ -82,7 +85,7 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
                 <polygon
                   points={points}
                   fill={layer.hex}
-                  fillOpacity={selected ? 1 : 0.42}
+                  fillOpacity={selected || !selectable ? 0.9 : 0.42}
                   stroke={selected ? '#ffffff' : 'transparent'}
                   strokeWidth={selected ? 2.5 : 0}
                   className="transition-[fill-opacity] duration-200 group-hover:[fill-opacity:0.8] group-focus-visible:stroke-white group-focus-visible:[stroke-width:2.5] group-focus-visible:[stroke-dasharray:6_4]"

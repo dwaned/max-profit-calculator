@@ -18,7 +18,7 @@ export default function Navigation() {
   return (
     <>
       <nav className="sticky top-0 z-50 bg-slate-800 border-b border-slate-700">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center space-x-8">
               <span className="text-white font-bold text-lg">Max Profit</span>

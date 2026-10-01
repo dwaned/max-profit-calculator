@@ -197,7 +197,7 @@ function ReportsPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
-      <div className="max-w-6xl mx-auto px-4 py-6 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
         <motion.header
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
