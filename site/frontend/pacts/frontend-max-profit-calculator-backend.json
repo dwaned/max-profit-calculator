@@ -2,81 +2,172 @@
   "consumer": {
     "name": "frontend"
   },
-  "provider": {
-    "name": "max-profit-calculator-backend"
-  },
   "interactions": [
     {
       "description": "a request to calculate max profit",
       "request": {
-        "method": "POST",
-        "path": "/api/calculate",
+        "body": {
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "companyNames": [
+            "Acme Corp",
+            "Globex Inc",
+            "Initech"
+          ],
+          "savings": 10,
+          "sellPrices": [
+            15,
+            10,
+            35
+          ]
+        },
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": {
-          "savings": 10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35],
-          "companyNames": ["Acme Corp", "Globex Inc", "Initech"]
-        }
+        "method": "POST",
+        "path": "/api/calculate"
       },
       "response": {
-        "status": 200,
+        "body": {
+          "companyNames": [
+            "Initech"
+          ],
+          "indices": [
+            2
+          ],
+          "maxProfit": 25,
+          "remainingSavings": 0,
+          "savingsUsed": 10
+        },
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": {
-          "maxProfit": 25,
-          "indices": [2],
-          "savingsUsed": 10,
-          "remainingSavings": 0,
-          "companyNames": ["Initech"]
-        }
+        "matchingRules": {
+          "body": {
+            "$.companyNames": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.companyNames[*]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.indices": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.indices[*]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.maxProfit": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.remainingSavings": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.savingsUsed": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
       }
     },
     {
       "description": "a request with invalid savings",
       "request": {
-        "method": "POST",
-        "path": "/api/calculate",
+        "body": {
+          "buyPrices": [
+            5,
+            5,
+            10
+          ],
+          "savings": -10,
+          "sellPrices": [
+            15,
+            10,
+            35
+          ]
+        },
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": {
-          "savings": -10,
-          "buyPrices": [5, 5, 10],
-          "sellPrices": [15, 10, 35]
-        }
+        "method": "POST",
+        "path": "/api/calculate"
       },
       "response": {
-        "status": 400,
-        "headers": {
-          "Content-Type": "application/json"
-        },
         "body": {
           "message": "Invalid input: Savings must be at least 1"
-        }
-      }
-    },
-    {
-      "description": "a health check request",
-      "request": {
-        "method": "GET",
-        "path": "/api/health"
-      },
-      "response": {
-        "status": 200,
-        "headers": {
-          "Content-Type": "text/plain"
         },
-        "body": "OK"
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 400
       }
     }
   ],
   "metadata": {
+    "pact-js": {
+      "version": "17.1.4"
+    },
+    "pactRust": {
+      "ffi": "0.5.8",
+      "models": "1.3.16"
+    },
     "pactSpecification": {
       "version": "3.0.0"
     }
+  },
+  "provider": {
+    "name": "max-profit-calculator-backend"
   }
 }
