@@ -152,4 +152,13 @@ class ApiSecurityTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).doesNotContain("components").doesNotContain("diskSpace");
     }
+
+    @Test
+    @DisplayName("Metrics endpoints are not exposed over HTTP")
+    void metricsEndpointsNotExposed() {
+        assertThat(rest.getForEntity("/actuator/prometheus", String.class).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(rest.getForEntity("/actuator/metrics", String.class).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }

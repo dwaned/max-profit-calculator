@@ -35,9 +35,10 @@ import java.util.List;
  * filter is registered in {@code RateLimitFilterConfig} for the
  * {@code /api/calculate} URL pattern only.
  *
- * <p>Instruments Micrometer counters/timer so a Prometheus scrape
- * ({@code /actuator/prometheus}) exposes invocation count, execution
- * time, and 429-rejection count.
+ * <p>Instruments Micrometer counters/timer (invocation count, execution
+ * time, 429-rejection count). They are recorded in the meter registry; the
+ * Prometheus endpoint is not exposed over HTTP by default (see
+ * {@code management.endpoints.web.exposure.include}).
  *
  * @author dwaned
  */

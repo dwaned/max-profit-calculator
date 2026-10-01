@@ -58,7 +58,7 @@ The API is served under the `/api` context path on port 9095:
 - `POST /api/calculate`: the calculation. Invalid input returns `400` with `{"message": "Invalid input: …"}`.
 - `GET /api/health`: returns `OK`.
 - `GET /api/swagger-ui.html` and `/api/v3/api-docs`: OpenAPI docs.
-- `GET /api/actuator/health` and `/api/actuator/prometheus`: health and metrics.
+- `GET /api/actuator/health`: health status (no details). Metrics are recorded but not exposed over HTTP.
 
 `/api/calculate` is rate limited per client IP (10 requests, refilling 10 per second).
 Behind Cloudflare the client IP comes from `CF-Connecting-IP`. CORS allows the
