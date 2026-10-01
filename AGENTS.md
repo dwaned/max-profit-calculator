@@ -53,7 +53,7 @@ mvn test -Dtest=ExampleBasedTests#shouldWorkWithOneIndex
 # Run container tests (requires Docker)
 mvn test -Pcontainer-tests
 
-# Run Playwright UI tests and the BDD acceptance scenarios (UI must be running)
+# Run the BDD acceptance scenarios through the UI (UI must be running)
 mvn test -Pplaywright-tests
 
 # Run contract tests (Pact) - Backend provider verification

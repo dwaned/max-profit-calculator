@@ -95,7 +95,7 @@ mvn verify                    # checkstyle, unit, property-based, web layer, int
 mvn test -Ppitest             # mutation testing (fails below a 90% mutation score)
 mvn test -Pperformance-tests  # algorithm stress tests
 mvn test -Pcontract-tests     # Pact provider verification (needs the API running on :9095)
-mvn test -Pplaywright-tests   # UI test + BDD acceptance scenarios (needs the UI running; PLAYWRIGHT_BASE_URL)
+mvn test -Pplaywright-tests   # BDD acceptance scenarios through the UI (needs the UI running; PLAYWRIGHT_BASE_URL)
 mvn test -Pcontainer-tests    # system tests + API performance via Testcontainers (needs Docker)
 
 cd site/frontend
@@ -117,7 +117,8 @@ after a warm-up, always at the maximum budget (savings 1000):
 | 100 items (maximum) | < 100 ms | ~0.2 ms |
 | Allocation, 100 items | < 64 MB | 0.39 MB |
 
-`ApiPerformanceTests` (`-Pcontainer-tests`) checks end-to-end API latency: < 500 ms for 50 stocks.
+`ApiPerformanceTests` (`-Pcontainer-tests`, and in CI in `containers.yml`) checks end-to-end API latency against the
+Docker image: the median of 15 paced requests after a warm-up, 50 stocks at savings 1000, must be < 500 ms.
 
 ## CI/CD
 
@@ -126,7 +127,7 @@ after a warm-up, always at the maximum budget (savings 1000):
 | `maven.yml` | PRs, `main` | `mvn verify`, mutation testing; OWASP dependency check and dependency-graph submission on `main` |
 | `frontend.yml` | PRs, `main` | ESLint, Vitest, production build |
 | `contract-tests.yml` | PRs, `main` | Pact consumer tests → Pact Broker (service container) → provider verification → `can-i-deploy` |
-| `containers.yml` | `main` | Builds both images, Docker Scout (fails on critical CVEs), Playwright UI test and BDD acceptance scenarios against the running stack |
+| `containers.yml` | `main` | Builds both images, Docker Scout (fails on critical CVEs), BDD acceptance scenarios against the running stack, then system and API performance tests |
 | `reports.yml` | `main` | Builds the Maven site, Cucumber and Playwright reports and deploys them to GitHub Pages |
 | `mega-linter.yml` | PRs | MegaLinter, including zizmor for GitHub Actions security |
 

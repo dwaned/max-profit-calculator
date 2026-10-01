@@ -62,7 +62,8 @@ exposure) and `OpenApiDocsTest`. CI: `maven.yml` (part of `mvn verify`).
 
 Black-box tests against the Docker images: Testcontainers starts `docker-compose-test.yml`
 (API + nginx frontend) and the tests call it over HTTP. `ContainerTests`, plus
-`ApiPerformanceTests` (see Performance). Run with `mvn test -Pcontainer-tests` (needs Docker).
+`ApiPerformanceTests` (see Performance). Run with `mvn test -Pcontainer-tests` (needs Docker); CI runs
+them in `containers.yml`, after the BDD scenarios.
 
 ## 8. Performance tests
 
@@ -73,8 +74,9 @@ reliable on shared runners while still catching a real regression. It runs in th
 suite (`mvn verify`, so in `maven.yml`) and on its own with `mvn test -Pperformance-tests`.
 Thresholds are in the [README](README.md#performance-thresholds).
 
-`ApiPerformanceTests` checks end-to-end API latency (< 500 ms for 50 stocks) through the
-Docker stack; see System tests.
+`ApiPerformanceTests` checks end-to-end API latency through the Docker stack: the median of 15
+requests after a warm-up (paced to stay within the rate limit), 50 stocks at savings 1000, must
+be under 500 ms. It runs in CI in `containers.yml`; see System tests.
 
 ## 9. UI / end-to-end tests and BDD acceptance scenarios
 
@@ -88,7 +90,6 @@ and reading the result on screen.
 | Suite | Files | Tool | Run locally | CI |
 |---|---|---|---|---|
 | BDD acceptance scenarios | `MaxProfit.feature` (7 scenarios) | Cucumber + Playwright for Java | `mvn test -Pplaywright-tests` (UI running; `PLAYWRIGHT_BASE_URL`, default `http://localhost:3000`) | `containers.yml` (Docker stack), `reports.yml` (published as the Cucumber report) |
-| Java UI test | `PlaywrightUITests` | Playwright for Java | same as above | `containers.yml`, `reports.yml` |
 | JavaScript e2e | `site/frontend/tests/e2e/calculator.spec.js` | Playwright Test | `npm run test:ui` | `reports.yml` (published as the Playwright HTML report) |
 
 ## Reports

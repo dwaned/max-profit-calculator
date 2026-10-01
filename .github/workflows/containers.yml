@@ -86,8 +86,8 @@ jobs:
           cache: maven
 
       - name: Install Playwright browsers
-        # playwright-tests only runs PlaywrightUITests, which needs a real
-        # Chromium binary. The standard install command is exposed via the
+        # -Pplaywright-tests runs the BDD acceptance scenarios, which drive a real
+        # Chromium. The standard install command is exposed via the
         # Playwright CLI; running it via exec:java avoids depending on
         # playwright being installed globally. --with-deps installs only the
         # system libraries Chromium needs. Playwright is a test-scope
@@ -105,7 +105,7 @@ jobs:
       - name: Maven Build & Install
         run: mvn -B install -DskipTests --no-transfer-progress
 
-      - name: Run browser tests (Playwright UI test + BDD acceptance scenarios)
+      - name: Run BDD acceptance scenarios through the UI (Playwright)
         run: mvn test -Pplaywright-tests
 
       - name: Upload Cucumber report
@@ -115,6 +115,14 @@ jobs:
           name: cucumber-report
           path: target/cucumber-report/report.html
           retention-days: 30
+
+      # ContainerTests and ApiPerformanceTests start their own Compose stack with
+      # Testcontainers, which publishes the same host ports, so stop ours first.
+      - name: Stop the stack
+        run: docker compose -f docker-compose-test.yml down
+
+      - name: Run system and API performance tests (Testcontainers)
+        run: mvn -B test -Pcontainer-tests --no-transfer-progress
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0

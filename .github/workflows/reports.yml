@@ -127,13 +127,8 @@ jobs:
         # mvn site aborts if the pitest reporting goal can't find
         # target/pit-reports. Pre-create it with a placeholder so the
         # site plugin still aggregates pitest's section with a stub.
-        # PlaywrightUITests is INCLUDED here — the previous workflow
-        # version excluded it because no browser / frontend was available.
-        # Now that we build + serve the frontend in this job, the test
-        # runs and its result lands in surefire-report.html.
-        # ContainerTests / ApiPerformanceTests / LocalContractVerificationTest
-        # / PactBrokerVerificationTest still need Docker / a Pact broker
-        # and are excluded.
+        # The BDD acceptance scenarios (RunCucumberTest) run here too, against
+        # vite preview + the local API; their report is published to Pages.
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
         run: |
