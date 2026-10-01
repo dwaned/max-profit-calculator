@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { bddInfo, layerOrder, lenses, safetyNet, testLayers, tradeoffLabels } from '../../src/data/testLayers';
+import { techniques } from '../../src/data/techniques';
+import { layerOrder, lenses, safetyNet, testLayers, tradeoffLabels } from '../../src/data/testLayers';
 
 // Keeps the Testing Pyramid page honest: it must list exactly the tests that
 // exist in the repository, with the right counts, on the right layers.
@@ -64,7 +65,8 @@ describe('Testing Pyramid data', () => {
   });
 
   it('places BDD acceptance scenarios on the UI / End-to-End layer', () => {
-    expect(bddInfo.appliesTo).toEqual(['e2e']);
+    expect(lenses.find((l) => l.id === 'bdd').appliesTo).toEqual(['e2e']);
+    expect(techniques.find((t) => t.id === 'bdd').layers).toEqual(['e2e']);
     expect(layerOrder[0]).toBe('e2e');
     const bddClasses = allClasses.filter((c) => c.style === 'bdd');
     expect(bddClasses.length).toBeGreaterThan(0);
@@ -93,11 +95,12 @@ describe('Testing Pyramid data', () => {
     expect([...layerOrder].sort()).toEqual([...pyramidLayers].sort());
   });
 
-  it('links techniques and pipeline steps only to layers that exist', () => {
+  it('links techniques, lenses and pipeline steps only to layers that exist', () => {
     const ids = new Set(testLayers.map((l) => l.id));
     const referenced = [
       ...lenses.flatMap((lens) => lens.appliesTo),
       ...safetyNet.flatMap((stage) => stage.steps.flatMap((step) => step.layers)),
+      ...techniques.flatMap((technique) => technique.layers),
     ];
     expect(referenced.filter((id) => !ids.has(id))).toEqual([]);
   });

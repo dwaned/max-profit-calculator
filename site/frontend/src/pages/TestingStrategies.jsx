@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import PyramidDiagram from '../components/TestPyramid/PyramidDiagram';
 import LayerExplainer from '../components/TestPyramid/LayerExplainer';
 import LensesSection from '../components/TestPyramid/LensesSection';
@@ -21,7 +22,12 @@ const totalTests = testLayers.filter((l) => !l.crossCutting).reduce((sum, l) => 
 
 function TestingStrategies() {
   usePageTitle('Testing Pyramid');
-  const [selectedLayer, setSelectedLayer] = useState('unit');
+  // Other pages link to a layer with ?layer=<id>.
+  const [searchParams] = useSearchParams();
+  const linkedLayer = searchParams.get('layer');
+  const [selectedLayer, setSelectedLayer] = useState(
+    testLayers.some((l) => l.id === linkedLayer) ? linkedLayer : 'unit',
+  );
   const explainerRef = useRef(null);
 
   // Selecting from further down the page brings the explanation into view.
