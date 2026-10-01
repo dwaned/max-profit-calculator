@@ -89,8 +89,14 @@ public final class Stock {
                     "price lists must not exceed " + MAX_PRICE_LIST_SIZE + " entries (got " + n + ")");
         }
 
+        if (companyNames != null && !companyNames.isEmpty() && companyNames.size() != n) {
+            throw new IllegalArgumentException(
+                    "companyNames must have the same size as the price lists (got "
+                            + companyNames.size() + " and " + n + ")");
+        }
+
         if (n == 0) {
-            return new CalculationResult(0, new ArrayList<>(), 0, saving, companyNames);
+            return new CalculationResult(0, new ArrayList<>(), 0, saving, new ArrayList<>());
         }
 
         // dp[i][c] = maximum profit achievable with the first i items (items 0..i-1)
@@ -130,8 +136,9 @@ public final class Stock {
         }
 
         if (bestProfit <= 0) {
-            // No profitable combination — the empty set has profit 0 by construction.
-            return new CalculationResult(0, new ArrayList<>(), 0, saving, companyNames);
+            // No profitable combination — the empty set has profit 0 by construction,
+            // so no stocks (and no company names) are chosen.
+            return new CalculationResult(0, new ArrayList<>(), 0, saving, new ArrayList<>());
         }
 
         // Backtrack from dp[n][minCost]. Item i-1 is in the chosen subset iff the
@@ -149,13 +156,12 @@ public final class Stock {
 
         final int remaining = saving - minCost;
 
+        // Names of the chosen stocks, in the same order as the indices.
         List<String> filteredCompanyNames = null;
-        if (companyNames != null && !selected.isEmpty()) {
+        if (companyNames != null && !companyNames.isEmpty()) {
             filteredCompanyNames = new ArrayList<>(selected.size());
             for (Integer index : selected) {
-                if (index >= 0 && index < companyNames.size()) {
-                    filteredCompanyNames.add(companyNames.get(index));
-                }
+                filteredCompanyNames.add(companyNames.get(index));
             }
         }
 

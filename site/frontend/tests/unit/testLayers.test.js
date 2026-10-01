@@ -56,6 +56,7 @@ describe('Testing Pyramid data', () => {
 
   it('shows test counts that match the source', () => {
     const mismatches = allClasses
+      .filter((c) => !c.generated) // config-driven suites (e.g. Schemathesis) have no test methods
       .map((c) => ({ ...c, ...declaredTests(c.file) }))
       .filter((c) => (c.expands ? c.count < c.declared : c.count !== c.declared))
       .map((c) => `${c.name}: page says ${c.count}, source declares ${c.declared}`);

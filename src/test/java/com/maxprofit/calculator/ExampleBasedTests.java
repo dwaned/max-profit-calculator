@@ -182,4 +182,32 @@ class ExampleBasedTests {
                 () -> Stock.returnIndicesMaxProfit(1,
                         Collections.singletonList(1), Arrays.asList(1, 2)));
     }
+
+    @Test
+    void shouldReturnCompanyNamesOfTheChosenStocksInIndexOrder() {
+        CalculationResult result = Stock.returnIndicesMaxProfit(5,
+                Arrays.asList(1, 2, 5), Arrays.asList(2, 3, 20),
+                Arrays.asList("Acme", "Globex", "Initech"));
+
+        assertEquals(Collections.singletonList(2), result.getIndices());
+        assertEquals(Collections.singletonList("Initech"), result.getCompanyNames());
+    }
+
+    @Test
+    void shouldReturnNoCompanyNamesWhenNothingIsBought() {
+        CalculationResult result = Stock.returnIndicesMaxProfit(1,
+                Collections.singletonList(1), Collections.singletonList(1),
+                Collections.singletonList("Acme"));
+
+        assertTrue(result.getIndices().isEmpty());
+        assertTrue(result.getCompanyNames().isEmpty(), "No stock bought, so no company names");
+    }
+
+    @Test
+    void shouldRejectCompanyNamesOfADifferentLength() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Stock.returnIndicesMaxProfit(10,
+                        Arrays.asList(1, 2), Arrays.asList(5, 6),
+                        Collections.singletonList("OnlyOne")));
+    }
 }

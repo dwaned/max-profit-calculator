@@ -1,0 +1,21 @@
+# API fuzzing with Schemathesis: generates requests from the published OpenAPI
+# spec and checks every response (no 5xx, documented status codes and content
+# types, response bodies match their schema, invalid input is rejected, 405s
+# carry Allow, ...). Run it against a running API with:
+#
+#   uvx schemathesis run http://localhost:9095/api/v3/api-docs \
+#       --checks all --exclude-checks positive_data_acceptance
+#
+# positive_data_acceptance is excluded because JSON Schema cannot express that
+# buyPrices and sellPrices must have the same length (documented in the
+# operation description): schema-valid requests with different lengths are
+# correctly rejected with 400, which that check reports as false positives.
+#
+# CI runs it against the Docker image in .github/workflows/containers.yml.
+
+base-url = "http://localhost:9095/api"
+# Stay within the API's rate limit (burst 10, refill 10/s) so responses are real.
+rate-limit = "8/s"
+
+[generation]
+max-examples = 300

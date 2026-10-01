@@ -1,8 +1,8 @@
 package com.maxprofit.calculator.controller;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -32,21 +32,22 @@ public class CalculationRequest {
     private Integer savings;
 
     @NotNull(message = "Buy prices are required")
-    @NotEmpty(message = "Buy prices cannot be empty")
-    @Size(max = MAX_PRICE_LIST_SIZE, message = "Buy prices must not exceed 100 entries")
+    @Size(min = 1, max = MAX_PRICE_LIST_SIZE, message = "Buy prices must contain between 1 and 100 entries")
     private List<@NotNull(message = "Buy prices must not contain empty values")
         @Min(value = 1, message = "Buy prices must be at least 1")
         @Max(value = MAX_PRICE, message = "Buy prices must not exceed 1000") Integer> buyPrices;
 
     @NotNull(message = "Sell prices are required")
-    @NotEmpty(message = "Sell prices cannot be empty")
-    @Size(max = MAX_PRICE_LIST_SIZE, message = "Sell prices must not exceed 100 entries")
+    @Size(min = 1, max = MAX_PRICE_LIST_SIZE, message = "Sell prices must contain between 1 and 100 entries")
     private List<@NotNull(message = "Sell prices must not contain empty values")
         @Min(value = 1, message = "Sell prices must be at least 1")
         @Max(value = MAX_PRICE, message = "Sell prices must not exceed 1000") Integer> sellPrices;
 
+    @Schema(nullable = true, description = "Optional display names, one per stock (same length as the "
+            + "price lists). When omitted or null, random company names are generated.")
     @Size(max = MAX_PRICE_LIST_SIZE, message = "Company names must not exceed 100 entries")
-    private List<@Size(max = MAX_COMPANY_NAME_LENGTH,
+    private List<@NotNull(message = "Company names must not contain empty values")
+        @Size(max = MAX_COMPANY_NAME_LENGTH,
         message = "Company names must not exceed 100 characters") String> companyNames;
 
     public Integer getSavings() {
