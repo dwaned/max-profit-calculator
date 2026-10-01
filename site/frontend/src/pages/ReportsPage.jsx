@@ -83,7 +83,7 @@ function ReportsPage() {
       name: 'System Tests',
       color: 'bg-orange-500',
       icon: '🐳',
-      description: 'Black-box tests against the Docker images, started by Testcontainers. They need Docker, so they are run with -Pcontainer-tests rather than in the report run.',
+      description: 'Black-box tests against the Docker images, started by Testcontainers. They run in the container workflow (and locally with -Pcontainer-tests), not in the report run.',
       reports: [
         {
           id: 'xref-system',
@@ -116,9 +116,9 @@ function ReportsPage() {
         },
         {
           id: 'surefire-ui',
-          name: 'Surefire (Java PlaywrightUITests)',
-          description: 'JUnit result for the Java UI test',
-          file: 'surefire-report.html#com.maxprofit.calculator.PlaywrightUITests',
+          name: 'Scenario results (JUnit)',
+          description: 'JUnit view of the BDD scenarios',
+          file: 'surefire-report.html#com.maxprofit.calculator.RunCucumberTest',
         },
       ],
     },
@@ -127,7 +127,7 @@ function ReportsPage() {
       name: 'Performance Tests',
       color: 'bg-purple-500',
       icon: '⚡',
-      description: 'StressTests: median time per call after a warm-up at the maximum budget, and bytes allocated, with limits far above the measured cost. ApiPerformanceTests (end-to-end latency) needs Docker and runs with -Pcontainer-tests.',
+      description: 'StressTests: median time per call after a warm-up at the maximum budget, and bytes allocated, with limits far above the measured cost. ApiPerformanceTests (median end-to-end latency) runs in the container workflow.',
       reports: [
         {
           id: 'surefire-stress',

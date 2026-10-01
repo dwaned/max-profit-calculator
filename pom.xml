@@ -111,7 +111,6 @@
                             <!-- Fail below this mutation score (currently ~97%). -->
                             <mutationThreshold>90</mutationThreshold>
                            <excludedTestClasses>
-                                 <param>*.PlaywrightUITests*</param>
                                  <param>*.RunCucumberTest*</param>
                            </excludedTestClasses>
                         </configuration>                        
@@ -163,7 +162,6 @@
                                 <exclude>**/ExampleBasedTests.java</exclude>
                                 <exclude>**/PropertyBasedStockTests.java</exclude>
                                 <exclude>**/RunCucumberTest.java</exclude>
-                                <exclude>**/PlaywrightUITests.java</exclude>
                                 <exclude>**/StressTests.java</exclude>
                             </excludes>
                         </configuration>
@@ -185,10 +183,9 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <!-- Browser tests against a running UI (PLAYWRIGHT_BASE_URL):
-                                 the Playwright UI test and the BDD acceptance scenarios. -->
+                            <!-- BDD acceptance scenarios, driven through a running UI with
+                                 Playwright (PLAYWRIGHT_BASE_URL). -->
                             <includes>
-                                <include>**/PlaywrightUITests.java</include>
                                 <include>**/RunCucumberTest.java</include>
                             </includes>
                             <excludes>
@@ -214,7 +211,6 @@
                                 <exclude>**/ExampleBasedTests.java</exclude>
                                 <exclude>**/PropertyBasedStockTests.java</exclude>
                                 <exclude>**/RunCucumberTest.java</exclude>
-                                <exclude>**/PlaywrightUITests.java</exclude>
                                 <exclude>**/ContainerTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                             </excludes>
@@ -242,7 +238,6 @@
                                 <exclude>**/RunCucumberTest.java</exclude>
                                 <exclude>**/CalculatorControllerTest.java</exclude>
                                 <exclude>**/CalculatorControllerHttpStatusTest.java</exclude>
-                                <exclude>**/PlaywrightUITests.java</exclude>
                                 <exclude>**/ContainerTests.java</exclude>
                                 <exclude>**/ApiPerformanceTests.java</exclude>
                                 <exclude>**/StressTests.java</exclude>
@@ -514,7 +509,6 @@
                     <excludes>
                         <exclude>**/ContainerTests.java</exclude>
                         <exclude>**/ApiPerformanceTests.java</exclude>
-                        <exclude>**/PlaywrightUITests.java</exclude>
                         <exclude>**/RunCucumberTest.java</exclude>
                         <exclude>**/LocalContractVerificationTest.java</exclude>
                         <exclude>**/PactBrokerVerificationTest.java</exclude>

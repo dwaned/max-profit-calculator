@@ -204,7 +204,7 @@ public class LocalContractVerificationTest { ... }`,
     borderColor: 'border-orange-400',
     textColor: 'text-orange-400',
     description:
-      'Black-box tests against the deployed stack: Testcontainers starts both Docker images (API and nginx frontend) with Docker Compose and the test talks to them over HTTP, as a client would.',
+      'Black-box tests against the deployed stack: Testcontainers starts both Docker images (API and nginx frontend) with Docker Compose and the test talks to them over HTTP, as a client would. Runs in CI in the container workflow.',
     framework: 'Testcontainers + REST Assured',
     testClasses: [
       { name: 'ContainerTests', style: 'example', count: 1, file: `${JAVA}/ContainerTests.java` },
@@ -239,10 +239,9 @@ public void testAppAndSite() {
     textColor: 'text-red-400',
     description:
       'Drive the real application in a browser, as a user would. This is where the BDD acceptance scenarios run: each Gherkin step fills in the form, submits it and reads the result on screen.',
-    framework: 'Playwright (Java + JS) + Cucumber',
+    framework: 'Cucumber + Playwright (Java) · Playwright Test (JS)',
     testClasses: [
       { name: 'MaxProfit.feature', style: 'bdd', count: 7, file: 'src/test/resources/com/maxprofit/calculator/MaxProfit.feature' },
-      { name: 'PlaywrightUITests', style: 'example', count: 1, file: `${JAVA}/PlaywrightUITests.java` },
       { name: 'calculator.spec.js', style: 'example', count: 3, file: 'site/frontend/tests/e2e/calculator.spec.js' },
     ],
     codeExample: `// steps/StepDefinitions.java — a Gherkin step, automated through the UI
@@ -267,7 +266,7 @@ public void profitIsEuros(final int profit) {
     textColor: 'text-purple-400',
     crossCutting: true,
     description:
-      'Performance is checked at the level where each requirement lives. StressTests runs at unit level: the median time per call after a JIT warm-up, at the maximum budget, plus bytes allocated (unaffected by GC timing), with limits 200–500× above the measured cost so they are reliable in CI. ApiPerformanceTests runs at system level: end-to-end API latency through the Docker stack.',
+      'Performance is checked at the level where each requirement lives. StressTests runs at unit level: the median time per call after a JIT warm-up, at the maximum budget, plus bytes allocated (unaffected by GC timing), with limits 200–500× above the measured cost so they are reliable in CI. ApiPerformanceTests runs at system level: the median end-to-end API latency through the Docker stack after a warm-up.',
     framework: 'JUnit 6 · Testcontainers + REST Assured',
     testClasses: [
       { name: 'StressTests', style: 'performance', count: 6, file: `${JAVA}/StressTests.java` },
@@ -306,10 +305,17 @@ assertTrue(allocated < 64L * 1024 * 1024);   // measured: 0.39 MB`,
       },
       {
         name: 'API latency (system level)',
-        description: 'End-to-end response time for 50 stocks through the Docker stack.',
-        codeExample: `given().body(requestWith50Stocks)
-.when().post("/api/calculate")
-.then().time(lessThan(500L));`,
+        description: 'Median end-to-end response time for 50 stocks through the Docker stack, after a warm-up. Runs in CI (containers.yml).',
+        codeExample: `// ApiPerformanceTests.java — 5 warm-up requests, then 15 timed ones,
+// paced to stay within the rate limit (burst 10, refill 10/s)
+for (int i = 0; i < TIMED_REQUESTS; i++) {
+    Response response = post(baseUri, body);   // 50 stocks, savings 1000
+    assertEquals(200, response.statusCode());
+    millis[i] = response.time();
+    Thread.sleep(PACING_MS);
+}
+Arrays.sort(millis);
+assertTrue(millis[TIMED_REQUESTS / 2] < 500);  // median`,
       },
     ],
   },
