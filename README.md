@@ -91,7 +91,7 @@ See [TESTING_LEVELS.md](TESTING_LEVELS.md) for every test suite, the tools it us
 run it and where CI runs it. In short:
 
 ```bash
-mvn verify                    # checkstyle, unit, property-based, API/security and BDD tests + coverage gate
+mvn verify                    # checkstyle, unit, property-based, API/security, BDD and stress tests + coverage gate
 mvn test -Ppitest             # mutation testing (fails below a 90% mutation score)
 mvn test -Pperformance-tests  # algorithm stress tests
 mvn test -Pcontract-tests     # Pact provider verification (needs the API running on :9095)
@@ -106,13 +106,18 @@ npm run test:ui                    # Playwright end-to-end tests (needs the UI r
 
 ### Performance thresholds
 
-| Input size | Threshold | Test |
+`StressTests` (part of `mvn verify`, so it runs in CI) checks the **median** time per call
+after a warm-up, always at the maximum budget (savings 1000):
+
+| Input size | Threshold | Measured (Apple M-series) |
 |---|---|---|
-| 5 items | < 10 ms | `StressTests` |
-| 10 items | < 100 ms | `StressTests` |
-| 50 items | < 500 ms | `StressTests`, `ApiPerformanceTests` (end-to-end through the API) |
-| 100 items | < 10 s | `StressTests` |
-| Memory, 100 items | < 512 MB | `StressTests` |
+| 5 items | < 10 ms | ~0.03 ms |
+| 10 items | < 20 ms | ~0.05 ms |
+| 50 items | < 50 ms | ~0.2 ms |
+| 100 items (maximum) | < 100 ms | ~0.2 ms |
+| Allocation, 100 items | < 64 MB | 0.39 MB |
+
+`ApiPerformanceTests` (`-Pcontainer-tests`) checks end-to-end API latency: < 500 ms for 50 stocks.
 
 ## CI/CD
 

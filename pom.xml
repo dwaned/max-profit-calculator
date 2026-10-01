@@ -510,7 +510,6 @@
                     </properties>
                     <excludes>
                         <exclude>**/ContainerTests.java</exclude>
-                        <exclude>**/StressTests.java</exclude>
                         <exclude>**/ApiPerformanceTests.java</exclude>
                         <exclude>**/PlaywrightUITests.java</exclude>
                         <exclude>**/LocalContractVerificationTest.java</exclude>

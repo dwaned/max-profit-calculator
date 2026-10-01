@@ -57,10 +57,15 @@ CI: `maven.yml` (part of `mvn verify`, plus an HTML report artifact).
 
 ## 7. Performance tests
 
-`StressTests` checks algorithm time and memory limits for 5–100 items
-(`mvn test -Pperformance-tests`); `ApiPerformanceTests` checks end-to-end API latency (see
-Integration tests). Thresholds are listed in the [README](README.md#performance-thresholds).
-Neither runs in CI, because wall-clock limits are unreliable on shared runners.
+`StressTests` checks the algorithm at 5–100 items: the median time per call after a JIT
+warm-up, always at the maximum budget, plus bytes allocated (which, unlike heap usage, isn't
+affected by GC timing). The thresholds sit 200–500× above the measured cost, so they are
+reliable on shared runners while still catching a real regression. It runs in the default
+suite (`mvn verify`, so in `maven.yml`) and on its own with `mvn test -Pperformance-tests`.
+Thresholds are in the [README](README.md#performance-thresholds).
+
+`ApiPerformanceTests` checks end-to-end API latency (< 500 ms for 50 stocks) through the
+Docker stack; see Integration tests.
 
 ## 8. End-to-end (browser) tests
 
