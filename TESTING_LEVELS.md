@@ -65,6 +65,13 @@ Black-box tests against the Docker images: Testcontainers starts `docker-compose
 `ApiPerformanceTests` (see Performance). Run with `mvn test -Pcontainer-tests` (needs Docker); CI runs
 them in `containers.yml`, after the BDD scenarios.
 
+**API fuzzing (Schemathesis)** is property-based testing for the whole API: it generates hundreds
+of requests from the published OpenAPI spec (`/api/v3/api-docs`) and checks every response: no
+5xx, only documented status codes and content types, bodies that match their schema, invalid
+input rejected, `Allow` on 405. Settings are in `schemathesis.toml`; run locally against a running
+API with `uvx schemathesis run http://localhost:9095/api/v3/api-docs --checks all --exclude-checks positive_data_acceptance`.
+CI runs it against the Docker image in `containers.yml`.
+
 ## 8. Performance tests
 
 `StressTests` checks the algorithm at 5–100 items: the median time per call after a JIT

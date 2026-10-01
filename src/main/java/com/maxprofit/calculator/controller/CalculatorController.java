@@ -68,8 +68,10 @@ public class CalculatorController {
      */
     @Operation(
             summary = "Calculate maximum profit",
-            description = "Calculates the maximum profit that can be made from a given set of stock "
-                    + "prices and savings amount. Returns the optimal buy and sell indices.")
+            description = "Chooses which stocks to buy so that the total profit (sell price minus buy price) "
+                    + "is as large as possible without spending more than the savings. buyPrices and "
+                    + "sellPrices must have the same length; a request where they differ is rejected with 400. "
+                    + "Rate limited per client IP (burst 10, refilling 10 per second).")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -78,9 +80,22 @@ public class CalculatorController {
                             schema = @Schema(implementation = CalculationResult.class))),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid request parameters",
+                    description = "Invalid input (validation failure, malformed JSON, or buyPrices and "
+                            + "sellPrices of different lengths)",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"error\": \"Invalid input: ...\"}"))),
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = "{\"message\": \"Invalid input: Savings must be at least 1\"}"))),
+            @ApiResponse(
+                    responseCode = "415",
+                    description = "The request body is not application/json",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(
+                    responseCode = "429",
+                    description = "Rate limit exceeded for this client",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(
                     responseCode = "500",
                     description = "Internal server error")

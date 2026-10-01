@@ -3,7 +3,8 @@ export default function ResultsCard({ result }) {
 
   const { maxProfit, indices, savingsUsed, remainingSavings, companyNames } = result;
 
-  const selectedCompanies = indices?.map(idx => companyNames?.[idx]).filter(Boolean) || [];
+  // The API returns the names of the chosen stocks only, in the same order as `indices`.
+  const selectedCompanies = companyNames?.filter(Boolean) || [];
 
   return (
     <div data-testid="results" className="bg-slate-800 rounded-xl p-6 border border-slate-700">

@@ -20,7 +20,7 @@ export const testLayers = [
       'Test one class or function in isolation: the knapsack engine, the rate limiter, configuration binding and the frontend API client. No Spring context, no HTTP, no browser. Both example-based and property-based tests live here.',
     framework: 'JUnit 6 + jqwik · Vitest',
     testClasses: [
-      { name: 'ExampleBasedTests', style: 'example', count: 15, file: `${JAVA}/ExampleBasedTests.java` },
+      { name: 'ExampleBasedTests', style: 'example', count: 18, file: `${JAVA}/ExampleBasedTests.java` },
       { name: 'StockInvalidInputTests', style: 'example', count: 6, file: `${JAVA}/StockInvalidInputTests.java` },
       { name: 'CalculationResultTests', style: 'example', count: 4, file: `${JAVA}/CalculationResultTests.java` },
       { name: 'CompanyNameGeneratorTests', style: 'example', count: 3, file: `${JAVA}/CompanyNameGeneratorTests.java` },
@@ -127,7 +127,7 @@ void postBuyPricesExceedsMaxSize() throws Exception {
       'Start the whole Spring application on a real embedded Tomcat and call it over HTTP. Checks what only the assembled application can show: CORS, client-IP resolution behind a proxy, the rate limiter, input limits, the error format and the OpenAPI docs.',
     framework: 'Spring Boot Test + TestRestTemplate',
     testClasses: [
-      { name: 'ApiSecurityTest', style: 'example', count: 10, file: `${JAVA}/controller/ApiSecurityTest.java` },
+      { name: 'ApiSecurityTest', style: 'example', count: 15, file: `${JAVA}/controller/ApiSecurityTest.java` },
       { name: 'OpenApiDocsTest', style: 'example', count: 2, file: `${JAVA}/controller/OpenApiDocsTest.java` },
     ],
     codeExample: `// ApiSecurityTest.java
@@ -204,10 +204,12 @@ public class LocalContractVerificationTest { ... }`,
     borderColor: 'border-orange-400',
     textColor: 'text-orange-400',
     description:
-      'Black-box tests against the deployed stack: Testcontainers starts both Docker images (API and nginx frontend) with Docker Compose and the test talks to them over HTTP, as a client would. Runs in CI in the container workflow.',
+      'Black-box tests against the deployed stack: Testcontainers starts both Docker images (API and nginx frontend) with Docker Compose and the test talks to them over HTTP, as a client would. API fuzzing (Schemathesis) generates hundreds of requests from the published OpenAPI spec and checks every response against it: no server errors, documented status codes, bodies matching their schema, invalid input rejected. Both run in CI in the container workflow.',
     framework: 'Testcontainers + REST Assured',
     testClasses: [
       { name: 'ContainerTests', style: 'example', count: 1, file: `${JAVA}/ContainerTests.java` },
+      // Config-driven: the count is the number of API operations fuzzed, not test methods.
+      { name: 'Schemathesis (API fuzzing)', style: 'property-based', count: 2, file: 'schemathesis.toml', generated: true },
     ],
     codeExample: `// ContainerTests.java
 @Container
@@ -226,6 +228,7 @@ public void testAppAndSite() {
     properties: [
       'Real Docker images',
       'Black-box over HTTP',
+      'API fuzzing from the OpenAPI spec',
       'Deployment configuration included',
       'Minutes to start',
     ],
@@ -338,7 +341,7 @@ export const propertyBasedInfo = {
   name: 'Property-Based',
   appliesTo: ['unit'],
   description:
-    'Property-based testing states invariants that must hold for every valid input and lets the framework (jqwik) generate thousands of inputs to try to break them. Here: the reported profit always equals the profit of the chosen stocks (PropertyBasedStockTests), and the rate limiter never admits more requests than its capacity under random burst patterns (RateLimiterServiceTests).',
+    'Property-based testing states invariants that must hold for every valid input and lets the framework (jqwik) generate thousands of inputs to try to break them. Here: the reported profit always equals the profit of the chosen stocks (PropertyBasedStockTests), and the rate limiter never admits more requests than its capacity under random burst patterns (RateLimiterServiceTests). At system level, Schemathesis applies the same idea to the whole API: it generates requests from the OpenAPI spec and checks every response.',
 };
 
 export const testingTechniques = [

@@ -56,6 +56,10 @@ test.describe('Max Profit Calculator UI', () => {
     const maxProfit = page.locator('.text-green-400').first();
     await expect(maxProfit).toBeVisible();
     await expect(maxProfit).toContainText('€25');
+
+    // The chosen stock's company name is shown (the API returns names of the
+    // chosen stocks only, in the same order as the indices).
+    await expect(page.getByTestId('results')).toContainText('Initech');
   });
 
   test('rejects invalid input with a validation banner', async ({ page }) => {

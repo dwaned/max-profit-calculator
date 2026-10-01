@@ -161,4 +161,63 @@ class ApiSecurityTest {
         assertThat(rest.getForEntity("/actuator/metrics", String.class).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    @DisplayName("A null company name is rejected with 400")
+    void nullCompanyNameRejected() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("CF-Connecting-IP", "198.51.100.25");
+        ResponseEntity<String> response = postCalculate(
+                "{\"savings\":1,\"buyPrices\":[1],\"sellPrices\":[1],\"companyNames\":[null]}", headers);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).contains("Company names must not contain empty values");
+    }
+
+    @Test
+    @DisplayName("Company names of a different length than the prices are rejected with 400")
+    void mismatchedCompanyNamesRejected() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("CF-Connecting-IP", "198.51.100.26");
+        ResponseEntity<String> response = postCalculate(
+                "{\"savings\":10,\"buyPrices\":[1,2],\"sellPrices\":[5,6],\"companyNames\":[\"OnlyOne\"]}", headers);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).contains("companyNames must have the same size");
+    }
+
+    @Test
+    @DisplayName("Unsupported media type uses the API error format")
+    void unsupportedMediaTypeUsesErrorFormat() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        headers.add("CF-Connecting-IP", "198.51.100.27");
+        ResponseEntity<String> response = rest.postForEntity("/calculate", new HttpEntity<>("hi", headers), String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        assertThat(response.getBody()).isEqualTo("{\"message\":\"Unsupported media type: send application/json\"}");
+    }
+
+    @Test
+    @DisplayName("405 lists the supported methods in Allow and uses the API error format")
+    void methodNotAllowedHasAllowHeader() {
+        ResponseEntity<String> response = rest.exchange("/calculate", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+        assertThat(response.getHeaders().getAllow()).containsExactly(HttpMethod.POST);
+        assertThat(response.getBody()).contains("\"message\":\"Method DELETE is not supported");
+    }
+
+    @Test
+    @DisplayName("Values of the wrong JSON type are rejected, not coerced")
+    void wrongJsonTypesRejected() {
+        String[] bodies = {
+            "{\"savings\":1,\"buyPrices\":[1],\"sellPrices\":[1],\"companyNames\":[false]}",
+            "{\"savings\":\"5\",\"buyPrices\":[1],\"sellPrices\":[1]}",
+            "{\"savings\":5,\"buyPrices\":[1.5],\"sellPrices\":[2]}",
+        };
+        for (int i = 0; i < bodies.length; i++) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("CF-Connecting-IP", "198.51.100.3" + i);
+            ResponseEntity<String> response = postCalculate(bodies[i], headers);
+            assertThat(response.getStatusCode()).as(bodies[i]).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(response.getBody()).as(bodies[i]).contains("\"message\":\"Invalid input: malformed request body\"");
+        }
+    }
 }

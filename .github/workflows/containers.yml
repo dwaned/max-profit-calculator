@@ -105,6 +105,19 @@ jobs:
       - name: Maven Build & Install
         run: mvn -B install -DskipTests --no-transfer-progress
 
+      # API fuzzing against the Docker image: requests generated from the
+      # OpenAPI spec, every response checked (settings in schemathesis.toml).
+      - name: API fuzzing (Schemathesis)
+        uses: schemathesis/action@806cace2053cbbac93188e1281ff7da415643160 # v3.0.0
+        with:
+          schema: http://localhost:9095/api/v3/api-docs
+          config-file: schemathesis.toml
+          version: "4.28.0"
+          checks: all
+          max-examples: "300"
+          args: "--exclude-checks positive_data_acceptance --report junit --report-junit-path target/schemathesis/junit.xml"
+          coverage-pr-comment: "false"
+
       - name: Run BDD acceptance scenarios through the UI (Playwright)
         run: mvn test -Pplaywright-tests
 
@@ -131,6 +144,7 @@ jobs:
           files: |
             target/surefire-reports/**/*.xml
             target/failsafe-reports/**/*.xml
+            target/schemathesis/*.xml
           report_individual_runs: true
           check_name: "Playwright Test Results"
 

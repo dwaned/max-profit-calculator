@@ -21,3 +21,7 @@ megalinter-reports/
 
 # jqwik property-test database (recreated on every run)
 .jqwik-database
+
+# Schemathesis local cache/reports
+.schemathesis/
+schemathesis-report/
