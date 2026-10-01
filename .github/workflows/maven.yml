@@ -1,7 +1,7 @@
 # This workflow builds service, and runs:
 # - Unit tests (Example and Property Based)
 # - Mutation tests
-# - Cucumber tests (BDD scenarios)
+# - Web-layer, integration and stress tests (BDD scenarios run against the UI in containers.yml)
 # - OWASP Dependency Check
 
 concurrency:
@@ -42,7 +42,7 @@ jobs:
 
       - name: Build and test (checkstyle, all default tests, coverage gate)
         # `verify` runs every test in the default suite (unit, property-based,
-        # API/security, BDD) and JaCoCo's coverage check; previously only four
+        # web layer, integration, stress) and JaCoCo's coverage check; previously only four
         # hand-picked test classes ran here.
         run: |
           mvn -B clean verify
@@ -105,26 +105,6 @@ jobs:
             mutation_output.txt
           retention-days: 30
 
-      - name: Run Cucumber Tests
-        if: always()
-        run: |
-          mvn test -Dtest="RunCucumberTest"
-          CUCUMBER_XML=target/surefire-reports/TEST-com.maxprofit.calculator.RunCucumberTest.xml
-          CUCUMBER_TOTAL=$(grep -m1 -o 'tests="[0-9]*"' "$CUCUMBER_XML" | grep -o '[0-9]*')
-          CUCUMBER_FAILED=$(grep -m1 -o 'failures="[0-9]*"' "$CUCUMBER_XML" | grep -o '[0-9]*')
-          {
-            echo "### Cucumber BDD Scenarios Results"
-            echo "- Total Scenarios: $CUCUMBER_TOTAL"
-            echo "- Failed Scenarios: $CUCUMBER_FAILED"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload Cucumber Report
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: cucumber-report
-          path: target/cucumber-report/report.html
-          retention-days: 30
 
   security-scan:
     runs-on: ubuntu-22.04

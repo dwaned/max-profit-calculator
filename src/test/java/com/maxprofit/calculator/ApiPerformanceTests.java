@@ -3,7 +3,7 @@ package com.maxprofit.calculator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -47,7 +47,7 @@ class ApiPerformanceTests {
     private static final long LARGE_THRESHOLD_MS = 500;
 
     @Container
-    private final DockerComposeContainer<?> environment = new DockerComposeContainer<>(
+    private final ComposeContainer environment = new ComposeContainer(
             new File("docker-compose-test.yml"))
         .withExposedService("app", APP_PORT, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(10)));
 

@@ -105,8 +105,16 @@ jobs:
       - name: Maven Build & Install
         run: mvn -B install -DskipTests --no-transfer-progress
 
-      - name: Run Playwright Browser tests
+      - name: Run browser tests (Playwright UI test + BDD acceptance scenarios)
         run: mvn test -Pplaywright-tests
+
+      - name: Upload Cucumber report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cucumber-report
+          path: target/cucumber-report/report.html
+          retention-days: 30
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0

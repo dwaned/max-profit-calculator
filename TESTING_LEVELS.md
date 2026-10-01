@@ -15,12 +15,13 @@ locally, and where CI runs it. Workflows live in `.github/workflows/`.
 
 ## 2. Unit tests
 
+One class or function in isolation: no Spring context, no HTTP, no browser.
+
 | Suite | Files | Tool | CI |
 |---|---|---|---|
-| Example-based | `ExampleBasedTests`, `StockInvalidInputTests`, `CalculationResultTests`, `CompanyNameGeneratorTests`, `StockLoggingLevelTest` | JUnit 6 | `maven.yml` |
-| Property-based | `PropertyBasedStockTests` | jqwik | `maven.yml` |
-| Controller / web layer | `CalculatorControllerTest`, `CalculatorControllerHttpStatusTest` (200/400/405/415/429), `MetricsInstrumentationTest`, `WebConfigCorsTest`, `CorsPropertiesTest`, `RateLimiterServiceTests` | JUnit, MockMvc | `maven.yml` |
-| Frontend | `site/frontend/tests/unit/*` (API client incl. timeouts, report links, footer) | Vitest | `frontend.yml` |
+| Example-based | `ExampleBasedTests`, `StockInvalidInputTests`, `CalculationResultTests`, `CompanyNameGeneratorTests`, `StockLoggingLevelTest`, `CorsPropertiesTest`, `WebConfigCorsTest` | JUnit 6 | `maven.yml` |
+| Property-based | `PropertyBasedStockTests` (engine invariants), `RateLimiterServiceTests` (never admits more than capacity) | jqwik | `maven.yml` |
+| Frontend | `site/frontend/tests/unit/*`: API client (incl. timeouts), report links, footer, and `testLayers.test.js`, which keeps the Testing Pyramid page in sync with the real tests | Vitest | `frontend.yml` |
 
 `mvn verify` also enforces a **coverage floor** with JaCoCo: 95% of lines and 80% of branches.
 
@@ -30,18 +31,18 @@ PITest mutates the production code and checks that the test suite catches the mu
 (`mvn test -Ppitest`). The build fails below a **90% mutation score** (currently ~97%).
 CI: `maven.yml`.
 
-## 4. BDD / acceptance tests
+## 4. Web layer tests
 
-Cucumber scenarios in `src/test/resources/com/maxprofit/calculator/MaxProfit.feature`,
-with step definitions in `steps/StepDefinitions.java` and runner `RunCucumberTest`.
-CI: `maven.yml` (part of `mvn verify`, plus an HTML report artifact).
+The Spring MVC layer on its own with MockMvc (`@WebMvcTest`): request mapping, validation,
+status codes (200/400/405/415/429), the rate-limit filter and metrics.
+`CalculatorControllerTest`, `CalculatorControllerHttpStatusTest`, `MetricsInstrumentationTest`.
+CI: `maven.yml` (part of `mvn verify`).
 
 ## 5. Integration tests
 
-| Suite | Files | Tool | Run locally | CI |
-|---|---|---|---|---|
-| API integration (real embedded Tomcat) | `ApiSecurityTest` (CORS, forwarded-IP rate limiting, input bounds, error format), `OpenApiDocsTest` | Spring Boot test, TestRestTemplate | `mvn verify` | `maven.yml` |
-| Containers | `ContainerTests`, `ApiPerformanceTests` (< 500 ms for 50 stocks) | Testcontainers, REST Assured | `mvn test -Pcontainer-tests` (needs Docker) | — |
+The whole Spring application on a real embedded Tomcat, called over HTTP (TestRestTemplate):
+`ApiSecurityTest` (CORS, forwarded-IP rate limiting, input bounds, error format, actuator
+exposure) and `OpenApiDocsTest`. CI: `maven.yml` (part of `mvn verify`).
 
 ## 6. Contract tests (consumer-driven)
 
@@ -55,7 +56,13 @@ CI: `maven.yml` (part of `mvn verify`, plus an HTML report artifact).
   each run), the provider is verified against it, and `can-i-deploy` checks that this
   commit's frontend and backend are compatible.
 
-## 7. Performance tests
+## 7. System tests
+
+Black-box tests against the Docker images: Testcontainers starts `docker-compose-test.yml`
+(API + nginx frontend) and the tests call it over HTTP. `ContainerTests`, plus
+`ApiPerformanceTests` (see Performance). Run with `mvn test -Pcontainer-tests` (needs Docker).
+
+## 8. Performance tests
 
 `StressTests` checks the algorithm at 5–100 items: the median time per call after a JIT
 warm-up, always at the maximum budget, plus bytes allocated (which, unlike heap usage, isn't
@@ -65,17 +72,26 @@ suite (`mvn verify`, so in `maven.yml`) and on its own with `mvn test -Pperforma
 Thresholds are in the [README](README.md#performance-thresholds).
 
 `ApiPerformanceTests` checks end-to-end API latency (< 500 ms for 50 stocks) through the
-Docker stack; see Integration tests.
+Docker stack; see System tests.
 
-## 8. End-to-end (browser) tests
+## 9. UI / end-to-end tests and BDD acceptance scenarios
+
+**BDD** is a collaboration practice: the Product Owner, QA and developers agree on concrete
+examples of business behaviour, written in Gherkin as acceptance criteria. The scenarios in
+`src/test/resources/com/maxprofit/calculator/MaxProfit.feature` are therefore automated at
+the top of the pyramid: the step definitions (`steps/StepDefinitions.java`, runner
+`RunCucumberTest`) drive the real UI with Playwright, entering savings and prices, submitting
+and reading the result on screen.
 
 | Suite | Files | Tool | Run locally | CI |
 |---|---|---|---|---|
-| Java | `PlaywrightUITests` | Playwright for Java | `mvn test -Pplaywright-tests` (UI running; `PLAYWRIGHT_BASE_URL`) | `containers.yml` (against the Docker stack), `reports.yml` (against `vite preview` + local API) |
-| JavaScript | `site/frontend/tests/e2e/calculator.spec.js` | Playwright Test | `npm run test:ui` | `reports.yml` (published as the Playwright HTML report) |
+| BDD acceptance scenarios | `MaxProfit.feature` (7 scenarios) | Cucumber + Playwright for Java | `mvn test -Pplaywright-tests` (UI running; `PLAYWRIGHT_BASE_URL`, default `http://localhost:3000`) | `containers.yml` (Docker stack), `reports.yml` (published as the Cucumber report) |
+| Java UI test | `PlaywrightUITests` | Playwright for Java | same as above | `containers.yml`, `reports.yml` |
+| JavaScript e2e | `site/frontend/tests/e2e/calculator.spec.js` | Playwright Test | `npm run test:ui` | `reports.yml` (published as the Playwright HTML report) |
 
 ## Reports
 
 `reports.yml` publishes the Maven site (test results, JaCoCo coverage, PITest mutations,
-checkstyle, cross-referenced source) and the Playwright HTML report to GitHub Pages:
+checkstyle, cross-referenced source), the Cucumber report and the Playwright HTML report to
+GitHub Pages:
 <https://dwaned.github.io/max-profit-calculator/reports/>.

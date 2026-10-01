@@ -44,8 +44,8 @@ function TestingStrategies() {
               selectedLayer={selectedLayer}
             />
             <p className="text-center text-sm text-slate-500 mt-4">
-              Click on layers to explore details • Each test class is tagged
-              with its testing style (Example / Property-Based / BDD / Contract)
+              Layers are ordered by scope; the number on each layer is its test count •
+              Each test class is tagged with its style (Example / Property-Based / BDD / Contract)
             </p>
           </motion.div>
 
@@ -79,29 +79,39 @@ function TestingStrategies() {
           <p className="font-semibold text-slate-400 mb-3">Run tests</p>
           <div className="flex flex-col items-start gap-2 max-w-xl mx-auto text-left">
             <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full">
-              mvn test
+              mvn verify
             </code>
-            <span className="text-xs">Unit, controller, property-based, contract (Pact broker), and BDD/Cucumber scenarios</span>
-
-            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
-              mvn test -Pcontainer-tests
-            </code>
-            <span className="text-xs">Integration tests with Docker Compose via Testcontainers (requires Docker)</span>
-
-            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
-              mvn test -Pplaywright-tests
-            </code>
-            <span className="text-xs">UI end-to-end tests with Playwright</span>
+            <span className="text-xs">Unit, web layer, integration and stress tests, plus checkstyle and the coverage floor</span>
 
             <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
               mvn test -Ppitest
             </code>
-            <span className="text-xs">Mutation testing with PITest</span>
+            <span className="text-xs">Mutation testing (fails below a 90% mutation score)</span>
 
             <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
-              cd site/frontend && npm run test:pact
+              mvn test -Pcontract-tests
             </code>
-            <span className="text-xs">Frontend Pact consumer contract tests</span>
+            <span className="text-xs">Pact provider verification (needs the API running on :9095)</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              mvn test -Pcontainer-tests
+            </code>
+            <span className="text-xs">System and API performance tests against the Docker stack (needs Docker)</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              mvn test -Pplaywright-tests
+            </code>
+            <span className="text-xs">UI tests and the BDD acceptance scenarios (needs the UI running; PLAYWRIGHT_BASE_URL)</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              cd site/frontend && npm run test:run && npm run test:pact
+            </code>
+            <span className="text-xs">Frontend unit tests and Pact consumer tests</span>
+
+            <code className="bg-slate-800 px-2 py-1 rounded text-sm w-full mt-2">
+              cd site/frontend && npm run test:ui
+            </code>
+            <span className="text-xs">Playwright end-to-end tests (JavaScript)</span>
           </div>
         </motion.footer>
       </div>

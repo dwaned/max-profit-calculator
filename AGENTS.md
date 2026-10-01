@@ -53,7 +53,7 @@ mvn test -Dtest=ExampleBasedTests#shouldWorkWithOneIndex
 # Run container tests (requires Docker)
 mvn test -Pcontainer-tests
 
-# Run Playwright UI tests
+# Run Playwright UI tests and the BDD acceptance scenarios (UI must be running)
 mvn test -Pplaywright-tests
 
 # Run contract tests (Pact) - Backend provider verification
@@ -130,7 +130,7 @@ mvn site
 - Test methods: descriptive camelCase starting with `should`
 - Use `@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})` in test classes
 - Property-based tests use Jqwik
-- BDD tests use Cucumber
+- BDD acceptance scenarios use Cucumber, automated end-to-end through the UI with Playwright
 
 ### Documentation
 - Javadoc for public classes and methods

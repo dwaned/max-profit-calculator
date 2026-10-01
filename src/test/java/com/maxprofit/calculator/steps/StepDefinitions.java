@@ -1,181 +1,166 @@
 /**
- * This class defines the step definitions for Cucumber scenarios related to
- * stock market calculations.
+ * Step definitions for the acceptance scenarios in {@code MaxProfit.feature}.
  */
 package com.maxprofit.calculator.steps;
 
-import com.maxprofit.calculator.CalculationResult;
-import com.maxprofit.calculator.Stock;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
+import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Drives the calculator UI in a real browser (Playwright), the way a user would:
+ * enter savings and prices, submit, and read the result. The scenarios are
+ * acceptance criteria written with the business, so they are automated
+ * end-to-end against the running application rather than against the engine.
+ *
+ * <p>The UI is expected at {@code PLAYWRIGHT_BASE_URL} (default
+ * {@code http://localhost:3000}, the Docker Compose frontend). Run with
+ * {@code mvn test -Pplaywright-tests}.
+ */
+@SuppressWarnings({"checkstyle:DesignForExtension", "checkstyle:MagicNumber"})
 public class StepDefinitions {
 
-    @SuppressWarnings({"checkstyle:VisibilityModifier", "checkstyle:JavadocVariable", "checkstyle:LineLength"})
-    private static final Logger LOGGER = LoggerFactory.getLogger(StepDefinitions.class);
+    private static final String BASE_URL = System.getenv().getOrDefault(
+            "PLAYWRIGHT_BASE_URL", "http://localhost:3000");
 
-    /**
-     * Integer storing the amount of savings.
-     */
-    private int savingsContext = 0;
+    // The form renders a desktop table and a mobile card layout; with a desktop
+    // viewport only the table is visible, so every selector is scoped to it.
+    private static final String BUY_INPUTS = "table input[aria-label^='Buy price']";
+    private static final String SELL_INPUTS = "table input[aria-label^='Sell price']";
+    private static final String REMOVE_BUTTONS = "table button[aria-label^='Remove']";
 
-    /**
-     * List storing the current prices.
-     */
-    private List<Integer> currentPricesContext;
+    private static Playwright playwright;
+    private static Browser browser;
 
-    /**
-     * List storing the future prices.
-     */
-    private List<Integer> futurePricesContext;
+    private BrowserContext context;
+    private Page page;
+    private boolean submitted;
 
-    /**
-     * Sets the value of savingsContext to the given savings.
-     *
-     * @param savings an integer representing the amount of savings.
-     */
+    @BeforeAll
+    public static void launchBrowser() {
+        playwright = Playwright.create();
+        browser = playwright.chromium().launch();
+    }
+
+    @AfterAll
+    public static void closeBrowser() {
+        if (browser != null) {
+            browser.close();
+        }
+        if (playwright != null) {
+            playwright.close();
+        }
+    }
+
+    @Before
+    public void openCalculator() {
+        context = browser.newContext(new Browser.NewContextOptions().setViewportSize(1280, 900));
+        page = context.newPage();
+        page.navigate(BASE_URL + "/#/calculator");
+        page.waitForSelector("#savings-amount");
+        submitted = false;
+    }
+
+    @After
+    public void closePage() {
+        if (context != null) {
+            context.close();
+        }
+    }
+
     @Given("I have {int} Euros of savings")
     public void iHaveEurosOfSavings(final int savings) {
-        System.out.format("Savings: %d\n", savings);
-        savingsContext = savings;
+        page.fill("#savings-amount", Integer.toString(savings));
     }
 
-    /**
-     * Sets the value of currentPricesContext to a List of integers parsed
-     * from the given string.
-     *
-     * @param currentPrices a string representing a comma-separated list
-     *                      of current stock prices.
-     */
     @When("Array of current stock prices are {string}")
     public void arrayOfCurrentStockPricesAre(final String currentPrices) {
-        System.out.format("Current prices: %s\n", currentPrices);
-        currentPricesContext =
-                Stream
-                        .of(currentPrices.split(","))
-                        .map(String::trim)
-                        .map(Integer::parseInt)
-                        .collect(Collectors.toList());
+        List<String> prices = parse(currentPrices);
+        setNumberOfStocks(prices.size());
+        fillAll(BUY_INPUTS, prices);
     }
 
-    /**
-     * Compares the expected result to the actual result of the
-     * calculation for the
-     * best combination of indices for maximum profit.
-     *
-     * @param result a string representing the expected result.
-     */
-    @Then("the best combination of indices for max profit is {string}")
-    public void theBestCombinationOfIndicesForMaxProfitIs(final String result) {
-        final List<Integer> resultIndices = Stream
-                .of(result.split(","))
-                .map(String::trim)
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-
-        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(
-                savingsContext,
-                currentPricesContext,
-                futurePricesContext
-        );
-
-        assertEquals(
-                resultIndices,
-                actualResult.getIndices(),
-                "Actual Result: "
-                        + actualResult.getIndices()
-                        + " with profit of "
-                        + actualResult.getMaxProfit()
-        );
-    }
-
-    /**
-     * Sets the value of futurePricesContext to a List of integers parsed
-     * from the
-     * given string.
-     *
-     * @param futurePrices a string representing a comma-separated list of
-     *                     future stock prices.
-     */
     @And("Array of future stock prices are {string}")
     public void arrayOfFutureStockPricesAre(final String futurePrices) {
-        System.out.format("Future prices: %s\n", futurePrices);
-        futurePricesContext =
-                Stream
-                        .of(futurePrices.split(","))
-                        .map(String::trim)
-                        .map(Integer::parseInt)
-                        .collect(Collectors.toList());
+        List<String> prices = parse(futurePrices);
+        assertEquals(page.locator(SELL_INPUTS).count(), prices.size(),
+                "Future prices must match the number of current prices");
+        fillAll(SELL_INPUTS, prices);
     }
 
-    /**
-     * Compares the expected profit to the actual profit of the calculation.
-     *
-     * @param profit an integer representing the expected profit.
-     */
+    @Then("the best combination of indices for max profit is {string}")
+    public void theBestCombinationOfIndicesForMaxProfitIs(final String expected) {
+        submitOnce();
+        Locator chips = page.getByTestId("buy-indices").locator("span");
+        List<String> actual = chips.allTextContents().stream()
+                .map(text -> text.replace("#", "").trim())
+                .toList();
+        assertEquals(parse(expected), actual, "Buy indices shown in the results");
+    }
+
     @Then("profit is {int} Euros")
     public void profitIsEuros(final int profit) {
-        System.out.format("Profit: %d\n", profit);
-        int actualProfit = Stock.returnIndicesMaxProfit(
-                        savingsContext,
-                        currentPricesContext,
-                        futurePricesContext
-                )
-                .getMaxProfit();
-        assertEquals(profit, actualProfit,
-                "Actual Profit is %s " + actualProfit);
+        submitOnce();
+        assertEquals("€" + profit, page.getByTestId("max-profit").textContent().trim(),
+                "Max profit shown in the results");
     }
 
-    /**
-     * Asserts that there is no set of indices with a profit.
-     */
     @Then("there is no best combination for max profit")
     public void thereIsNoBestCombinationForMaxProfit() {
-        final CalculationResult actualResult = Stock.returnIndicesMaxProfit(
-                savingsContext,
-                currentPricesContext,
-                futurePricesContext
-        );
-        assertEquals(
-                0,
-                actualResult.getIndices().size(),
-                "Actual Result: " + actualResult.getIndices()
-        );
+        submitOnce();
+        assertTrue(page.getByTestId("no-profit").isVisible(), "Expected the 'no profitable stocks' message");
+        assertEquals(0, page.getByTestId("buy-indices").count(), "No buy indices should be shown");
     }
 
-    /**
-     * Asserts that profit is 0.
-     */
     @And("no profit is made")
     public void noProfitIsMade() {
-        final int actualProfit = Stock.returnIndicesMaxProfit(
-                        savingsContext,
-                        currentPricesContext,
-                        futurePricesContext
-                )
-                .getMaxProfit();
-        assertEquals(0, actualProfit, "Actual Profit is %s " + actualProfit);
+        profitIsEuros(0);
     }
 
-    /**
-     * Asserts that with the given indices, same profit is achieved as
-     * previously stored.
-     *
-     * @param indices combination representing the indices of stocks.
-     */
-    @And("same savings and max profit is achieved with the indices {string}")
-    public void sameSavingsMaxProfitIsWithCombination(final String indices) {
-        this.theBestCombinationOfIndicesForMaxProfitIs(indices);
+    /** Adds or removes rows with the real UI controls until there are {@code count} stocks. */
+    private void setNumberOfStocks(final int count) {
+        while (page.locator(BUY_INPUTS).count() > count) {
+            page.locator(REMOVE_BUTTONS).last().click();
+        }
+        while (page.locator(BUY_INPUTS).count() < count) {
+            page.getByRole(com.microsoft.playwright.options.AriaRole.BUTTON,
+                    new Page.GetByRoleOptions().setName("+ Add Stock")).click();
+        }
+    }
+
+    private void fillAll(final String selector, final List<String> values) {
+        Locator inputs = page.locator(selector);
+        for (int i = 0; i < values.size(); i++) {
+            inputs.nth(i).fill(values.get(i));
+        }
+    }
+
+    /** Submits the form the first time a result is needed, then waits for the result card. */
+    private void submitOnce() {
+        if (!submitted) {
+            page.click("button[type='submit']");
+            page.getByTestId("results").waitFor();
+            submitted = true;
+        }
+    }
+
+    private static List<String> parse(final String commaSeparated) {
+        return Stream.of(commaSeparated.split(",")).map(String::trim).toList();
     }
 }
