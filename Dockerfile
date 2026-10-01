@@ -12,16 +12,21 @@ FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=build /docker/target/max-profit-calculator-1.0-SNAPSHOT.jar app.jar
 
+# curl is only for the HEALTHCHECK. Not pinning its exact Ubuntu package version
+# (it changes with every base-image update); the base image itself is kept current
+# by Dependabot.
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd --system userA && useradd --system --gid userA userA
+# Numeric IDs so the user resolves the same way on any host or orchestrator.
+RUN groupadd --system --gid 10001 app && useradd --system --uid 10001 --gid 10001 app
 
-USER userA
+USER 10001:10001
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:9095/api/health || exit 1
+    CMD ["curl", "-fsS", "http://localhost:9095/api/health"]
 
 EXPOSE 9095
 

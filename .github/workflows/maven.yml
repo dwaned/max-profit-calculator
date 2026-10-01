@@ -139,7 +139,7 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           mvn org.owasp:dependency-check-maven:aggregate \
-            -Ddependency-check.nvd.api.key=${NVD_API_KEY} \
+            -Ddependency-check.nvd.api.key="${NVD_API_KEY}" \
             -DskipProvidedScope=true \
             -DskipSystemScope=true \
             -DskipTestScope=true \
