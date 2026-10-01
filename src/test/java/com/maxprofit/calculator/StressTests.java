@@ -1,245 +1,134 @@
 package com.maxprofit.calculator;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Stress tests for the {@link Stock#returnIndicesMaxProfit} algorithm.
  *
- * <p>Pure in-process tests — no Spring context, no HTTP. They measure
- * how the algorithm holds up under increasingly heavy inputs:
- * <ul>
- *   <li>Execution time at the maximum allowed input size (100 stocks)</li>
- *   <li>Memory usage at the maximum allowed input size</li>
- *   <li>No {@link OutOfMemoryError} at the maximum allowed input size</li>
- * </ul>
+ * <p>Pure in-process tests — no Spring context, no HTTP. They check that the
+ * O(n · savings) dynamic program stays fast and lean up to the maximum allowed
+ * input (100 stocks, savings 1000). End-to-end latency through the API is
+ * covered by {@link ApiPerformanceTests}.
  *
- * <p>These are not "performance tests" in the usual sense
- * (response time, throughput, latency) — that is
- * {@link ApiPerformanceTests}. Stress tests push the system past
- * expected operating conditions to catch robustness issues (OOM,
- * runaway allocations, runaway time).
+ * <p>To be reliable on shared CI runners, timings are the <b>median</b> of many
+ * runs after a JIT warm-up, always at the maximum budget (the worst case for
+ * this algorithm), and the thresholds sit orders of magnitude above the real
+ * cost. Memory is measured as bytes allocated by the test thread, which, unlike
+ * heap usage, does not depend on when the garbage collector runs.
  *
- * <p><b>Thresholds:</b>
+ * <p><b>Thresholds (median time per call):</b>
  * <ul>
  *   <li>5 items: &lt; 10ms</li>
- *   <li>10 items: &lt; 100ms</li>
+ *   <li>10 items: &lt; 20ms</li>
  *   <li>50 items: &lt; 50ms</li>
- *   <li>100 items (boundary): &lt; 500ms</li>
- *   <li>Memory usage: &lt; 512MB for max input</li>
+ *   <li>100 items (maximum): &lt; 100ms</li>
+ *   <li>Allocation for one maximum-size call: &lt; 64MB</li>
  * </ul>
  *
- * <p>Thresholds for 50/100 items assume the polynomial DP rewrite in Phase 2
- * (O(n · savings)). The original brute-force permutation algorithm only
- * passed the relaxed thresholds (500ms / 10s) because the input size cap of
- * 100 keeps 2^100 impractical.
- *
- * <p><b>Running these tests:</b>
- * <pre>
- * mvn test -Dtest=StressTests
- * </pre>
+ * <p>Runs in the default suite ({@code mvn test}) and on its own with
+ * {@code mvn test -Pperformance-tests}.
  */
-@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength", "checkstyle:VisibilityModifier"})
+@SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 class StressTests {
 
-    private static final int SMALL_SIZE = 5;
-    private static final int MEDIUM_SIZE = 10;
-    private static final int LARGE_SIZE = 50;
-    private static final int BOUNDARY_SIZE = 100;
+    private static final int MAX_SAVINGS = 1000;
+    private static final int WARMUP_RUNS = 50;
+    private static final int TIMED_RUNS = 51;
+    private static final long MAX_ALLOCATION_BYTES = 64L * 1024 * 1024;
 
-    private static final long SMALL_THRESHOLD_MS = 10;
-    private static final long MEDIUM_THRESHOLD_MS = 100;
-    private static final long LARGE_THRESHOLD_MS = 50;
-    private static final long BOUNDARY_THRESHOLD_MS = 500;
-
-    private static final int MAX_MEMORY_MB = 512;
-
-    private final MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
     private final Random random = new Random(42);
 
-    /**
-     * Cleans up heap memory before each test to ensure accurate measurements.
-     */
-    @BeforeEach
-    void setUp() {
-        System.gc();
-    }
-
-    /**
-     * Cleans up after each test to maintain test isolation.
-     */
-    @AfterEach
-    void tearDown() {
-        System.gc();
-    }
-
-    /**
-     * Tests that the algorithm completes in under 10ms for small input (5 items).
-     * 
-     * <p>This test verifies the algorithm performs efficiently for small datasets.
-     * Uses 1000 iterations with 100 warmup runs to get stable measurements.
-     */
     @Test
-    void algorithmShouldCompleteInUnder10msFor5Items() {
-        List<Integer> currentValues = generateRandomPrices(SMALL_SIZE);
-        List<Integer> futureValues = generateRandomPrices(SMALL_SIZE);
-
-        long executionTime = measureAlgorithmExecution(1000, 100, currentValues, futureValues);
-
-        System.out.println("5 items - Avg execution time: " + executionTime + "ms");
-        assertTrue(executionTime < SMALL_THRESHOLD_MS,
-                "Execution time should be < " + SMALL_THRESHOLD_MS + "ms, was: " + executionTime + "ms");
+    void medianTimeFor5ItemsShouldBeUnder10ms() {
+        assertMedianUnder(5, 10);
     }
 
-    /**
-     * Tests that the algorithm completes in under 100ms for medium input (10 items).
-     * 
-     * <p>This test verifies the algorithm scales reasonably for medium-sized datasets.
-     * Uses 100 iterations with 10 warmup runs.
-     */
     @Test
-    void algorithmShouldCompleteInUnder100msFor10Items() {
-        List<Integer> currentValues = generateRandomPrices(MEDIUM_SIZE);
-        List<Integer> futureValues = generateRandomPrices(MEDIUM_SIZE);
-
-        long executionTime = measureAlgorithmExecution(100, 10, currentValues, futureValues);
-
-        System.out.println("10 items - Avg execution time: " + executionTime + "ms");
-        assertTrue(executionTime < MEDIUM_THRESHOLD_MS,
-                "Execution time should be < " + MEDIUM_THRESHOLD_MS + "ms, was: " + executionTime + "ms");
+    void medianTimeFor10ItemsShouldBeUnder20ms() {
+        assertMedianUnder(10, 20);
     }
 
-    /**
-     * Tests that the algorithm completes in under 50ms for large input (50 items).
-     *
-     * <p>Polynomial DP (Phase 2) handles 50 items × 1000 savings in microseconds;
-     * the previous brute-force threshold of 500ms only passed because of the
-     * 100-item cap. Uses 10 iterations with 1 warmup run.
-     */
     @Test
-    void algorithmShouldCompleteInUnder50msFor50Items() {
-        List<Integer> currentValues = generateRandomPrices(LARGE_SIZE);
-        List<Integer> futureValues = generateRandomPrices(LARGE_SIZE);
-
-        long executionTime = measureAlgorithmExecution(10, 1, currentValues, futureValues);
-
-        System.out.println("50 items - Avg execution time: " + executionTime + "ms");
-        assertTrue(executionTime < LARGE_THRESHOLD_MS,
-                "Execution time should be < " + LARGE_THRESHOLD_MS + "ms, was: " + executionTime + "ms");
+    void medianTimeFor50ItemsShouldBeUnder50ms() {
+        assertMedianUnder(50, 50);
     }
 
-    /**
-     * Tests that the algorithm completes in under 500ms for maximum input (100 items).
-     *
-     * <p>100 items is the maximum allowed input size (defined by {@code @Size(max=100)}
-     * on {@code CalculationRequest}). Polynomial DP handles 100 items × 1000 savings
-     * in milliseconds; the previous threshold of 10s only passed because the
-     * brute-force algorithm's worst case wasn't actually exercised. Only runs once
-     * due to the long execution time.
-     */
     @Test
-    void algorithmShouldCompleteInUnder500msFor100Items() {
-        List<Integer> currentValues = generateRandomPrices(BOUNDARY_SIZE);
-        List<Integer> futureValues = generateRandomPrices(BOUNDARY_SIZE);
-
-        long executionTime = measureAlgorithmExecution(1, 1, currentValues, futureValues);
-
-        System.out.println("100 items - Execution time: " + executionTime + "ms");
-        assertTrue(executionTime < BOUNDARY_THRESHOLD_MS,
-                "Execution time should be < " + BOUNDARY_THRESHOLD_MS + "ms, was: " + executionTime + "ms");
+    void medianTimeFor100ItemsShouldBeUnder100ms() {
+        assertMedianUnder(100, 100);
     }
 
-    /**
-     * Tests that memory usage doesn't exceed 512MB when processing max input.
-     * 
-     * <p>This test measures heap memory delta before and after algorithm execution
-     * with the maximum allowed input size (100 items).
-     */
     @Test
-    void memoryUsageShouldNotExceed512MBFor100Items() {
-        MemoryUsage heapBefore = memoryBean.getHeapMemoryUsage();
-        long usedBefore = heapBefore.getUsed() / (1024 * 1024);
+    void maximumInputShouldAllocateLessThan64MB() {
+        List<Integer> buy = generateRandomPrices(100);
+        List<Integer> sell = generateRandomPrices(100);
+        Stock.returnIndicesMaxProfit(MAX_SAVINGS, buy, sell); // load classes before measuring
 
-        List<Integer> currentValues = generateRandomPrices(BOUNDARY_SIZE);
-        List<Integer> futureValues = generateRandomPrices(BOUNDARY_SIZE);
+        com.sun.management.ThreadMXBean threads =
+                (com.sun.management.ThreadMXBean) ManagementFactory.getThreadMXBean();
+        long threadId = Thread.currentThread().threadId();
+        long before = threads.getThreadAllocatedBytes(threadId);
+        Stock.returnIndicesMaxProfit(MAX_SAVINGS, buy, sell);
+        long allocated = threads.getThreadAllocatedBytes(threadId) - before;
 
-        Stock.returnIndicesMaxProfit(1000, currentValues, futureValues);
-
-        MemoryUsage heapAfter = memoryBean.getHeapMemoryUsage();
-        long usedAfter = heapAfter.getUsed() / (1024 * 1024);
-        long usedDelta = usedAfter - usedBefore;
-
-        System.out.println("Memory before: " + usedBefore + "MB, after: " + usedAfter + "MB, delta: " + usedDelta + "MB");
-
-        assertTrue(usedDelta < MAX_MEMORY_MB,
-                "Memory usage should increase by < " + MAX_MEMORY_MB + "MB, was: " + usedDelta + "MB");
+        System.out.printf("100 items, savings %d - allocated: %.2f MB%n", MAX_SAVINGS, allocated / 1048576.0);
+        assertTrue(allocated < MAX_ALLOCATION_BYTES,
+                "One maximum-size call should allocate < 64MB, allocated " + allocated + " bytes");
     }
 
-    /**
-     * Tests that the algorithm doesn't throw OutOfMemoryError for max input.
-     * 
-     * <p>This is a safety test to ensure the algorithm is robust and can handle
-     * the maximum allowed input size without crashing.
-     */
     @Test
-    void noOutOfMemoryErrorForMaxInput() {
-        List<Integer> currentValues = generateRandomPrices(BOUNDARY_SIZE);
-        List<Integer> futureValues = generateRandomPrices(BOUNDARY_SIZE);
-
+    void maximumInputShouldNotRunOutOfMemory() {
+        List<Integer> buy = generateRandomPrices(100);
+        List<Integer> sell = generateRandomPrices(100);
         try {
-            CalculationResult result = Stock.returnIndicesMaxProfit(1000, currentValues, futureValues);
-            System.out.println("Max input test completed successfully. Profit: " + result.getMaxProfit());
+            CalculationResult result = Stock.returnIndicesMaxProfit(MAX_SAVINGS, buy, sell);
+            assertTrue(result.getMaxProfit() >= 0, "Profit should never be negative");
         } catch (OutOfMemoryError e) {
             throw new AssertionError("OutOfMemoryError occurred for max input size", e);
         }
     }
 
-    /**
-     * Measures algorithm execution time with warmup and averaging.
-     * 
-     * @param totalRuns   Number of timing iterations to average
-     * @param warmupRuns  Number of warmup iterations (not timed)
-     * @param currentValues Current stock prices
-     * @param futureValues  Future stock prices
-     * @return Average execution time in milliseconds
-     */
-    private long measureAlgorithmExecution(int totalRuns, int warmupRuns, 
-            List<Integer> currentValues, List<Integer> futureValues) {
-        AtomicLong totalTime = new AtomicLong(0);
+    private void assertMedianUnder(final int items, final long thresholdMs) {
+        List<Integer> buy = generateRandomPrices(items);
+        List<Integer> sell = generateRandomPrices(items);
+        double medianMs = medianMillis(buy, sell);
 
-        for (int i = 0; i < warmupRuns; i++) {
-            Stock.returnIndicesMaxProfit(100, currentValues, futureValues);
-        }
-
-        for (int i = 0; i < totalRuns; i++) {
-            long startTime = System.nanoTime();
-            Stock.returnIndicesMaxProfit(100, currentValues, futureValues);
-            long endTime = System.nanoTime();
-            totalTime.addAndGet(endTime - startTime);
-        }
-
-        return totalTime.get() / (1_000_000 * totalRuns);
+        System.out.printf("%d items, savings %d - median: %.3f ms (threshold %d ms)%n",
+                items, MAX_SAVINGS, medianMs, thresholdMs);
+        assertTrue(medianMs < thresholdMs,
+                "Median time for " + items + " items should be < " + thresholdMs + "ms, was " + medianMs + "ms");
     }
 
     /**
-     * Generates a list of random stock prices.
-     * 
-     * @param size Number of prices to generate
-     * @return List of random prices between 1 and 100
+     * Median wall-clock time of {@link #TIMED_RUNS} calls after {@link #WARMUP_RUNS}
+     * untimed warm-up calls, so JIT compilation and one-off pauses (GC, a busy
+     * neighbour on a shared runner) don't decide the result.
      */
-    private List<Integer> generateRandomPrices(int size) {
-        List<Integer> prices = new ArrayList<>();
+    private static double medianMillis(final List<Integer> buy, final List<Integer> sell) {
+        for (int i = 0; i < WARMUP_RUNS; i++) {
+            Stock.returnIndicesMaxProfit(MAX_SAVINGS, buy, sell);
+        }
+        long[] nanos = new long[TIMED_RUNS];
+        for (int i = 0; i < TIMED_RUNS; i++) {
+            long start = System.nanoTime();
+            Stock.returnIndicesMaxProfit(MAX_SAVINGS, buy, sell);
+            nanos[i] = System.nanoTime() - start;
+        }
+        Arrays.sort(nanos);
+        return nanos[TIMED_RUNS / 2] / 1_000_000.0;
+    }
+
+    /** Random prices from 1 to 100, so many stocks fit in the maximum budget. */
+    private List<Integer> generateRandomPrices(final int size) {
+        List<Integer> prices = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             prices.add(random.nextInt(100) + 1);
         }
