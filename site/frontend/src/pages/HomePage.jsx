@@ -1,142 +1,239 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import PyramidDiagram from '../components/TestPyramid/PyramidDiagram';
+import { techniques } from '../data/techniques';
+import { layerOrder, layerTestCount, testLayers } from '../data/testLayers';
 import { usePageTitle } from '../hooks/usePageTitle';
+
+const totalTests = testLayers.filter((l) => !l.crossCutting).reduce((sum, l) => sum + layerTestCount(l), 0);
+
+const stats = [
+  { value: totalTests, label: 'automated tests' },
+  { value: layerOrder.length, label: 'layers, unit to browser' },
+  { value: techniques.length, label: 'testing techniques' },
+  { value: '97%', label: 'of deliberate bugs caught' },
+];
+
+// The worked example: €5 of savings, three stocks.
+const SAVINGS = 5;
+const exampleStocks = [
+  { index: 0, buy: 4, sell: 5, chosen: false },
+  { index: 1, buy: 1, sell: 2, chosen: true },
+  { index: 2, buy: 3, sell: 6, chosen: true },
+];
+
+const rules = [
+  'Choose the stocks that give the highest total profit; each stock can be bought once',
+  'If several choices give the same profit, use the one that spends the least savings',
+  'If no stock makes a profit, buy nothing and report a profit of 0',
+  'Savings are whole euros from 1 to 1000; prices from 1 to 1000; 1 to 100 stocks, with a future price for each',
+];
+
+const learnCards = [
+  {
+    to: '/testing-pyramid',
+    eyebrow: 'Where tests run',
+    title: 'Testing Pyramid',
+    body: 'Six layers from unit to UI / end-to-end: the question each answers, what it catches and misses, and what it costs.',
+    hex: '#38bdf8',
+  },
+  {
+    to: '/testing-techniques',
+    eyebrow: 'How tests are designed',
+    title: 'Testing Techniques',
+    body: 'Example-based, property-based, fuzzing, mutation, BDD, contract and performance testing: when each one pays off.',
+    hex: '#c084fc',
+  },
+  {
+    to: '/reports',
+    eyebrow: 'The evidence',
+    title: 'Live reports',
+    body: 'Test results, coverage, mutation and BDD reports, published by CI on every change to main.',
+    hex: '#34d399',
+  },
+];
+
+function SectionHeading({ id, eyebrow, title, children }) {
+  return (
+    <>
+      <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">{eyebrow}</p>
+      <h2 id={id} className="mt-1 text-2xl sm:text-3xl font-bold text-white">{title}</h2>
+      {children && <p className="mt-2 max-w-3xl text-slate-400 leading-relaxed">{children}</p>}
+    </>
+  );
+}
+
+function WorkedExample() {
+  const spent = exampleStocks.filter((s) => s.chosen).reduce((sum, s) => sum + s.buy, 0);
+  const profit = exampleStocks.filter((s) => s.chosen).reduce((sum, s) => sum + s.sell - s.buy, 0);
+  return (
+    <div className="rounded-2xl border border-slate-700/80 bg-slate-800/50 p-5 sm:p-6">
+      <div className="flex items-baseline justify-between gap-4">
+        <p className="text-sm font-semibold text-slate-200">Worked example</p>
+        <p className="text-sm text-slate-400">
+          Savings <span className="font-semibold text-white">€{SAVINGS}</span>
+        </p>
+      </div>
+      <ul className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+        {exampleStocks.map((stock) => (
+          <li
+            key={stock.index}
+            className={`rounded-xl border p-3 text-center ${
+              stock.chosen ? 'border-emerald-400 bg-emerald-400/10' : 'border-slate-700 bg-slate-900/60'
+            }`}
+          >
+            <p className="text-xs text-slate-400">Stock {stock.index}</p>
+            <p className="mt-2 text-sm text-slate-300">
+              €{stock.buy} <span aria-hidden="true">→</span><span className="sr-only">rises to</span> €{stock.sell}
+            </p>
+            <p className={`mt-1 text-lg font-bold ${stock.chosen ? 'text-emerald-300' : 'text-slate-400'}`}>
+              +€{stock.sell - stock.buy}
+            </p>
+            <p className={`mt-1 text-[11px] uppercase tracking-wide ${stock.chosen ? 'text-emerald-400' : 'text-transparent'}`}>
+              {stock.chosen ? 'Buy' : 'Skip'}
+            </p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 text-slate-200">
+        Buy stocks <span className="font-semibold text-emerald-300">1 and 2</span>: spend €{spent} of €{SAVINGS} for
+        a profit of <span className="font-semibold text-emerald-300">€{profit}</span>.
+      </p>
+      <p className="mt-1 text-sm text-slate-400">
+        Spending all €5 on stocks 0 and 1 would earn only €2. More money spent is not more profit.
+      </p>
+    </div>
+  );
+}
 
 function HomePage() {
   usePageTitle(null);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
-      <div className="max-w-4xl mx-auto px-4 py-6 md:py-12">
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8 md:mb-12"
-        >
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            Max Profit Calculator
-          </h1>
-          <p className="text-base md:text-xl text-slate-400">
-            A learning project for exploring software testing strategies
-          </p>
-        </motion.header>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-4 md:space-y-8"
-        >
-          <section className="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">The Challenge</h2>
-            <p className="text-slate-300 text-sm md:text-base mb-4">
-              Given 2 arrays containing the current price and the forecasted future price of a set of stocks,
-              when a value of savings is entered, the system should output which combination of indices from the
-              first array to choose so that with the available savings amount, the maximum profit is returned.
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+        {/* Hero */}
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
+          <motion.header initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}>
+            <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">A learning project</p>
+            <h1 className="mt-2 text-4xl md:text-6xl font-bold text-white leading-tight">Max Profit Calculator</h1>
+            <p className="mt-5 text-lg md:text-xl text-slate-300 leading-relaxed">
+              A small problem, tested thoroughly. See how each kind of test protects a real application, from a
+              single function to a user in the browser, and what each one is worth.
             </p>
-          </section>
-
-          <section className="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">Example</h2>
-            <div className="bg-slate-900 rounded-lg p-4 mb-4">
-              <div className="grid grid-cols-3 gap-2 md:gap-4 text-center text-xs md:text-base">
-                <div>
-                  <div className="text-slate-400 mb-1">Savings</div>
-                  <div className="text-lg md:text-xl font-bold text-white">€5</div>
-                </div>
-                <div>
-                  <div className="text-slate-400 mb-1">Current Prices</div>
-                  <div className="text-lg md:text-xl font-bold text-white">[4, 1, 3]</div>
-                </div>
-                <div>
-                  <div className="text-slate-400 mb-1">Future Prices</div>
-                  <div className="text-lg md:text-xl font-bold text-white">[5, 2, 6]</div>
-                </div>
-              </div>
-            </div>
-            <p className="text-slate-300 text-sm md:text-base">
-              <span className="text-green-400 font-bold">Result: [1, 2]</span> → Profit of €4
-            </p>
-            <p className="text-xs md:text-sm text-slate-500 mt-2">
-              Choosing indices 1 and 2 uses €4 of savings (from €5) and returns profit of €4.<br/>
-              Choosing indices 0 and 1 would only return profit of €2.
-            </p>
-          </section>
-
-          <section className="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">Business Requirements</h2>
-            <ul className="space-y-2 text-slate-300 text-sm md:text-base">
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">✓</span>
-                System chooses the max profit with the least amount of savings used
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">✓</span>
-                If multiple combinations with same amount of savings exist, returns them all
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">✓</span>
-                If loss is only possible, return empty list and max profit 0
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">✓</span>
-                Savings is a positive Integer only (1-1000)
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">✓</span>
-                Stock prices: 1-1000, List size: 1-100
-              </li>
-            </ul>
-          </section>
-
-          <section className="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">Testing Strategies</h2>
-            <p className="text-slate-300 mb-4 md:mb-6 text-sm md:text-base">
-              This project demonstrates multiple testing strategies:
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/testing-techniques"
-                className="block p-3 md:p-4 bg-slate-900 hover:bg-slate-750 rounded-lg border border-slate-600 hover:border-slate-500 transition-colors"
+                to="/calculator"
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                <h3 className="text-base md:text-lg font-semibold text-white mb-2">Testing Techniques</h3>
-                <p className="text-xs md:text-sm text-slate-400">
-                  Learn about Example-Based, Property-Based, Mutation, and BDD testing approaches
-                </p>
+                Try the calculator →
               </Link>
               <Link
                 to="/testing-pyramid"
-                className="block p-3 md:p-4 bg-slate-900 hover:bg-slate-750 rounded-lg border border-slate-600 hover:border-slate-500 transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg border border-slate-600 px-5 py-3 font-semibold text-slate-100 hover:border-slate-400 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                <h3 className="text-base md:text-lg font-semibold text-white mb-2">Testing Pyramid</h3>
-                <p className="text-xs md:text-sm text-slate-400">
-                  Explore the different testing layers: Unit, Controller, Integration, and UI tests
-                </p>
+                How it’s tested
               </Link>
             </div>
-          </section>
+          </motion.header>
 
-          <section className="text-center">
-            <Link
-              to="/calculator"
-              className="inline-block px-6 md:px-8 py-3 md:py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors text-sm md:text-lg"
-            >
-              Try the Calculator →
-            </Link>
-          </section>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
+            <PyramidDiagram onSelect={(id) => navigate(`/testing-pyramid?layer=${id}`)} />
+            <p className="mt-3 text-center text-sm text-slate-500">Select a layer to explore it</p>
+          </motion.div>
+        </div>
 
-          <section className="bg-slate-800/50 rounded-xl p-4 md:p-6 border border-slate-700">
-            <h2 className="text-lg md:text-xl font-bold text-white mb-4">Quick Start</h2>
-            <div className="space-y-2 text-xs md:text-sm font-mono">
-              <div><span className="text-slate-500"># Clone the repository</span></div>
-              <div><span className="text-slate-500">$ git clone https://github.com/dwaned/max-profit-calculator.git</span></div>
-              <div className="mt-2 md:mt-4"><span className="text-slate-500"># Build and run</span></div>
-              <div><span className="text-slate-500">$ mvn clean install</span></div>
-              <div><span className="text-slate-500">$ mvn spring-boot:run</span></div>
-              <div className="mt-2 md:mt-4"><span className="text-slate-500"># API runs on http://localhost:9095/api</span></div>
+        {/* Stats */}
+        <dl className="mt-14 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {stats.map((stat) => (
+            <div key={stat.label} className="rounded-2xl border border-slate-700/80 bg-slate-800/40 p-5">
+              <dt className="sr-only">{stat.label}</dt>
+              <dd>
+                <span className="block text-3xl md:text-4xl font-bold text-white tabular-nums">{stat.value}</span>
+                <span className="mt-1 block text-sm text-slate-400">{stat.label}</span>
+              </dd>
             </div>
-          </section>
-        </motion.div>
+          ))}
+        </dl>
+
+        {/* The problem */}
+        <section aria-labelledby="problem-heading" className="mt-20 grid gap-8 lg:grid-cols-2 lg:items-start">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">The problem</p>
+            <h2 id="problem-heading" className="mt-1 text-2xl sm:text-3xl font-bold text-white">
+              Which stocks should you buy?
+            </h2>
+            <p className="mt-3 text-slate-300 leading-relaxed">
+              You have some savings, today’s price of each stock, and a forecast of its future price. Pick the
+              stocks to buy so the profit is as high as possible without spending more than you have.
+            </p>
+            <h3 className="mt-6 text-xs font-semibold uppercase tracking-widest text-slate-400">The rules</h3>
+            <ul className="mt-3 space-y-2.5">
+              {rules.map((rule) => (
+                <li key={rule} className="flex gap-2.5 text-slate-300 leading-relaxed">
+                  <span aria-hidden="true" className="mt-0.5 shrink-0 font-bold text-emerald-400">✓</span>
+                  <span>{rule}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-sm text-slate-400">
+              Each rule is an acceptance scenario, written in plain language and run through this UI in a real
+              browser.{' '}
+              <Link to="/testing-techniques" className="text-sky-300 hover:underline underline-offset-4">
+                How BDD works
+              </Link>
+            </p>
+          </div>
+          <WorkedExample />
+        </section>
+
+        {/* Learn */}
+        <section aria-labelledby="learn-heading" className="mt-20">
+          <SectionHeading id="learn-heading" eyebrow="Learn" title="Explore the testing">
+            Start with the pyramid to see where tests live, then the techniques to see how they are designed.
+          </SectionHeading>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {learnCards.map((card) => (
+              <Link
+                key={card.to}
+                to={card.to}
+                className="group flex flex-col rounded-2xl border border-slate-700/80 bg-slate-800/40 p-6 transition-colors hover:border-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: card.hex }}>
+                  {card.eyebrow}
+                </span>
+                <span className="mt-2 text-xl font-semibold text-white">{card.title}</span>
+                <span className="mt-2 text-slate-400 leading-relaxed">{card.body}</span>
+                <span className="mt-auto pt-4 text-sm font-semibold" style={{ color: card.hex }}>
+                  Open <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-0.5">→</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Run it */}
+        <details className="group mt-20 rounded-2xl border border-slate-700/80 bg-slate-800/40">
+          <summary className="cursor-pointer select-none list-none px-5 py-4 flex items-center justify-between rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+            <span>
+              <span className="block text-lg font-semibold text-white">Run it locally</span>
+              <span className="block text-sm text-slate-400">With Docker, or the backend and frontend separately</span>
+            </span>
+            <span aria-hidden="true" className="text-xl text-slate-400 transition-transform group-open:rotate-90">›</span>
+          </summary>
+          <pre className="mx-5 mb-5 overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-300 leading-relaxed">
+            <code>{`git clone https://github.com/dwaned/max-profit-calculator.git
+cd max-profit-calculator
+
+# Everything in Docker: UI on http://localhost:3000
+docker compose up --build
+
+# Or separately: API on http://localhost:9095/api, then the UI
+mvn spring-boot:run
+cd site/frontend && npm ci && npm run dev`}</code>
+          </pre>
+        </details>
       </div>
     </div>
   );

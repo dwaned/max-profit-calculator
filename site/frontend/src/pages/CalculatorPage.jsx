@@ -92,7 +92,7 @@ export default function CalculatorPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-4 md:py-8">
+    <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
       <header className="mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-white">Max Profit Calculator</h1>
         <p className="text-slate-400 mt-2 text-sm md:text-base">
