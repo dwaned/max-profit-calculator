@@ -156,33 +156,39 @@ void forgedForwardedForDoesNotBypassRateLimit() {
     borderColor: 'border-teal-400',
     textColor: 'text-teal-400',
     description:
-      'Consumer-driven contracts with Pact: the frontend (consumer) states the requests it sends and the responses it relies on; the backend (provider) is verified against them, from the file and through a Pact Broker, and can-i-deploy confirms this commit’s frontend and backend are compatible. Contracts catch API changes that break the frontend without starting both together, which reduces, but does not replace, end-to-end testing. Note: the consumer test currently writes the pact file by hand rather than generating it from the frontend’s API client against a Pact mock provider.',
+      'Consumer-driven contracts with Pact: the frontend’s real API client runs against Pact’s mock provider, which records the requests it sends and the response fields it relies on; the backend (provider) is verified against them, from the file and through a Pact Broker, and can-i-deploy confirms this commit’s frontend and backend are compatible. Contracts catch API changes that break the frontend without starting both together, which reduces, but does not replace, end-to-end testing.',
     framework: 'Pact (consumer-driven)',
     testClasses: [
-      { name: 'calculate.api.test.js', style: 'contract', count: 1, file: 'site/frontend/tests/pact/calculate.api.test.js' },
-      { name: 'LocalContractVerificationTest', style: 'contract', count: 1, file: `${JAVA}/LocalContractVerificationTest.java` },
-      { name: 'PactBrokerVerificationTest', style: 'contract', count: 3, file: `${JAVA}/PactBrokerVerificationTest.java` },
+      { name: 'calculate.api.test.js', style: 'contract', count: 2, file: 'site/frontend/tests/pact/calculate.api.test.js' },
+      { name: 'LocalContractVerificationTest', style: 'contract', count: 2, file: `${JAVA}/LocalContractVerificationTest.java` },
+      { name: 'PactBrokerVerificationTest', style: 'contract', count: 2, file: `${JAVA}/PactBrokerVerificationTest.java` },
     ],
-    codeExample: `// calculate.api.test.js — one interaction of the contract
-{
-  description: 'a request to calculate max profit',
-  request: {
-    method: 'POST',
-    path: '/api/calculate',
-    body: { savings: 10, buyPrices: [5, 5, 10], sellPrices: [15, 10, 35] },
-  },
-  response: {
+    codeExample: `// calculate.api.test.js — the frontend's real client against Pact's mock provider
+provider
+  .uponReceiving('a request to calculate max profit')
+  .withRequest({ method: 'POST', path: '/api/calculate', headers: JSON_HEADERS, body: payload })
+  .willRespondWith({
     status: 200,
-    // Stock 2 costs 10 and earns 25; stocks 0+1 cost 10 and earn 15
-    body: { maxProfit: 25, indices: [2], savingsUsed: 10, remainingSavings: 0 },
-  },
-}
+    headers: JSON_HEADERS,
+    // Only the fields ResultsCard reads, matched by type
+    body: {
+      maxProfit: integer(25),
+      indices: eachLike(integer(2)),
+      savingsUsed: integer(10),
+      remainingSavings: integer(0),
+      companyNames: eachLike(string('Initech')),
+    },
+  });
 
-// PactBrokerVerificationTest.java — the provider side
+await provider.executeTest(async (mockServer) => {
+  const result = await requestCalculation(\`\${mockServer.url}/api\`, payload, TIMEOUT);
+  expect(result.maxProfit).toBe(25);
+});
+
+// LocalContractVerificationTest.java / PactBrokerVerificationTest.java — the provider side
 @Provider("max-profit-calculator-backend")
-@Consumer("frontend")
-@PactBroker(url = "\${pactbroker.host}", tags = {"latest"})
-public class PactBrokerVerificationTest { ... }`,
+@PactFolder("pacts")   // or @PactBroker(url = "\${pactbroker.host}")
+public class LocalContractVerificationTest { ... }`,
     properties: [
       'Consumer defines the contract',
       'Provider verifies it',

@@ -46,11 +46,13 @@ exposure) and `OpenApiDocsTest`. CI: `maven.yml` (part of `mvn verify`).
 
 ## 6. Contract tests (consumer-driven)
 
-- **Consumer:** `site/frontend/tests/pact/calculate.api.test.js` (Pact JS) writes the contract
-  to `site/frontend/pacts/` (`npm run test:pact`).
-- **Provider:** `LocalContractVerificationTest` verifies the backend against that file, and
-  `PactBrokerVerificationTest` against the Pact Broker (`mvn test -Pcontract-tests`, with the
-  API running on :9095).
+- **Consumer:** `site/frontend/tests/pact/calculate.api.test.js` runs the frontend's real API
+  client (`requestCalculation`) against Pact's mock provider (Pact JS, `PactV3`). Pact records
+  the requests the client sends and the response fields the UI relies on (matched by type) into
+  `site/frontend/pacts/` (`npm run test:pact`). If the client changes what it sends, the test fails.
+- **Provider:** Pact's verifier checks the running backend against that contract, from the local
+  file (`LocalContractVerificationTest`, `@PactFolder`) and from the Pact Broker
+  (`PactBrokerVerificationTest`): `mvn test -Pcontract-tests`, with the API running on :9095.
 - CI: `contract-tests.yml` runs all of this in one job on a GitHub-hosted runner: the
   consumer tests publish to a Pact Broker running as a service container (SQLite, fresh for
   each run), the provider is verified against it, and `can-i-deploy` checks that this
