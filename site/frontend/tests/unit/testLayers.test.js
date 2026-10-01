@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { bddInfo, layerOrder, testLayers } from '../../src/data/testLayers';
+import { bddInfo, layerOrder, lenses, safetyNet, testLayers, tradeoffLabels } from '../../src/data/testLayers';
 
 // Keeps the Testing Pyramid page honest: it must list exactly the tests that
 // exist in the repository, with the right counts, on the right layers.
@@ -69,5 +69,36 @@ describe('Testing Pyramid data', () => {
     const bddClasses = allClasses.filter((c) => c.style === 'bdd');
     expect(bddClasses.length).toBeGreaterThan(0);
     expect(bddClasses.every((c) => c.layer === 'e2e')).toBe(true);
+  });
+
+  it('explains every layer: its question, what it catches and misses, and its trade-offs', () => {
+    const problems = testLayers.flatMap((layer) => {
+      const issues = [];
+      if (!layer.question?.endsWith('?')) issues.push(`${layer.id}: question`);
+      if (!layer.summary) issues.push(`${layer.id}: summary`);
+      if (!(layer.catches?.length > 0)) issues.push(`${layer.id}: catches`);
+      if (!(layer.blindSpots?.length > 0)) issues.push(`${layer.id}: blindSpots`);
+      if (!layer.writeOneWhen) issues.push(`${layer.id}: writeOneWhen`);
+      Object.keys(tradeoffLabels).forEach((name) => {
+        const value = layer.tradeoffs?.[name];
+        if (!Number.isInteger(value) || value < 1 || value > 5) issues.push(`${layer.id}: tradeoff ${name}`);
+      });
+      return issues;
+    });
+    expect(problems).toEqual([]);
+  });
+
+  it('draws every pyramid layer exactly once', () => {
+    const pyramidLayers = testLayers.filter((l) => !l.crossCutting).map((l) => l.id);
+    expect([...layerOrder].sort()).toEqual([...pyramidLayers].sort());
+  });
+
+  it('links techniques and pipeline steps only to layers that exist', () => {
+    const ids = new Set(testLayers.map((l) => l.id));
+    const referenced = [
+      ...lenses.flatMap((lens) => lens.appliesTo),
+      ...safetyNet.flatMap((stage) => stage.steps.flatMap((step) => step.layers)),
+    ];
+    expect(referenced.filter((id) => !ids.has(id))).toEqual([]);
   });
 });
