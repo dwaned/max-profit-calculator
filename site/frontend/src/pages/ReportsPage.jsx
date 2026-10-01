@@ -1,327 +1,232 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import TechniqueIcon from '../components/TechniqueIcon';
+import { featuredReports, layerReports, projectReports } from '../data/reports';
+import { layerOrder, layerTestCount, testLayers } from '../data/testLayers';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { reportUrl, useReportsAvailable } from '../utils/reports';
 
+const linkUrl = (link) => link.href ?? reportUrl(link.file, { external: link.external });
+
+// Pyramid layers top-down, then the cross-cutting performance checks.
+const layers = [...layerOrder, 'performance'].map((id) => testLayers.find((l) => l.id === id));
+
+function Availability({ available, checking }) {
+  if (checking) {
+    return <p className="text-sm text-slate-400" role="status">Checking the published reports…</p>;
+  }
+  if (available) {
+    return (
+      <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300" role="status">
+        <span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-400" />
+        Published by CI from the latest change to main
+      </p>
+    );
+  }
+  return (
+    <div role="status" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-slate-300">
+      <p className="font-semibold text-amber-300">The published reports can’t be reached right now.</p>
+      <p className="mt-1">
+        They live on GitHub Pages. You can generate the same reports locally; see “Generate them yourself” below.
+      </p>
+    </div>
+  );
+}
+
+function OpenLink({ href, children, className = '' }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${className}`}
+    >
+      {children}
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
+  );
+}
+
 function ReportsPage() {
   usePageTitle('Reports');
-  const [selectedReport, setSelectedReport] = useState('unit');
+  const [selectedLayer, setSelectedLayer] = useState('unit');
   const { available, checking } = useReportsAvailable();
-
-  const reportCategories = [
-    {
-      id: 'unit',
-      name: 'Unit Tests',
-      color: 'bg-emerald-500',
-      icon: '🧪',
-      description: 'Classes in isolation: example-based and property-based tests of the engine, the rate limiter and configuration.',
-      reports: [
-        {
-          id: 'surefire-unit',
-          name: 'Test Results',
-          description: 'JUnit results for every Java test in the report run',
-          file: 'surefire-report.html',
-        },
-        {
-          id: 'jacoco-unit',
-          name: 'Code Coverage',
-          description: 'JaCoCo coverage (the build fails below 95% lines / 80% branches)',
-          file: 'jacoco/index.html',
-        },
-        {
-          id: 'xref-unit',
-          name: 'Source Code',
-          description: 'Production source, cross-referenced',
-          file: 'xref/index.html',
-        },
-      ],
-    },
-    {
-      id: 'web',
-      name: 'Web Layer Tests',
-      color: 'bg-blue-500',
-      icon: '🌐',
-      description: 'Spring MVC on its own with MockMvc: request mapping, validation, status codes, the rate-limit filter and metrics.',
-      reports: [
-        {
-          id: 'surefire-web',
-          name: 'Test Results',
-          description: 'HTTP status tests (200/400/405/415/429)',
-          file: 'surefire-report.html#com.maxprofit.calculator.controller.CalculatorControllerHttpStatusTest',
-        },
-        {
-          id: 'xref-web',
-          name: 'Test Source Code',
-          description: 'CalculatorControllerHttpStatusTest source',
-          file: 'xref-test/com/maxprofit/calculator/controller/CalculatorControllerHttpStatusTest.html',
-        },
-      ],
-    },
-    {
-      id: 'integration',
-      name: 'Integration Tests',
-      color: 'bg-indigo-500',
-      icon: '🔗',
-      description: 'The whole Spring application on a real embedded Tomcat: CORS, client-IP resolution behind a proxy, rate limiting, input limits, error format and OpenAPI docs.',
-      reports: [
-        {
-          id: 'surefire-integration',
-          name: 'Test Results',
-          description: 'ApiSecurityTest results',
-          file: 'surefire-report.html#com.maxprofit.calculator.controller.ApiSecurityTest',
-        },
-        {
-          id: 'xref-integration',
-          name: 'Test Source Code',
-          description: 'ApiSecurityTest source',
-          file: 'xref-test/com/maxprofit/calculator/controller/ApiSecurityTest.html',
-        },
-      ],
-    },
-    {
-      id: 'system',
-      name: 'System Tests',
-      color: 'bg-orange-500',
-      icon: '🐳',
-      description: 'Black-box tests against the Docker images, started by Testcontainers. They run in the container workflow (and locally with -Pcontainer-tests), not in the report run.',
-      reports: [
-        {
-          id: 'xref-system',
-          name: 'Test Source Code',
-          description: 'ContainerTests source',
-          file: 'xref-test/com/maxprofit/calculator/ContainerTests.html',
-        },
-      ],
-    },
-    {
-      id: 'e2e',
-      name: 'UI / E2E & BDD',
-      color: 'bg-red-500',
-      icon: '🎭',
-      description: 'The real app in a browser. Includes the BDD acceptance scenarios agreed with the Product Owner, QA and developers, automated through the UI with Cucumber and Playwright.',
-      reports: [
-        {
-          id: 'cucumber',
-          name: 'BDD Acceptance Scenarios',
-          description: 'Cucumber report for MaxProfit.feature: every scenario and step, run against the UI',
-          file: 'cucumber-report/index.html',
-          external: true,
-        },
-        {
-          id: 'playwright-html',
-          name: 'Playwright HTML Report',
-          description: 'JavaScript end-to-end tests: interactive timeline, traces, screenshots',
-          file: 'playwright-report/index.html',
-          external: true,
-        },
-        {
-          id: 'surefire-ui',
-          name: 'Scenario results (JUnit)',
-          description: 'JUnit view of the BDD scenarios',
-          file: 'surefire-report.html#com.maxprofit.calculator.RunCucumberTest',
-        },
-      ],
-    },
-    {
-      id: 'performance',
-      name: 'Performance Tests',
-      color: 'bg-purple-500',
-      icon: '⚡',
-      description: 'StressTests: median time per call after a warm-up at the maximum budget, and bytes allocated, with limits far above the measured cost. ApiPerformanceTests (median end-to-end latency) runs in the container workflow.',
-      reports: [
-        {
-          id: 'surefire-stress',
-          name: 'Stress Test Results',
-          description: 'StressTests results',
-          file: 'surefire-report.html#com.maxprofit.calculator.StressTests',
-        },
-        {
-          id: 'xref-stress',
-          name: 'Stress Test Source',
-          description: 'StressTests source',
-          file: 'xref-test/com/maxprofit/calculator/StressTests.html',
-        },
-        {
-          id: 'xref-api-performance',
-          name: 'API Performance Test Source',
-          description: 'ApiPerformanceTests source',
-          file: 'xref-test/com/maxprofit/calculator/ApiPerformanceTests.html',
-        },
-      ],
-    },
-    {
-      id: 'mutation',
-      name: 'Mutation Testing',
-      color: 'bg-yellow-500',
-      icon: '✦',
-      description: 'PITest mutation testing. It runs in the main CI workflow (the build fails below a 90% score); the published site shows a placeholder because the report run skips it.',
-      reports: [
-        {
-          id: 'pitest',
-          name: 'Mutation Test Report',
-          description: 'PITest results',
-          file: 'pit-reports/index.html',
-        },
-      ],
-    },
-    {
-      id: 'quality',
-      name: 'Code Quality',
-      color: 'bg-slate-500',
-      icon: '🔍',
-      description: 'Static analysis and project reports.',
-      reports: [
-        {
-          id: 'checkstyle',
-          name: 'Checkstyle',
-          description: 'Code style enforcement',
-          file: 'checkstyle.html',
-        },
-        {
-          id: 'dependencies',
-          name: 'Dependencies',
-          description: 'Dependency analysis',
-          file: 'dependencies.html',
-        },
-        {
-          id: 'project-info',
-          name: 'Project Information',
-          description: 'Project details',
-          file: 'project-info.html',
-        },
-      ],
-    },
-  ];
-
-  const activeCategory = reportCategories.find(cat => cat.id === selectedReport) || reportCategories[0];
+  const layer = testLayers.find((l) => l.id === selectedLayer);
+  const detail = layerReports[selectedLayer];
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200">
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-6 md:mb-12"
-        >
-          <h1 className="text-2xl md:text-4xl font-bold text-white mb-4">
-            Test Reports
-          </h1>
-          <p className="text-sm md:text-lg text-slate-400 max-w-2xl mx-auto">
-            View detailed test reports organized by testing layer.
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-14">
+        <motion.header initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">Reports</p>
+          <h1 className="mt-2 text-3xl md:text-5xl font-bold text-white leading-tight">The evidence</h1>
+          <p className="mt-4 text-base md:text-lg text-slate-400 leading-relaxed">
+            Tests are only useful if someone can see what they found. Every change to main runs the suite and
+            publishes these reports. Each one answers a different question.
           </p>
+          <div className="mt-5">
+            <Availability available={available} checking={checking} />
+          </div>
         </motion.header>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="md:col-span-1"
-          >
-            <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-              <h2 className="text-lg font-semibold text-white mb-4">Test Layers</h2>
-              <div className="space-y-2">
-                {reportCategories.map(category => (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedReport(category.id)}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      selectedReport === category.id
-                        ? 'bg-slate-700 text-white'
-                        : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>{category.icon}</span>
-                      <span className="font-medium">{category.name}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-slate-800 rounded-xl p-4 border border-slate-700 mt-4">
-              <h3 className="text-sm font-semibold text-white mb-2">Generate All Reports</h3>
-              <code className="block bg-slate-900 p-2 rounded text-xs text-cyan-400">
-                mvn site
-              </code>
-              <p className="text-xs text-slate-400 mt-2">
-                Output lands in <code className="text-cyan-400">target/site/</code>. CI publishes it to
-                GitHub Pages on every change to <code className="text-cyan-400">main</code>.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="md:col-span-3"
-          >
-            <div className="bg-slate-800 rounded-xl border border-slate-700 mb-4">
-              <div className="p-4 border-b border-slate-700">
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl ${activeCategory.color}`}>{activeCategory.icon}</span>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{activeCategory.name}</h3>
-                    <p className="text-sm text-slate-400">{activeCategory.description}</p>
-                  </div>
+        {/* Featured reports */}
+        <section aria-labelledby="featured-heading" className="mt-12">
+          <h2 id="featured-heading" className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Start here
+          </h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredReports.map((report) => {
+              const body = (
+                <>
+                  <span className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-900" style={{ color: report.hex }}>
+                      <TechniqueIcon name={report.icon} />
+                    </span>
+                    <span className="text-lg font-semibold text-white">{report.title}</span>
+                  </span>
+                  <span className="mt-3 block text-slate-200 leading-snug">{report.question}</span>
+                  <span className="mt-3 block text-sm text-slate-400 leading-relaxed">
+                    <span className="font-semibold text-slate-300">Look for: </span>
+                    {report.lookFor}
+                  </span>
+                </>
+              );
+              return available === false ? (
+                <div key={report.id} className="flex flex-col rounded-2xl border border-slate-700/80 bg-slate-800/40 p-5 opacity-70">
+                  {body}
                 </div>
-              </div>
+              ) : (
+                <OpenLink
+                  key={report.id}
+                  href={reportUrl(report.file, { external: report.external })}
+                  className="group flex flex-col rounded-2xl border border-slate-700/80 bg-slate-800/40 p-5 transition-colors hover:border-slate-500"
+                >
+                  {body}
+                  <span className="mt-auto pt-4 inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: report.hex }}>
+                    Open report <TechniqueIcon name="external" className="h-4 w-4" />
+                  </span>
+                </OpenLink>
+              );
+            })}
+          </div>
+        </section>
 
-              <div className="p-4">
-                <h4 className="text-sm font-medium text-white mb-3">Available Reports</h4>
-                {checking ? (
-                  <p className="text-sm text-slate-400">Checking report availability…</p>
-                ) : available === false ? (
-                  <div
-                    role="status"
-                    className="p-4 bg-slate-900 rounded-lg border border-slate-700 text-sm text-slate-400"
-                  >
-                    <p className="text-amber-300 font-semibold mb-2">
-                      Reports are not available in this deployment.
-                    </p>
-                    <p>
-                      Reports are published to GitHub Pages by CI and could not be reached. Run{' '}
-                      <code className="text-cyan-400">mvn site</code> to generate them locally in{' '}
-                      <code className="text-cyan-400">target/site/</code>.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {activeCategory.reports.map(report => (
-                      <a
-                        key={report.id}
-                        // The Playwright HTML report sits at the Pages root
-                        // (`external: true`) so its relative ./data and ./trace
-                        // links resolve; everything else is under /reports/.
-                        href={reportUrl(report.file, { external: report.external })}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
-                      >
-                        <span className="text-cyan-400">📄</span>
-                        <div>
-                          <div className="text-sm font-medium text-white">{report.name}</div>
-                          <div className="text-xs text-slate-500">{report.description}</div>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                )}
+        {/* By layer */}
+        <section aria-labelledby="layers-heading" className="mt-20">
+          <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">By layer</p>
+          <h2 id="layers-heading" className="mt-1 text-2xl sm:text-3xl font-bold text-white">
+            Reports for each layer of the pyramid
+          </h2>
+          <p className="mt-2 max-w-3xl text-slate-400 leading-relaxed">
+            Not every test runs in the same place: the slowest ones run against the Docker images after a merge.
+            Each layer says where its tests run and links to their results and source.
+          </p>
+
+          <div role="group" aria-label="Choose a test layer" className="mt-6 flex flex-wrap gap-2">
+            {layers.map((l) => {
+              const selected = l.id === selectedLayer;
+              return (
+                <button
+                  key={l.id}
+                  type="button"
+                  aria-pressed={selected}
+                  aria-controls="layer-panel"
+                  onClick={() => setSelectedLayer(l.id)}
+                  className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  style={
+                    selected
+                      ? { backgroundColor: l.hex, color: '#0f172a' }
+                      : { boxShadow: `inset 0 0 0 1px ${l.hex}80`, color: '#e2e8f0' }
+                  }
+                >
+                  {!selected && <span aria-hidden="true" className="h-2 w-2 rounded-full" style={{ backgroundColor: l.hex }} />}
+                  {l.shortName}
+                </button>
+              );
+            })}
+          </div>
+
+          <motion.div
+            key={selectedLayer}
+            id="layer-panel"
+            aria-live="polite"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-4 overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-800/40"
+          >
+            <div className="h-1.5" style={{ backgroundColor: layer.hex }} />
+            <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
+              <div>
+                <h3 className="text-xl font-semibold text-white">{layer.name}</h3>
+                <p className="mt-1 text-sm text-slate-400">{layerTestCount(layer)} tests</p>
+                <p className="mt-3 text-slate-300 leading-relaxed">{layer.question}</p>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-slate-400">Where it runs</p>
+                <p className="mt-1 text-slate-300 leading-relaxed">{detail.whereItRuns}</p>
+                <Link
+                  to={`/testing-pyramid?layer=${layer.id}`}
+                  className="mt-4 inline-block text-sm text-sky-300 hover:underline underline-offset-4"
+                >
+                  What this layer tests →
+                </Link>
               </div>
+              <ul className="grid gap-3 sm:grid-cols-2 content-start">
+                {detail.links.map((link) => (
+                  <li key={link.label}>
+                    <OpenLink
+                      href={linkUrl(link)}
+                      className="flex h-full flex-col rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 transition-colors hover:border-slate-500"
+                    >
+                      <span className="flex items-center justify-between gap-2 font-medium text-slate-100">
+                        {link.label}
+                        <TechniqueIcon name="external" className="h-4 w-4 shrink-0 text-slate-500" />
+                      </span>
+                      <span className="mt-1 text-sm text-slate-400">{link.description}</span>
+                    </OpenLink>
+                  </li>
+                ))}
+              </ul>
             </div>
           </motion.div>
-        </div>
+        </section>
 
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 text-center text-slate-500"
-        >
-          <p>
-            Reports are served from the local build directory.
-          </p>
-        </motion.footer>
+        {/* More */}
+        <div className="mt-20 grid gap-4 lg:grid-cols-2">
+          <section className="rounded-2xl border border-slate-700/80 bg-slate-800/40 p-5">
+            <h2 className="text-lg font-semibold text-white">More project reports</h2>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {projectReports.map((report) => (
+                <li key={report.file}>
+                  <OpenLink
+                    href={reportUrl(report.file)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-600 px-3 py-1 text-sm text-slate-200 hover:border-slate-400"
+                  >
+                    {report.label}
+                    <TechniqueIcon name="external" className="h-3.5 w-3.5 text-slate-500" />
+                  </OpenLink>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <details className="group rounded-2xl border border-slate-700/80 bg-slate-800/40">
+            <summary className="cursor-pointer select-none list-none px-5 py-4 flex items-center justify-between rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+              <span>
+                <span className="block text-lg font-semibold text-white">Generate them yourself</span>
+                <span className="block text-sm text-slate-400">The same reports, built locally</span>
+              </span>
+              <span aria-hidden="true" className="text-xl text-slate-400 transition-transform group-open:rotate-90">›</span>
+            </summary>
+            <div className="px-5 pb-5">
+              <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-300 leading-relaxed">
+                <code>{`mvn -Ppitest test-compile     # mutation report
+mvn -DskipITs -Dpitest.skip=true verify site
+open target/site/index.html`}</code>
+              </pre>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   );

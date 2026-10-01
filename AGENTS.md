@@ -27,10 +27,9 @@ Generated reports are never committed.
 For a manual local run:
 
 ```bash
-# Generate all reports (skipping integration tests + slow pitest mutation run)
-mkdir -p target/pit-reports && \
-  printf '<!DOCTYPE html><html><body><p>skipped</p></body></html>' \
-    > target/pit-reports/index.html
+# Mutation report first (~2.5 min); the site copies target/pit-reports/
+mvn -Ppitest test-compile
+# Generate all reports
 mvn -DskipITs -Dpitest.skip=true verify site
 ```
 

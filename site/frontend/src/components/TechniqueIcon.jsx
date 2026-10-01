@@ -54,6 +54,22 @@ const ICON_PATHS = {
       <path d="m9 14 3 2 3-2" />
     </>
   ),
+  browser: (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M2 9h20" />
+      <circle cx="5.5" cy="6.5" r=".6" fill="currentColor" />
+      <circle cx="8" cy="6.5" r=".6" fill="currentColor" />
+      <path d="m10 13 3 2-3 2" />
+    </>
+  ),
+  external: (
+    <>
+      <path d="M14 4h6v6" />
+      <path d="M20 4 10 14" />
+      <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+    </>
+  ),
   shield: (
     <>
       <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z" />
