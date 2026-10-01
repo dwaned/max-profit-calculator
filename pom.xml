@@ -35,6 +35,9 @@
              (CVE-2026-65905, CVE-2026-68525, CVE-2026-65182; fixed in 11.0.25),
              flagged by Docker Scout. Drop once the parent catches up. -->
         <tomcat.version>11.0.26</tomcat.version>
+        <!-- Spring Boot 4.1.1 manages Jackson 3.1.5 (tools.jackson), which has
+             high-severity CVEs fixed in 3.1.6/3.1.7 (Dependabot #487-#491). -->
+        <jackson-bom.version>3.1.7</jackson-bom.version>
         <!-- Jackson 2 still arrives in tests through Pact; keep it past the CVEs
              fixed in 2.21.6 (Boot 4.1.1 manages 2.21.5). -->
         <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
