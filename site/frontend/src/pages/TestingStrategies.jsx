@@ -9,7 +9,7 @@ import { layerTestCount, testLayers } from '../data/testLayers';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const commands = [
-  { command: 'mvn verify', what: 'Unit, web layer, integration and performance tests, plus checkstyle and the coverage floor' },
+  { command: 'mvn verify', what: 'Unit, integration and performance tests, plus checkstyle and the coverage floor' },
   { command: 'mvn test -Ppitest', what: 'Mutation testing (fails below a 90% mutation score)' },
   { command: 'mvn test -Pcontract-tests', what: 'Contract verification against the backend (needs the API running on :9095)' },
   { command: 'mvn test -Pcontainer-tests', what: 'System and API performance tests against the Docker images (needs Docker)' },

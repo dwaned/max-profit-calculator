@@ -34,7 +34,7 @@ const learnCards = [
     to: '/testing-pyramid',
     eyebrow: 'Where tests run',
     title: 'Testing Pyramid',
-    body: 'Six layers from unit to UI / end-to-end: the question each answers, what it catches and misses, and what it costs.',
+    body: 'Five layers from unit to UI / end-to-end: the question each answers, what it catches and misses, and what it costs.',
     hex: '#38bdf8',
   },
   {

@@ -95,15 +95,10 @@ export const layerReports = {
   integration: {
     whereItRuns: 'In the reports run and on every pull request.',
     links: [
-      { label: 'Test results', description: 'ApiSecurityTest and the other full-application tests', file: 'surefire-report.html#com.maxprofit.calculator.controller.ApiSecurityTest' },
-      { label: 'Test source', description: 'ApiSecurityTest', file: `${XREF}/controller/ApiSecurityTest.html` },
-    ],
-  },
-  web: {
-    whereItRuns: 'In the reports run and on every pull request.',
-    links: [
-      { label: 'Test results', description: 'HTTP status tests (200 / 400 / 405 / 415 / 429)', file: 'surefire-report.html#/calculate%20endpoint%20HTTP%20status%20tests' },
-      { label: 'Test source', description: 'CalculatorControllerHttpStatusTest', file: `${XREF}/controller/CalculatorControllerHttpStatusTest.html` },
+      { label: 'Narrow: test results', description: 'HTTP status tests (200 / 400 / 405 / 415 / 429), no server', file: 'surefire-report.html#/calculate%20endpoint%20HTTP%20status%20tests' },
+      { label: 'Narrow: test source', description: 'CalculatorControllerHttpStatusTest', file: `${XREF}/controller/CalculatorControllerHttpStatusTest.html` },
+      { label: 'Broad: test results', description: 'ApiSecurityTest: the whole app on a real server', file: 'surefire-report.html#com.maxprofit.calculator.controller.ApiSecurityTest' },
+      { label: 'Broad: test source', description: 'ApiSecurityTest', file: `${XREF}/controller/ApiSecurityTest.html` },
     ],
   },
   unit: {
