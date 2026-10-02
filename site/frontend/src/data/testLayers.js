@@ -52,43 +52,6 @@ void shouldWorkWithThreeIndices() {
 }`,
   },
   {
-    id: 'web',
-    name: "Web Layer Tests",
-    shortName: "Web Layer",
-    hex: '#3b82f6',
-    color: 'bg-blue-500',
-    borderColor: 'border-blue-400',
-    textColor: 'text-blue-400',
-    question: "Does the HTTP layer accept, reject and answer requests correctly?",
-    summary: "Web layer tests start only the part of the application that handles HTTP (routing, validation, error responses, filters), without a real server or network. They check the contract of each endpoint, such as which status code a bad request gets, in milliseconds.",
-    catches: ["Wrong status codes: 400 for invalid input, 405 for the wrong method, 415 for the wrong content type, 429 when rate limited", "Validation rules that are missing or too loose, such as oversized price lists", "Request and response mapping mistakes"],
-    realIssue: null,
-    blindSpots: ["Problems that only appear with the whole application running, such as CORS or a real proxy in front", "Real network behaviour and server configuration"],
-    tradeoffs: { speed: 4, realism: 2, upkeep: 2, flakiness: 1 },
-    writeOneWhen: "Whenever an endpoint has rules about what it accepts or how it fails. They are cheaper and more precise than calling a fully started server.",
-    inThisProject: "Status codes, validation limits, the rate-limit filter and the metrics each request records.",
-    tools: "Spring MockMvc",
-    testClasses: [
-      { name: 'CalculatorControllerTest', style: 'example', count: 1, file: `${JAVA}/controller/CalculatorControllerTest.java` },
-      { name: 'CalculatorControllerHttpStatusTest', style: 'example', count: 9, file: `${JAVA}/controller/CalculatorControllerHttpStatusTest.java` },
-      { name: 'MetricsInstrumentationTest', style: 'example', count: 1, file: `${JAVA}/controller/MetricsInstrumentationTest.java` },
-    ],
-    codeExample: `// CalculatorControllerHttpStatusTest.java
-@Test
-@DisplayName("Returns 400 when buyPrices exceeds maximum size of 100")
-void postBuyPricesExceedsMaxSize() throws Exception {
-    CalculationRequest request = new CalculationRequest();
-    request.setSavings(10);
-    List<Integer> oversized = IntStream.rangeClosed(1, 101).boxed().toList();
-    request.setBuyPrices(oversized);
-    request.setSellPrices(oversized);
-    mockMvc.perform(post("/calculate")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
-}`,
-  },
-  {
     id: 'integration',
     name: "Integration Tests",
     shortName: "Integration",
@@ -96,22 +59,34 @@ void postBuyPricesExceedsMaxSize() throws Exception {
     color: 'bg-indigo-500',
     borderColor: 'border-indigo-400',
     textColor: 'text-indigo-400',
-    question: "Do the pieces work together when the whole application is running?",
-    summary: "Integration tests start the complete application on a real embedded web server and talk to it over HTTP. They catch problems that live in the gaps between components: configuration, filters, security rules and how they interact.",
-    catches: ["Security behaviour that only exists in the assembled app: which websites may call the API (CORS) and how the client’s IP is resolved behind a proxy", "Request filters and error handling working together, such as malformed JSON, wrong JSON types and consistent error bodies", "Published documentation that actually loads"],
+    question: "Do the components work together correctly?",
+    summary: "Integration tests check that separately written parts of the backend cooperate: routing, validation, filters, error handling, configuration and security rules. They come in two sizes. Narrow ones wire up only the parts that handle a request, with no server or network, and run in milliseconds. Broad ones start the whole application on a real embedded server and call it over HTTP, catching what only appears once everything is assembled.",
+    catches: ["Wrong status codes: 400 for invalid input, 405 for the wrong method, 415 for the wrong content type, 429 when rate limited", "Validation rules that are missing or too loose, such as oversized price lists", "Security behaviour that only exists in the assembled app: which websites may call the API (CORS) and how the client’s IP is resolved behind a proxy", "Filters and error handling working together: malformed JSON, wrong JSON types and a consistent error format"],
     realIssue: { title: "Caught real security gaps", story: "Any website could call the API, and a client could reset its own rate limit just by sending a fake X-Forwarded-For header. Both were fixed, and these tests now fail if either comes back." },
-    blindSpots: ["Problems in the Docker image or the deployed infrastructure", "Anything in the frontend"],
+    blindSpots: ["Problems in the Docker image or the deployed infrastructure", "Whether the frontend and backend agree on the API", "Anything the user sees in the browser"],
     tradeoffs: { speed: 3, realism: 3, upkeep: 2, flakiness: 2 },
-    writeOneWhen: "When behaviour depends on several components or on configuration, especially anything security-related.",
-    inThisProject: "CORS, client-IP resolution and rate limiting, input limits, the error format, actuator exposure and the OpenAPI docs.",
-    tools: "Spring Boot Test with a real embedded server",
+    writeOneWhen: "When behaviour depends on several components or on configuration, especially anything security-related. Prefer the narrow kind for an endpoint’s rules (what it accepts and how it fails) and keep the broad kind for what needs the whole application.",
+    inThisProject: "Narrow: status codes, validation limits, the rate-limit filter and request metrics. Broad: CORS, client-IP resolution and rate limiting, input limits, the error format, actuator exposure and the OpenAPI docs.",
+    tools: "Spring MockMvc (narrow) and Spring Boot Test with a real embedded server (broad)",
     testClasses: [
+      { name: 'CalculatorControllerTest', style: 'example', count: 1, file: `${JAVA}/controller/CalculatorControllerTest.java` },
+      { name: 'CalculatorControllerHttpStatusTest', style: 'example', count: 9, file: `${JAVA}/controller/CalculatorControllerHttpStatusTest.java` },
+      { name: 'MetricsInstrumentationTest', style: 'example', count: 1, file: `${JAVA}/controller/MetricsInstrumentationTest.java` },
       { name: 'ApiSecurityTest', style: 'example', count: 15, file: `${JAVA}/controller/ApiSecurityTest.java` },
       { name: 'OpenApiDocsTest', style: 'example', count: 2, file: `${JAVA}/controller/OpenApiDocsTest.java` },
     ],
-    codeExample: `// ApiSecurityTest.java
+    codeExample: `// Narrow: CalculatorControllerHttpStatusTest.java (no server)
 @Test
-@DisplayName("Forged X-Forwarded-For entries do not give a client a fresh bucket")
+void postBuyPricesExceedsMaxSize() throws Exception {
+    List<Integer> oversized = IntStream.rangeClosed(1, 101).boxed().toList();
+    mockMvc.perform(post("/calculate")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json(10, oversized, oversized)))
+            .andExpect(status().isBadRequest());
+}
+
+// Broad: ApiSecurityTest.java (whole app on a real server)
+@Test
 void forgedForwardedForDoesNotBypassRateLimit() {
     for (int i = 0; i < 3; i++) {
         assertThat(postCalculate(VALID_BODY, client("198.51.100.7", "203.0.113." + i))
@@ -270,7 +245,7 @@ private static double medianMillis(List<Integer> buy, List<Integer> sell) { ... 
 ];
 
 // Top of the pyramid first.
-export const layerOrder = ['e2e', 'system', 'contract', 'integration', 'web', 'unit'];
+export const layerOrder = ['e2e', 'system', 'contract', 'integration', 'unit'];
 
 export const layerTestCount = (layer) =>
   layer.testClasses.reduce((sum, testClass) => sum + testClass.count, 0);
@@ -309,7 +284,7 @@ export const lenses = [
     icon: 'mutant',
     idea: 'Tests your tests: it makes small deliberate bugs in the code (flip a > to >=, return early) and checks that some test fails for each one.',
     value: 'High coverage can still hide tests that assert nothing. A surviving mutant points at exactly that gap.',
-    appliesTo: ['unit', 'web', 'integration'],
+    appliesTo: ['unit', 'integration'],
     inThisProject: '97% of 107 deliberate bugs are caught; the build fails below 90%.',
   },
   {
@@ -318,7 +293,7 @@ export const lenses = [
     icon: 'gauge',
     idea: 'Measures which lines and branches the tests execute, and fails the build if that drops below a floor.',
     value: 'Stops untested code from creeping in unnoticed. Combined with mutation testing, it shows both what runs and what is really checked.',
-    appliesTo: ['unit', 'web', 'integration'],
+    appliesTo: ['unit', 'integration'],
     inThisProject: 'At least 95% of lines and 80% of branches.',
   },
   {
@@ -347,8 +322,8 @@ export const safetyNet = [
     stage: 'Every pull request',
     steps: [
       { name: 'Static & security analysis', detail: 'Style, Dockerfiles, workflows, secrets', duration: '~3 min', layers: [] },
-      { name: 'Unit, web & integration tests', detail: 'Plus performance checks and the coverage floor', duration: '~45 s', layers: ['unit', 'web', 'integration'] },
-      { name: 'Mutation testing', detail: 'Do the tests catch deliberate bugs?', duration: '~2.5 min', layers: ['unit', 'web', 'integration'] },
+      { name: 'Unit & integration tests', detail: 'Plus performance checks and the coverage floor', duration: '~45 s', layers: ['unit', 'integration'] },
+      { name: 'Mutation testing', detail: 'Do the tests catch deliberate bugs?', duration: '~2.5 min', layers: ['unit', 'integration'] },
       { name: 'Frontend checks', detail: 'Lint, unit tests and production build', duration: '~25 s', layers: ['unit'] },
       { name: 'Contract tests', detail: 'Frontend ↔ backend agreement, then “can I deploy?”', duration: '~1.5 min', layers: ['contract'] },
     ],

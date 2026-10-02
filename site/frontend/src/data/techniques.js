@@ -18,8 +18,8 @@ export const techniques = [
       'You only test the cases you thought of; the bugs live in the ones you didn’t',
       'Many near-identical examples add upkeep without adding confidence',
     ],
-    inThisProject: 'Most unit, web and integration tests are examples, including the regression tests for the bugs found by fuzzing.',
-    layers: ['unit', 'web', 'integration'],
+    inThisProject: 'Most unit and integration tests are examples, including the regression tests for the bugs found by fuzzing.',
+    layers: ['unit', 'integration'],
     codeTitle: 'ExampleBasedTests.java',
     code: `@Test
 void shouldWorkWithThreeIndices() {
@@ -102,7 +102,7 @@ void positiveScenarios(@ForAll @IntRange(min = 1, max = 1000) int savings,
       'Some mutants don’t change behaviour (“equivalent mutants”) and can never be killed; that’s why 100% isn’t the goal',
     ],
     inThisProject: 'About 97% of mutants are killed; the build fails below 90%.',
-    layers: ['unit', 'web', 'integration'],
+    layers: ['unit', 'integration'],
     codeTitle: 'Illustration: one mutant',
     code: `// Original
 if (cost <= remainingSavings) { buy(stock); }

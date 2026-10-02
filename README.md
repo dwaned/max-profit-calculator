@@ -91,7 +91,7 @@ See [TESTING_LEVELS.md](TESTING_LEVELS.md) for every test suite, the tools it us
 run it and where CI runs it. In short:
 
 ```bash
-mvn verify                    # checkstyle, unit, property-based, web layer, integration and stress tests + coverage gate
+mvn verify                    # checkstyle, unit, property-based, integration and stress tests + coverage gate
 mvn test -Ppitest             # mutation testing (fails below a 90% mutation score)
 mvn test -Pperformance-tests  # algorithm stress tests
 mvn test -Pcontract-tests     # Pact provider verification (needs the API running on :9095)

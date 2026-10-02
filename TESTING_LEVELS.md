@@ -31,20 +31,20 @@ PITest mutates the production code and checks that the test suite catches the mu
 (`mvn test -Ppitest`). The build fails below a **90% mutation score** (currently ~97%).
 CI: `maven.yml`.
 
-## 4. Web layer tests
+## 4. Integration tests
 
-The Spring MVC layer on its own with MockMvc (`@WebMvcTest`): request mapping, validation,
-status codes (200/400/405/415/429), the rate-limit filter and metrics.
-`CalculatorControllerTest`, `CalculatorControllerHttpStatusTest`, `MetricsInstrumentationTest`.
+Components of the backend working together (ISTQB: component integration testing), in two sizes:
+
+- **Narrow**, the Spring MVC layer on its own with MockMvc (`@WebMvcTest`), no server or network:
+  request mapping, validation, status codes (200/400/405/415/429), the rate-limit filter and
+  metrics. `CalculatorControllerTest`, `CalculatorControllerHttpStatusTest`, `MetricsInstrumentationTest`.
+- **Broad**, the whole Spring application on a real embedded Tomcat, called over HTTP
+  (TestRestTemplate): `ApiSecurityTest` (CORS, forwarded-IP rate limiting, input bounds, error
+  format, actuator exposure) and `OpenApiDocsTest`.
+
 CI: `maven.yml` (part of `mvn verify`).
 
-## 5. Integration tests
-
-The whole Spring application on a real embedded Tomcat, called over HTTP (TestRestTemplate):
-`ApiSecurityTest` (CORS, forwarded-IP rate limiting, input bounds, error format, actuator
-exposure) and `OpenApiDocsTest`. CI: `maven.yml` (part of `mvn verify`).
-
-## 6. Contract tests (consumer-driven)
+## 5. Contract tests (consumer-driven)
 
 - **Consumer:** `site/frontend/tests/pact/calculate.api.test.js` runs the frontend's real API
   client (`requestCalculation`) against Pact's mock provider (Pact JS, `PactV3`). Pact records
@@ -58,7 +58,7 @@ exposure) and `OpenApiDocsTest`. CI: `maven.yml` (part of `mvn verify`).
   each run), the provider is verified against it, and `can-i-deploy` checks that this
   commit's frontend and backend are compatible.
 
-## 7. System tests
+## 6. System tests
 
 Black-box tests against the Docker images: Testcontainers starts `docker-compose-test.yml`
 (API + nginx frontend) and the tests call it over HTTP. `ContainerTests`, plus
@@ -72,7 +72,7 @@ input rejected, `Allow` on 405. Settings are in `schemathesis.toml`; run locally
 API with `uvx schemathesis run http://localhost:9095/api/v3/api-docs --checks all --exclude-checks positive_data_acceptance`.
 CI runs it against the Docker image in `containers.yml`.
 
-## 8. Performance tests
+## 7. Performance tests
 
 `StressTests` checks the algorithm at 5–100 items: the median time per call after a JIT
 warm-up, always at the maximum budget, plus bytes allocated (which, unlike heap usage, isn't
@@ -85,7 +85,7 @@ Thresholds are in the [README](README.md#performance-thresholds).
 requests after a warm-up (paced to stay within the rate limit), 50 stocks at savings 1000, must
 be under 500 ms. It runs in CI in `containers.yml`; see System tests.
 
-## 9. UI / end-to-end tests and BDD acceptance scenarios
+## 8. UI / end-to-end tests and BDD acceptance scenarios
 
 **BDD** is a collaboration practice: the Product Owner, QA and developers agree on concrete
 examples of business behaviour, written in Gherkin as acceptance criteria. The scenarios in
