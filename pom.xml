@@ -41,7 +41,7 @@
         <!-- Jackson 2 still arrives in tests through Pact; keep it past the CVEs
              fixed in 2.21.6 (Boot 4.1.1 manages 2.21.5). -->
         <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
-        <json.version>20250107</json.version>
+        <json.version>20260814</json.version>
     </properties>
 
     <dependencyManagement>
