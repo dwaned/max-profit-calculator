@@ -1,4 +1,4 @@
-FROM maven:3.9-eclipse-temurin-25 AS build
+FROM maven:3-eclipse-temurin-24 AS build
 WORKDIR /docker
 # Resolve dependencies in their own layer so source-only changes reuse it.
 COPY pom.xml .
