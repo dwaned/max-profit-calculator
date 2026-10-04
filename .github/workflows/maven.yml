@@ -1,7 +1,7 @@
 # This workflow builds service, and runs:
 # - Unit tests (Example and Property Based)
 # - Mutation tests
-# - Web-layer, integration and stress tests (BDD scenarios run against the UI in containers.yml)
+# - Integration and stress tests (BDD scenarios run against the UI in containers.yml)
 # - OWASP Dependency Check
 
 concurrency:
@@ -138,8 +138,10 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          mvn org.owasp:dependency-check-maven:aggregate \
-            -Ddependency-check.nvd.api.key="${NVD_API_KEY}" \
+          # The plugin reads the key from this environment variable, which
+          # keeps it off the command line and out of Maven's debug log.
+          mvn -B org.owasp:dependency-check-maven:aggregate \
+            -DnvdApiKeyEnvironmentVariable=NVD_API_KEY \
             -DskipProvidedScope=true \
             -DskipSystemScope=true \
             -DskipTestScope=true \
@@ -155,7 +157,6 @@ jobs:
               echo "- Low Risk: $LOW"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
-        continue-on-error: true
 
       - name: Upload Security Report
         if: always()
