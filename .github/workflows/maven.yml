@@ -116,6 +116,7 @@ jobs:
           sparse-checkout: |
             pom.xml
             src
+            dependency-check-suppressions.xml
           sparse-checkout-cone-mode: false
           persist-credentials: false
 
