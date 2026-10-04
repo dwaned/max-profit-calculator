@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- OWASP dependency-check suppressions. Every entry needs a reason and an
+     expiry ("until"): after that date the finding is reported again. -->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress until="2027-01-02Z">
+        <notes><![CDATA[
+        DOMPurify 3.4.13 bundled inside the swagger-ui webjar (springdoc's
+        /api/swagger-ui page). GHSA-p98j-92pf-mc4p is low severity (CVSS 2.3)
+        and needs DOMPurify's IN_PLACE mode with a node-removing afterSanitize
+        hook, which is set by the calling code; Swagger UI only sanitizes the
+        API description. Fixed in DOMPurify 3.4.16, but even swagger-ui 5.33.1
+        still bundles 3.4.13. Remove once a swagger-ui release ships the fix.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/DOMPurify@3\.4\.1[3-5]$</packageUrl>
+        <vulnerabilityName>GHSA-p98j-92pf-mc4p</vulnerabilityName>
+    </suppress>
+</suppressions>
