@@ -26,6 +26,7 @@
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <jqwik.version>1.10.1</jqwik.version>
         <cucumber.version>8.0.3</cucumber.version>
+        <dependency-check.version>13.0.0</dependency-check.version>
         <pitest.version>1.30.0</pitest.version>
         <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
         <playwright.version>1.63.0</playwright.version>
@@ -131,7 +132,6 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>12.0.2</version>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
                             <failBuildOnCVSS>10</failBuildOnCVSS>
@@ -343,6 +343,13 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- Version for both the dependency-check profile and CI's
+                     `mvn org.owasp:dependency-check-maven:aggregate` call. -->
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.pitest</groupId>
                     <artifactId>pitest-maven</artifactId>
