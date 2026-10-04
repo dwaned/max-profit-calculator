@@ -349,6 +349,11 @@
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
                     <version>${dependency-check.version}</version>
+                    <configuration>
+                        <suppressionFiles>
+                            <suppressionFile>${project.basedir}/dependency-check-suppressions.xml</suppressionFile>
+                        </suppressionFiles>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.pitest</groupId>
