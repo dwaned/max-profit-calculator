@@ -14,6 +14,14 @@ describe('getAdvisorStatus', () => {
     expect(await getAdvisorStatus('http://api', { fetchImpl })).toEqual({ enabled: true, model: 'qwen3.5:4b' });
   });
 
+  it('gives up on a slow (sleeping) backend instead of making the page wait', async () => {
+    const hanging = (_url, { signal }) => new Promise((_resolve, reject) => {
+      signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')));
+    });
+    expect(await getAdvisorStatus('http://api', { timeoutMs: 10, fetchImpl: hanging }))
+      .toEqual({ enabled: false, model: null });
+  });
+
   it('treats errors and unreachable servers as disabled', async () => {
     expect(await getAdvisorStatus('http://api', { fetchImpl: async () => jsonResponse(404, {}) }))
       .toEqual({ enabled: false, model: null });

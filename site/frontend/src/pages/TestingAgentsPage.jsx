@@ -14,7 +14,8 @@ const pyramidLayers = agentLayerOrder.map((id) => agentLayers.find((l) => l.id =
 
 const commands = [
   { command: 'ollama pull qwen3.5:4b && ollama pull gemma3:12b', what: 'The advisor’s model and the judge’s model' },
-  { command: 'APP_ADVISOR_ENABLED=true mvn spring-boot:run', what: 'Run the API with the advisor switched on (this page then talks to it live)' },
+  { command: 'APP_ADVISOR_ENABLED=true mvn spring-boot:run', what: 'Run the API with the advisor switched on' },
+  { command: 'cd site/frontend && npm ci && npm run dev', what: 'Run the site; open http://localhost:5173/#/testing-ai-agents to ask the advisor live' },
   { command: 'mvn test -Dtest=StockAdvisorTests,ProfitToolTests,AdvisorReplayTests', what: 'Deterministic and replay layers: no model needed, as in CI' },
   { command: 'mvn test -Dtest=AdvisorReplayTests -Dadvisor.record=true', what: 'Re-record the replayed conversations after changing the prompt or tool' },
   { command: 'mvn test -Pagent-evals', what: 'Repeated runs and the LLM judge (about 10 minutes); updates the results on this page' },

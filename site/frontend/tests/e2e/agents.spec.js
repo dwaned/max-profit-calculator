@@ -9,6 +9,7 @@ test.describe('Testing AI Agents page', () => {
     await page.goto('/#/testing-ai-agents');
     await expect(page.getByRole('heading', { name: 'Testing an AI agent' })).toBeVisible();
     await expect(page.getByText('so it is off on this site')).toBeVisible();
+    await expect(page.getByText('Try it live on your own machine')).toBeVisible();
 
     await page.getByRole('button', { name: 'No future prices given' }).click();
     await expect(page.getByText('I have 10 euros and the stocks cost 3, 4 and 5')).toBeVisible();

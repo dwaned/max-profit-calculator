@@ -132,11 +132,38 @@ function RecordedDemo() {
   const toolCalls = task.kind === 'calculate' ? [{ arguments: task.input, result: task.expected }] : [];
   return (
     <div className="space-y-4">
-      <p className="rounded-xl border border-slate-700 bg-slate-900/60 p-3 text-sm text-slate-400">
-        The advisor runs on a local Ollama model, so it is off on this site. These are real answers from the
-        latest evaluation run ({results.generatedAt.slice(0, 10)}, {results.advisorModel}). Run it yourself with{' '}
-        <code className="text-sky-300">APP_ADVISOR_ENABLED=true</code>.
-      </p>
+      <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4 text-sm text-slate-400">
+        <p>
+          <span className="font-semibold text-slate-200">Recorded, not live.</span> The advisor runs on a local
+          Ollama model, so it is off on this site. These are real answers from the agent, recorded in the latest
+          evaluation run ({results.generatedAt.slice(0, 10)}, {results.advisorModel}).
+        </p>
+        <details className="group mt-3">
+          <summary className="cursor-pointer select-none font-medium text-sky-300 hover:text-sky-200">
+            Try it live on your own machine
+          </summary>
+          <ol className="mt-3 list-decimal space-y-2 pl-5">
+            <li>
+              Install <a href="https://ollama.com" className="text-sky-300 underline-offset-4 hover:underline">Ollama</a> and
+              pull the model: <code className="text-slate-200">ollama pull {results.advisorModel}</code>
+            </li>
+            <li>
+              Start the API with the advisor on:{' '}
+              <code className="text-slate-200">APP_ADVISOR_ENABLED=true mvn spring-boot:run</code>
+            </li>
+            <li>
+              Start the site: <code className="text-slate-200">cd site/frontend && npm ci && npm run dev</code>, then open{' '}
+              <code className="text-slate-200">http://localhost:5173/#/testing-ai-agents</code>
+            </li>
+          </ol>
+          <p className="mt-3">
+            Or run everything in Docker:{' '}
+            <code className="text-slate-200">ADVISOR_ENABLED=true docker compose up --build</code> and open{' '}
+            <code className="text-slate-200">http://localhost:3000/#/testing-ai-agents</code>. This box then becomes a
+            live “Ask the advisor” form.
+          </p>
+        </details>
+      </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Recorded questions">
         {recorded.map((t) => (
           <button
@@ -167,15 +194,18 @@ function RecordedDemo() {
   );
 }
 
-/** A live advisor when the backend has it enabled, otherwise recorded answers. */
+/**
+ * Recorded answers straight away; switches to the live advisor only if the
+ * backend reports it enabled (which happens when running locally with
+ * APP_ADVISOR_ENABLED=true). The hosted site never waits on the check.
+ */
 export default function AdvisorDemo() {
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState({ enabled: false, model: null });
   useEffect(() => {
     let cancelled = false;
     getAdvisorStatus(API_BASE_URL).then((s) => { if (!cancelled) setStatus(s); });
     return () => { cancelled = true; };
   }, []);
 
-  if (status === null) return <p className="text-sm text-slate-400" role="status">Checking whether the advisor is available…</p>;
   return status.enabled ? <LiveDemo model={status.model} /> : <RecordedDemo />;
 }

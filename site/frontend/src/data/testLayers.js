@@ -42,7 +42,7 @@ export const testLayers = [
       { name: 'apiFooter.test.js', style: 'example', count: 8, file: 'site/frontend/tests/unit/apiFooter.test.js' },
       { name: 'calculatorApi.test.js', style: 'example', count: 7, file: 'site/frontend/tests/unit/calculatorApi.test.js' },
       { name: 'reports.test.js', style: 'example', count: 6, file: 'site/frontend/tests/unit/reports.test.js' },
-      { name: 'advisorApi.test.js', style: 'example', count: 4, file: 'site/frontend/tests/unit/advisorApi.test.js' },
+      { name: 'advisorApi.test.js', style: 'example', count: 5, file: 'site/frontend/tests/unit/advisorApi.test.js' },
       { name: 'testLayers.test.js', style: 'example', count: 8, file: 'site/frontend/tests/unit/testLayers.test.js' },
     ],
     codeExample: `// ExampleBasedTests.java
