@@ -66,6 +66,15 @@ class AdvisorReplayTests {
                                     .allSatisfy(call -> assertThat(call.result()).isNull());
                             assertThat(answer.verified()).isFalse();
                         }),
+                Arguments.of("asks-for-missing-future-prices",
+                        "I have 10 euros and the stocks cost 3, 4 and 5. Which should I buy?",
+                        (Consumer<AdvisorAnswer>) answer -> {
+                            // The evaluation found the model copying today's prices as the future prices in
+                            // 10 of 10 runs; the prompt now forbids assuming prices. Guard that here.
+                            assertThat(answer.toolCalls()).as("must not calculate with invented future prices")
+                                    .allSatisfy(call -> assertThat(call.result()).isNull());
+                            assertThat(answer.verified()).isFalse();
+                        }),
                 Arguments.of("declines-off-topic-questions",
                         "What will the weather be like tomorrow?",
                         (Consumer<AdvisorAnswer>) answer -> assertThat(answer.toolCalls()).isEmpty()));

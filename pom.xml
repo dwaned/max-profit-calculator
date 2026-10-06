@@ -177,6 +177,24 @@
             </build>
         </profile>
         <profile>
+            <!-- AI agent evaluations against a local Ollama (never in CI):
+                 mvn test -Pagent-evals [-Devals.runs=10 -Devals.judged=3] -->
+            <id>agent-evals</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>**/AdvisorEvaluation.java</include>
+                            </includes>
+                            <excludes combine.self="override"/>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>playwright-tests</id>
             <build>
                 <plugins>

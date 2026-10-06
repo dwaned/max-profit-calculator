@@ -10,6 +10,7 @@ const STYLE_LABELS = {
   contract: 'Contract',
   performance: 'Performance',
   replay: 'Record & replay',
+  eval: 'Evaluation',
 };
 
 function scrollToLens(lensId) {
