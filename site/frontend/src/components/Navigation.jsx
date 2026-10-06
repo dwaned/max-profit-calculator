@@ -10,6 +10,7 @@ export default function Navigation() {
     { path: '/calculator', label: 'Calculator' },
     { path: '/testing-techniques', label: 'Testing Techniques' },
     { path: '/testing-pyramid', label: 'Testing Pyramid' },
+    { path: '/testing-ai-agents', label: 'AI Agents' },
     { path: '/reports', label: 'Reports' },
   ];
 
@@ -21,14 +22,14 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center space-x-8">
-              <span className="text-white font-bold text-lg">Max Profit</span>
-              <div className="hidden md:flex space-x-1">
+              <span className="text-white font-bold text-lg whitespace-nowrap">Max Profit</span>
+              <div className="hidden lg:flex space-x-1">
                 {links.map(link => (
                   <Link
                     key={link.path}
                     to={link.path}
                     className={`
-                      px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                      whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-colors
                       ${location.pathname === link.path
                         ? 'bg-slate-700 text-white'
                         : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}
@@ -41,7 +42,7 @@ export default function Navigation() {
             </div>
 
             <button
-              className="md:hidden p-2 text-slate-400 hover:text-white"
+              className="lg:hidden p-2 text-slate-400 hover:text-white"
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label="Open menu"
             >

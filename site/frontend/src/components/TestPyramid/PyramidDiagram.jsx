@@ -9,20 +9,31 @@ const GAP = 5;
 const APEX_HALF = 34; // half-width at the very top
 const BASE_HALF = 250; // half-width at the base
 const CX = WIDTH / 2;
-const HEIGHT = TOP + layerOrder.length * BAND_HEIGHT + 8;
 
-const halfWidthAt = (y) => {
-  const t = (y - TOP) / (layerOrder.length * BAND_HEIGHT);
-  return APEX_HALF + t * (BASE_HALF - APEX_HALF);
-};
-
-function bandPoints(index) {
-  const y0 = TOP + index * BAND_HEIGHT;
-  const y1 = y0 + BAND_HEIGHT - GAP;
-  const w0 = halfWidthAt(y0);
-  const w1 = halfWidthAt(y1);
-  return { y0, y1, points: `${CX - w0},${y0} ${CX + w0},${y0} ${CX + w1},${y1} ${CX - w1},${y1}` };
+function geometry(bands) {
+  const halfWidthAt = (y) => APEX_HALF + ((y - TOP) / (bands * BAND_HEIGHT)) * (BASE_HALF - APEX_HALF);
+  const band = (index) => {
+    const y0 = TOP + index * BAND_HEIGHT;
+    const y1 = y0 + BAND_HEIGHT - GAP;
+    const w0 = halfWidthAt(y0);
+    const w1 = halfWidthAt(y1);
+    return { y0, y1, points: `${CX - w0},${y0} ${CX + w0},${y0} ${CX + w1},${y1} ${CX - w1},${y1}` };
+  };
+  return { halfWidthAt, band, height: TOP + bands * BAND_HEIGHT + 8 };
 }
+
+// The classic pyramid of this project, used unless other layers are passed.
+const CLASSIC = {
+  layers: layerOrder.map((id) => testLayers.find((l) => l.id === id)),
+  subtitle: (layer) => `${layerTestCount(layer)} tests`,
+  axis: {
+    up: 'More realistic, slower, costlier',
+    down: 'Faster, cheaper, more precise',
+    mobileUp: 'More realistic, slower',
+    mobileDown: 'Faster, more precise',
+  },
+  label: 'Testing pyramid. Select a layer to learn what it tests.',
+};
 
 /**
  * The testing pyramid as a drawing: each band is a focusable button. Up/down
@@ -30,9 +41,17 @@ function bandPoints(index) {
  * selectedLayer (e.g. on the home page) every band is a plain link-like button
  * and arrow keys only move focus.
  */
-export default function PyramidDiagram({ selectedLayer, onSelect }) {
+export default function PyramidDiagram({
+  selectedLayer,
+  onSelect,
+  layers = CLASSIC.layers,
+  subtitle = CLASSIC.subtitle,
+  axis = CLASSIC.axis,
+  label = CLASSIC.label,
+}) {
   const selectable = selectedLayer !== undefined;
   const bandRefs = useRef([]);
+  const { halfWidthAt, band, height } = geometry(layers.length);
 
   const handleKeyDown = (event, index, layerId) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -41,8 +60,8 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
     } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault();
       const next = event.key === 'ArrowUp' ? index - 1 : index + 1;
-      if (next >= 0 && next < layerOrder.length) {
-        if (selectable) onSelect(layerOrder[next]);
+      if (next >= 0 && next < layers.length) {
+        if (selectable) onSelect(layers[next].id);
         bandRefs.current[next]?.focus();
       }
     }
@@ -52,20 +71,20 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
     <div>
       <div className="flex items-stretch gap-2 sm:gap-4">
         {/* Left axis: realism grows towards the top */}
-        <Axis direction="up" label="More realistic, slower, costlier" />
+        <Axis direction="up" label={axis.up} />
 
         <svg
-          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+          viewBox={`0 0 ${WIDTH} ${height}`}
           className="w-full h-auto"
           role="group"
-          aria-label="Testing pyramid. Select a layer to learn what it tests."
+          aria-label={label}
         >
-          {layerOrder.map((layerId, index) => {
-            const layer = testLayers.find((l) => l.id === layerId);
-            const { y0, y1, points } = bandPoints(index);
+          {layers.map((layer, index) => {
+            const layerId = layer.id;
+            const { y0, y1, points } = band(index);
             const selected = selectedLayer === layerId;
-            const count = layerTestCount(layer);
-            const label = layer.shortName || layer.name;
+            const caption = subtitle(layer);
+            const name = layer.shortName || layer.name;
             const midY = (y0 + y1) / 2;
             // Narrow top bands get a smaller name.
             const roomy = halfWidthAt(y0) > 110;
@@ -77,7 +96,7 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
                 role="button"
                 tabIndex={0}
                 aria-pressed={selectable ? selected : undefined}
-                aria-label={`${layer.name}: ${layer.question} ${count} tests.`}
+                aria-label={`${layer.name}: ${layer.question} ${caption}.`}
                 onClick={() => onSelect(layerId)}
                 onKeyDown={(event) => handleKeyDown(event, index, layerId)}
                 className="cursor-pointer outline-none group"
@@ -97,7 +116,7 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
                   className="fill-white font-semibold pointer-events-none"
                   style={{ fontSize: roomy ? 19 : 15 }}
                 >
-                  {label}
+                  {name}
                 </text>
                 <text
                   x={CX}
@@ -106,7 +125,7 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
                   className="fill-white/80 pointer-events-none"
                   style={{ fontSize: 13 }}
                 >
-                  {count} tests
+                  {caption}
                 </text>
               </g>
             );
@@ -114,12 +133,12 @@ export default function PyramidDiagram({ selectedLayer, onSelect }) {
         </svg>
 
         {/* Right axis: speed and precision grow towards the base */}
-        <Axis direction="down" label="Faster, cheaper, more precise" />
+        <Axis direction="down" label={axis.down} />
       </div>
       {/* The side axes don't fit on phones */}
       <div className="sm:hidden mt-3 flex justify-between gap-4 text-[11px] uppercase tracking-wide text-slate-400">
-        <span>▲ More realistic, slower</span>
-        <span className="text-right">▼ Faster, more precise</span>
+        <span>▲ {axis.mobileUp}</span>
+        <span className="text-right">▼ {axis.mobileDown}</span>
       </div>
     </div>
   );

@@ -6,17 +6,12 @@ import HistoryPanel from '../components/HistoryPanel';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { shouldShowApiFooter } from '../utils/apiFooter';
 import { requestCalculation } from '../api/calculator';
+import { API_BASE_URL } from '../api/baseUrl';
 
 // Default to 25s — Render's free tier cold start usually completes in 30-60s
 // but the user's request is much more likely to succeed after the first warm-up.
 const API_REQUEST_TIMEOUT_MS = 25_000;
 
-// VITE_API_URL is set at build time via render.yaml env vars / .env files.
-// When unset we fall back to the known deployed backend URL so the footer is
-// always accurate (#6 — was previously hard-coded as a misleading "/api").
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) ||
-  'https://max-profit-calculator.onrender.com/api';
 
 export default function CalculatorPage() {
   usePageTitle('Calculator');
