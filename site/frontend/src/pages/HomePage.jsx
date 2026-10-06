@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PyramidDiagram from '../components/TestPyramid/PyramidDiagram';
 import { techniques } from '../data/techniques';
-import { layerOrder, layerTestCount, testLayers } from '../data/testLayers';
+import { layerOrder, layerTestCount, mutationPercent, testLayers } from '../data/testLayers';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const totalTests = testLayers.filter((l) => !l.crossCutting).reduce((sum, l) => sum + layerTestCount(l), 0);
@@ -11,7 +11,7 @@ const stats = [
   { value: totalTests, label: 'automated tests' },
   { value: layerOrder.length, label: 'layers, unit to browser' },
   { value: techniques.length, label: 'testing techniques' },
-  { value: '97%', label: 'of deliberate bugs caught' },
+  { value: `${mutationPercent}%`, label: 'of deliberate bugs caught' },
 ];
 
 // The worked example: €5 of savings, three stocks.
@@ -43,6 +43,13 @@ const learnCards = [
     title: 'Testing Techniques',
     body: 'Example-based, property-based, fuzzing, mutation, BDD, contract and performance testing: when each one pays off.',
     hex: '#c084fc',
+  },
+  {
+    to: '/testing-ai-agents',
+    eyebrow: 'Non-deterministic',
+    title: 'Testing AI Agents',
+    body: 'A real AI agent in this project, tested layer by layer: fakes, recordings, repeated runs and an LLM judge.',
+    hex: '#f472b6',
   },
   {
     to: '/reports',
@@ -193,7 +200,7 @@ function HomePage() {
           <SectionHeading id="learn-heading" eyebrow="Learn" title="Explore the testing">
             Start with the pyramid to see where tests live, then the techniques to see how they are designed.
           </SectionHeading>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {learnCards.map((card) => (
               <Link
                 key={card.to}

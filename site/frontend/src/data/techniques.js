@@ -1,3 +1,5 @@
+import { mutationScore } from './testLayers';
+
 // Content for the Testing Techniques page. A layer of the pyramid says where a
 // test runs; a technique says how its inputs are chosen and its results judged.
 // Each entry explains the idea, why it matters, when to use it and what to
@@ -101,7 +103,7 @@ void positiveScenarios(@ForAll @IntRange(min = 1, max = 1000) int savings,
       'It is slow: every mutant means another test run, so keep it to the code that matters',
       'Some mutants don’t change behaviour (“equivalent mutants”) and can never be killed; that’s why 100% isn’t the goal',
     ],
-    inThisProject: 'About 97% of mutants are killed; the build fails below 90%.',
+    inThisProject: `${mutationScore.killed} of ${mutationScore.total} mutants are killed; the build fails below ${mutationScore.floor}%. The agent’s code started at 64 of 65: the survivor showed a missing boundary test.`,
     layers: ['unit', 'integration'],
     codeTitle: 'Illustration: one mutant',
     code: `// Original

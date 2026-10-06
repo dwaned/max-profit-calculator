@@ -21,7 +21,7 @@ One class or function in isolation: no Spring context, no HTTP, no browser.
 |---|---|---|---|
 | Example-based | `ExampleBasedTests`, `StockInvalidInputTests`, `CalculationResultTests`, `CompanyNameGeneratorTests`, `StockLoggingLevelTest`, `CorsPropertiesTest`, `WebConfigCorsTest` | JUnit 6 | `maven.yml` |
 | Property-based | `PropertyBasedStockTests` (engine invariants), `RateLimiterServiceTests` (never admits more than capacity) | jqwik | `maven.yml` |
-| Frontend | `site/frontend/tests/unit/*`: API client (incl. timeouts), report links, footer, and `testLayers.test.js`, which keeps the Testing Pyramid page in sync with the real tests | Vitest | `frontend.yml` |
+| Frontend | `site/frontend/tests/unit/*`: calculator and advisor API clients (incl. timeouts), report links, footer, and `testLayers.test.js`, which keeps both pyramid pages in sync with the real tests | Vitest | `frontend.yml` |
 
 `mvn verify` also enforces a **coverage floor** with JaCoCo: 95% of lines and 80% of branches.
 
@@ -128,7 +128,7 @@ and reading the result on screen.
 | Suite | Files | Tool | Run locally | CI |
 |---|---|---|---|---|
 | BDD acceptance scenarios | `MaxProfit.feature` (7 scenarios) | Cucumber + Playwright for Java | `mvn test -Pplaywright-tests` (UI running; `PLAYWRIGHT_BASE_URL`, default `http://localhost:3000`) | `containers.yml` (Docker stack), `reports.yml` (published as the Cucumber report) |
-| JavaScript e2e | `site/frontend/tests/e2e/calculator.spec.js` | Playwright Test | `npm run test:ui` | `reports.yml` (published as the Playwright HTML report) |
+| JavaScript e2e | `site/frontend/tests/e2e/calculator.spec.js`, `agents.spec.js` (the AI agents page falls back to recorded answers when the advisor is off) | Playwright Test | `npm run test:ui` | `reports.yml` (published as the Playwright HTML report) |
 
 ## Reports
 

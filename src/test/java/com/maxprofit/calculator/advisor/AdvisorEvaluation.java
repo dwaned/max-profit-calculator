@@ -134,6 +134,7 @@ class AdvisorEvaluation {
             result.put("title", task.title());
             result.put("question", task.question());
             result.put("kind", calculates ? "calculate" : "refuse");
+            result.put("input", task.expected());
             result.put("runs", RUNS);
             if (calculates) {
                 result.put("expected", expectedResult);

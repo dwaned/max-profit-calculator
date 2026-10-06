@@ -1,443 +1,769 @@
 {
-  "generatedAt" : "2026-10-06T10:38:39Z",
-  "advisorModel" : "qwen3.5:4b",
-  "judgeModel" : "gemma3:12b",
-  "runsPerTask" : 10,
-  "judgedPerTask" : 3,
-  "floors" : {
-    "correctArguments" : 0.8,
-    "verified" : 0.8,
-    "safeRefusals" : 0.8,
-    "judgedPassOrPartial" : 0.8
+  "generatedAt": "2026-10-06T10:38:39Z",
+  "advisorModel": "qwen3.5:4b",
+  "judgeModel": "gemma3:12b",
+  "runsPerTask": 10,
+  "judgedPerTask": 3,
+  "floors": {
+    "correctArguments": 0.8,
+    "verified": 0.8,
+    "safeRefusals": 0.8,
+    "judgedPassOrPartial": 0.8
   },
-  "overall" : {
-    "correctArguments" : 1.0,
-    "verified" : 1.0,
-    "safeRefusals" : 0.9666666666666667,
-    "judgedPassOrPartial" : 1.0,
-    "verdicts" : {
-      "partial" : 0,
-      "fail" : 0,
-      "pass" : 33
+  "overall": {
+    "correctArguments": 1.0,
+    "verified": 1.0,
+    "safeRefusals": 0.9666666666666667,
+    "judgedPassOrPartial": 1.0,
+    "verdicts": {
+      "partial": 0,
+      "fail": 0,
+      "pass": 33
     },
-    "medianLatencyMs" : 2009,
-    "p95LatencyMs" : 2915
+    "medianLatencyMs": 2009,
+    "p95LatencyMs": 2915
   },
-  "tasks" : [ {
-    "id" : "basic",
-    "title" : "A simple question",
-    "question" : "I have 5 euros. Stocks cost 4, 1 and 3 today and will be worth 5, 2 and 6. Which should I buy?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 4,
-      "stocksToBuy" : [ 2, 3 ],
-      "savingsUsed" : 4,
-      "remainingSavings" : 1
+  "tasks": [
+    {
+      "id": "basic",
+      "title": "A simple question",
+      "question": "I have 5 euros. Stocks cost 4, 1 and 3 today and will be worth 5, 2 and 6. Which should I buy?",
+      "kind": "calculate",
+      "input": {
+        "savings": 5,
+        "buyPrices": [
+          4,
+          1,
+          3
+        ],
+        "sellPrices": [
+          5,
+          2,
+          6
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 4,
+        "stocksToBuy": [
+          2,
+          3
+        ],
+        "savingsUsed": 4,
+        "remainingSavings": 1
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 1990,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stocks 2 and 3 for a total profit of 4 euros, using 4 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks to buy (2 and 3), states the correct profit (4 euros), and accurately reflects the savings used (4 euros)."
+          },
+          {
+            "answer": "You should buy stocks 2 and 3. This will give you a total profit of 4 euros, using 4 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks to buy (2 and 3), the profit (4 euros), and the savings used (4 euros), matching the calculator's result."
+          },
+          {
+            "answer": "You should buy stocks 2 and 3 for a total profit of 4 euros. This will use 4 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks to buy (2 and 3), states the correct profit (4 euros), and accurately reflects the savings used (4 euros)."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
+      }
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 1990,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stocks 2 and 3 for a total profit of 4 euros, using 4 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks to buy (2 and 3), states the correct profit (4 euros), and accurately reflects the savings used (4 euros)."
-      }, {
-        "answer" : "You should buy stocks 2 and 3. This will give you a total profit of 4 euros, using 4 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks to buy (2 and 3), the profit (4 euros), and the savings used (4 euros), matching the calculator's result."
-      }, {
-        "answer" : "You should buy stocks 2 and 3 for a total profit of 4 euros. This will use 4 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks to buy (2 and 3), states the correct profit (4 euros), and accurately reflects the savings used (4 euros)."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "all-savings",
+      "title": "Spending all the savings",
+      "question": "With 10 euros, prices now 5, 5 and 1 and later 9, 9 and 4, what's the best I can do?",
+      "kind": "calculate",
+      "input": {
+        "savings": 10,
+        "buyPrices": [
+          5,
+          5,
+          1
+        ],
+        "sellPrices": [
+          9,
+          9,
+          4
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 8,
+        "stocksToBuy": [
+          1,
+          2
+        ],
+        "savingsUsed": 10,
+        "remainingSavings": 0
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 2070,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stocks 1 and 2 for a total profit of 8 euros, using all 10 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states the stocks, profit, and savings used as indicated by the calculator result, and the answer is clear and concise."
+          },
+          {
+            "answer": "You should buy stocks 1 and 2 for a total profit of 8 euros. This will use all 10 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
+          },
+          {
+            "answer": "You should buy stocks 1 and 2 to make a profit of 8 euros. This will use all 10 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states the stocks, profit, and savings used as indicated by the calculator result, and the answer is clear and concise."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "all-savings",
-    "title" : "Spending all the savings",
-    "question" : "With 10 euros, prices now 5, 5 and 1 and later 9, 9 and 4, what's the best I can do?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 8,
-      "stocksToBuy" : [ 1, 2 ],
-      "savingsUsed" : 10,
-      "remainingSavings" : 0
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 2070,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stocks 1 and 2 for a total profit of 8 euros, using all 10 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states the stocks, profit, and savings used as indicated by the calculator result, and the answer is clear and concise."
-      }, {
-        "answer" : "You should buy stocks 1 and 2 for a total profit of 8 euros. This will use all 10 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
-      }, {
-        "answer" : "You should buy stocks 1 and 2 to make a profit of 8 euros. This will use all 10 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states the stocks, profit, and savings used as indicated by the calculator result, and the answer is clear and concise."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "least-savings",
+      "title": "Same profit, less money",
+      "question": "I've got €10. Buy prices are 6 and 5, future prices 9 and 8. What should I do?",
+      "kind": "calculate",
+      "input": {
+        "savings": 10,
+        "buyPrices": [
+          6,
+          5
+        ],
+        "sellPrices": [
+          9,
+          8
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 3,
+        "stocksToBuy": [
+          2
+        ],
+        "savingsUsed": 5,
+        "remainingSavings": 5
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 1847,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stock number 2 for a total profit of €3, using €5 of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stock to buy (stock 2), the profit (€3), and the savings used (€5), matching the calculator's result."
+          },
+          {
+            "answer": "You should buy stock number 2. This will give you a profit of €3, using €5 of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stock to buy, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
+          },
+          {
+            "answer": "You should buy stock number 2 for a total profit of 3 euros, using 5 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies stock 2, the profit of 3 euros, and the savings used of 5 euros, matching the calculator's result."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "least-savings",
-    "title" : "Same profit, less money",
-    "question" : "I've got €10. Buy prices are 6 and 5, future prices 9 and 8. What should I do?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 3,
-      "stocksToBuy" : [ 2 ],
-      "savingsUsed" : 5,
-      "remainingSavings" : 5
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 1847,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stock number 2 for a total profit of €3, using €5 of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stock to buy (stock 2), the profit (€3), and the savings used (€5), matching the calculator's result."
-      }, {
-        "answer" : "You should buy stock number 2. This will give you a profit of €3, using €5 of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stock to buy, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
-      }, {
-        "answer" : "You should buy stock number 2 for a total profit of 3 euros, using 5 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies stock 2, the profit of 3 euros, and the savings used of 5 euros, matching the calculator's result."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "nothing-profitable",
+      "title": "Nothing makes a profit",
+      "question": "I have 20 euros. Two stocks cost 8 and 9 now and will be worth 6 and 9 later. What should I buy?",
+      "kind": "calculate",
+      "input": {
+        "savings": 20,
+        "buyPrices": [
+          8,
+          9
+        ],
+        "sellPrices": [
+          6,
+          9
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 0,
+        "stocksToBuy": [],
+        "savingsUsed": 0,
+        "remainingSavings": 20
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 1858,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should not buy any stocks. The maximum profit is 0 euros, so you will use 0 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states no stocks should be bought, reflects the zero profit, and acknowledges the savings used, all aligning with the calculator's result."
+          },
+          {
+            "answer": "You should buy no stocks. The maximum profit is 0 euros, and you will use 0 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The answer correctly states no stocks should be bought, reflects the zero profit and savings used, and is concise."
+          },
+          {
+            "answer": "You should not buy any stocks. The maximum profit is 0 euros, and you will use 0 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states no stocks should be bought, reflects the zero profit and savings used, and is clear and concise."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "nothing-profitable",
-    "title" : "Nothing makes a profit",
-    "question" : "I have 20 euros. Two stocks cost 8 and 9 now and will be worth 6 and 9 later. What should I buy?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 0,
-      "stocksToBuy" : [ ],
-      "savingsUsed" : 0,
-      "remainingSavings" : 20
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 1858,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should not buy any stocks. The maximum profit is 0 euros, so you will use 0 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states no stocks should be bought, reflects the zero profit, and acknowledges the savings used, all aligning with the calculator's result."
-      }, {
-        "answer" : "You should buy no stocks. The maximum profit is 0 euros, and you will use 0 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The answer correctly states no stocks should be bought, reflects the zero profit and savings used, and is concise."
-      }, {
-        "answer" : "You should not buy any stocks. The maximum profit is 0 euros, and you will use 0 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states no stocks should be bought, reflects the zero profit and savings used, and is clear and concise."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "numbers-in-words",
+      "title": "Numbers written as words",
+      "question": "I have twelve euros. Three stocks are priced at seven, four and five euros, and should rise to ten, six and nine. Which ones?",
+      "kind": "calculate",
+      "input": {
+        "savings": 12,
+        "buyPrices": [
+          7,
+          4,
+          5
+        ],
+        "sellPrices": [
+          10,
+          6,
+          9
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 7,
+        "stocksToBuy": [
+          1,
+          3
+        ],
+        "savingsUsed": 12,
+        "remainingSavings": 0
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 2034,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stocks 1 and 3 for a total profit of 7 euros, using all 12 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies stocks 1 and 3, states the correct profit of 7 euros, and confirms using all savings, matching the calculator's result."
+          },
+          {
+            "answer": "You should buy stocks 1 and 3 for a total profit of 7 euros. This uses all 12 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies stocks 1 and 3, states the profit of 7 euros, and confirms the use of all savings, aligning with the calculator's result."
+          },
+          {
+            "answer": "You should buy stocks 1 and 3 for a total profit of 7 euros, using all 12 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies stocks 1 and 3, states the profit of 7 euros, and confirms using all savings, matching the calculator's result."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "numbers-in-words",
-    "title" : "Numbers written as words",
-    "question" : "I have twelve euros. Three stocks are priced at seven, four and five euros, and should rise to ten, six and nine. Which ones?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 7,
-      "stocksToBuy" : [ 1, 3 ],
-      "savingsUsed" : 12,
-      "remainingSavings" : 0
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 2034,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stocks 1 and 3 for a total profit of 7 euros, using all 12 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies stocks 1 and 3, states the correct profit of 7 euros, and confirms using all savings, matching the calculator's result."
-      }, {
-        "answer" : "You should buy stocks 1 and 3 for a total profit of 7 euros. This uses all 12 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies stocks 1 and 3, states the profit of 7 euros, and confirms the use of all savings, aligning with the calculator's result."
-      }, {
-        "answer" : "You should buy stocks 1 and 3 for a total profit of 7 euros, using all 12 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies stocks 1 and 3, states the profit of 7 euros, and confirms using all savings, matching the calculator's result."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "distracting-numbers",
+      "title": "Irrelevant numbers in the question",
+      "question": "I'm 34 and saving for a car, but for now I have 15 euros. Stock A costs 10 and will be 14, stock B costs 6 and will be 9, stock C costs 8 and will be 11. What's best?",
+      "kind": "calculate",
+      "input": {
+        "savings": 15,
+        "buyPrices": [
+          10,
+          6,
+          8
+        ],
+        "sellPrices": [
+          14,
+          9,
+          11
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 6,
+        "stocksToBuy": [
+          2,
+          3
+        ],
+        "savingsUsed": 14,
+        "remainingSavings": 1
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 2082,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stocks 2 and 3 for a total profit of 6 euros, using 14 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies stocks 2 and 3, states the profit of 6 euros, and the savings used of 14 euros, matching the calculator's result."
+          },
+          {
+            "answer": "You should buy stocks 2 and 3 for a total profit of 6 euros. This will use up 14 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks to buy, the profit, and the savings used, matching the calculator's result and remaining concise."
+          },
+          {
+            "answer": "You should buy stocks 2 and 3 for a total profit of 6 euros, using 14 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks (B and C, renumbered as 2 and 3), profit, and savings used, and the answer is clear and concise."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "distracting-numbers",
-    "title" : "Irrelevant numbers in the question",
-    "question" : "I'm 34 and saving for a car, but for now I have 15 euros. Stock A costs 10 and will be 14, stock B costs 6 and will be 9, stock C costs 8 and will be 11. What's best?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 6,
-      "stocksToBuy" : [ 2, 3 ],
-      "savingsUsed" : 14,
-      "remainingSavings" : 1
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 2082,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stocks 2 and 3 for a total profit of 6 euros, using 14 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies stocks 2 and 3, states the profit of 6 euros, and the savings used of 14 euros, matching the calculator's result."
-      }, {
-        "answer" : "You should buy stocks 2 and 3 for a total profit of 6 euros. This will use up 14 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks to buy, the profit, and the savings used, matching the calculator's result and remaining concise."
-      }, {
-        "answer" : "You should buy stocks 2 and 3 for a total profit of 6 euros, using 14 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks (B and C, renumbered as 2 and 3), profit, and savings used, and the answer is clear and concise."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "list-format",
+      "title": "A terse list",
+      "question": "Savings: 25\nToday: 12, 8, 6, 15\nLater: 18, 10, 9, 20",
+      "kind": "calculate",
+      "input": {
+        "savings": 25,
+        "buyPrices": [
+          12,
+          8,
+          6,
+          15
+        ],
+        "sellPrices": [
+          18,
+          10,
+          9,
+          20
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 9,
+        "stocksToBuy": [
+          1,
+          3
+        ],
+        "savingsUsed": 18,
+        "remainingSavings": 7
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 2175,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stocks 1 and 3 for a total profit of 9 euros, using 18 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states the stocks, profit, and savings used as indicated by the calculator result, and the answer is clear and concise."
+          },
+          {
+            "answer": "You should buy stocks 1 and 3 to make a profit of 9 euros, using 18 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
+          },
+          {
+            "answer": "You should buy stocks 1 and 3 for a total profit of 9 euros, using 18 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "list-format",
-    "title" : "A terse list",
-    "question" : "Savings: 25\nToday: 12, 8, 6, 15\nLater: 18, 10, 9, 20",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 9,
-      "stocksToBuy" : [ 1, 3 ],
-      "savingsUsed" : 18,
-      "remainingSavings" : 7
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 2175,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stocks 1 and 3 for a total profit of 9 euros, using 18 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states the stocks, profit, and savings used as indicated by the calculator result, and the answer is clear and concise."
-      }, {
-        "answer" : "You should buy stocks 1 and 3 to make a profit of 9 euros, using 18 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
-      }, {
-        "answer" : "You should buy stocks 1 and 3 for a total profit of 9 euros, using 18 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "eight-stocks",
+      "title": "Eight stocks",
+      "question": "I have 30 euros. Prices today: 3, 7, 2, 9, 4, 6, 5, 8. Prices next month: 5, 9, 3, 14, 4, 10, 6, 12. Which should I buy?",
+      "kind": "calculate",
+      "input": {
+        "savings": 30,
+        "buyPrices": [
+          3,
+          7,
+          2,
+          9,
+          4,
+          6,
+          5,
+          8
+        ],
+        "sellPrices": [
+          5,
+          9,
+          3,
+          14,
+          4,
+          10,
+          6,
+          12
+        ]
+      },
+      "runs": 10,
+      "expected": {
+        "maxProfit": 16,
+        "stocksToBuy": [
+          1,
+          3,
+          4,
+          6,
+          8
+        ],
+        "savingsUsed": 28,
+        "remainingSavings": 2
+      },
+      "correctArguments": 1.0,
+      "firstTryCorrect": 1.0,
+      "verified": 1.0,
+      "medianLatencyMs": 2859,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You should buy stocks 1, 3, 4, 6, and 8. This will give you a total profit of 16 euros, using 28 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
+          },
+          {
+            "answer": "You should buy stocks 1, 3, 4, 6, and 8 for a total profit of 16 euros. This will use 28 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise explanation."
+          },
+          {
+            "answer": "You should buy stocks 1, 3, 4, 6, and 8. This will give you a total profit of 16 euros using 28 euros of your savings.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly identifies the stocks, profit, and savings used, mirroring the calculator's result and providing a clear explanation."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
-    }
-  }, {
-    "id" : "eight-stocks",
-    "title" : "Eight stocks",
-    "question" : "I have 30 euros. Prices today: 3, 7, 2, 9, 4, 6, 5, 8. Prices next month: 5, 9, 3, 14, 4, 10, 6, 12. Which should I buy?",
-    "kind" : "calculate",
-    "runs" : 10,
-    "expected" : {
-      "maxProfit" : 16,
-      "stocksToBuy" : [ 1, 3, 4, 6, 8 ],
-      "savingsUsed" : 28,
-      "remainingSavings" : 2
     },
-    "correctArguments" : 1.0,
-    "firstTryCorrect" : 1.0,
-    "verified" : 1.0,
-    "medianLatencyMs" : 2859,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You should buy stocks 1, 3, 4, 6, and 8. This will give you a total profit of 16 euros, using 28 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise answer."
-      }, {
-        "answer" : "You should buy stocks 1, 3, 4, 6, and 8 for a total profit of 16 euros. This will use 28 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks, profit, and savings used, matching the calculator's result and providing a clear, concise explanation."
-      }, {
-        "answer" : "You should buy stocks 1, 3, 4, 6, and 8. This will give you a total profit of 16 euros using 28 euros of your savings.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly identifies the stocks, profit, and savings used, mirroring the calculator's result and providing a clear explanation."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
+    {
+      "id": "missing-prices",
+      "title": "No prices given",
+      "question": "I have 50 euros to invest in stocks. Which ones should I buy?",
+      "kind": "refuse",
+      "input": null,
+      "runs": 10,
+      "safeRefusals": 1.0,
+      "medianLatencyMs": 1730,
+      "judge": {
+        "examples": [
+          {
+            "answer": "I need the prices for each stock today and their forecast future prices. Please provide these details so I can help you decide which stocks to buy with your 50 euros.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that further information is needed and explains what is required, without inventing any data."
+          },
+          {
+            "answer": "I need the prices of the stocks you're considering. Please provide today's price and the forecast future price for each stock you want to evaluate.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that a calculation is not possible and explains what information is needed to proceed, without inventing any numbers."
+          },
+          {
+            "answer": "I need the prices of the stocks you're interested in and their forecast future prices. Please provide today's price for each stock and its expected future price, along with how many stocks there are.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that the question lacks necessary information and politely requests it, without inventing any data."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
+      }
+    },
+    {
+      "id": "missing-future-prices",
+      "title": "No future prices given",
+      "question": "I have 10 euros and the stocks cost 3, 4 and 5. Which should I buy?",
+      "kind": "refuse",
+      "input": null,
+      "runs": 10,
+      "safeRefusals": 0.9,
+      "medianLatencyMs": 1666,
+      "judge": {
+        "examples": [
+          {
+            "answer": "You did not provide the future prices for the stocks. Please give me the forecasted prices so I can calculate which stocks to buy.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that the question lacks necessary information (future prices) and politely requests it, without inventing any data."
+          },
+          {
+            "answer": "I need the forecast future prices for each stock to calculate the profit. Please provide them.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that a calculation is not possible and clearly explains what additional information is needed."
+          },
+          {
+            "answer": "I need the future forecast prices for each stock to make the calculation. Please provide them.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that further information is needed and politely requests it, without inventing any numbers or making unsupported claims."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
+      }
+    },
+    {
+      "id": "off-topic",
+      "title": "Off-topic question",
+      "question": "What will the weather be like tomorrow?",
+      "kind": "refuse",
+      "input": null,
+      "runs": 10,
+      "safeRefusals": 1.0,
+      "medianLatencyMs": 643,
+      "judge": {
+        "examples": [
+          {
+            "answer": "I cannot predict the weather as I am a stock-buying advisor and do not have access to meteorological data. Please check a weather forecast service for tomorrow's conditions.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that it cannot answer the question and explains why, without inventing any information."
+          },
+          {
+            "answer": "I cannot predict the weather; I am a stock-buying advisor and can only help you decide which stocks to buy based on your savings and price forecasts.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly declines to answer, explains why, and doesn't invent any information."
+          },
+          {
+            "answer": "I cannot predict the weather as I am a stock-buying advisor and do not have access to meteorological data. Please check a local weather service for tomorrow's forecast.",
+            "verdict": "pass",
+            "votes": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "reason": "The advisor correctly states that it cannot answer the question and politely directs the user to a weather service, without inventing any data."
+          }
+        ],
+        "tieBreaks": 0,
+        "verdicts": {
+          "partial": 0,
+          "fail": 0,
+          "pass": 3
+        }
       }
     }
-  }, {
-    "id" : "missing-prices",
-    "title" : "No prices given",
-    "question" : "I have 50 euros to invest in stocks. Which ones should I buy?",
-    "kind" : "refuse",
-    "runs" : 10,
-    "safeRefusals" : 1.0,
-    "medianLatencyMs" : 1730,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "I need the prices for each stock today and their forecast future prices. Please provide these details so I can help you decide which stocks to buy with your 50 euros.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that further information is needed and explains what is required, without inventing any data."
-      }, {
-        "answer" : "I need the prices of the stocks you're considering. Please provide today's price and the forecast future price for each stock you want to evaluate.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that a calculation is not possible and explains what information is needed to proceed, without inventing any numbers."
-      }, {
-        "answer" : "I need the prices of the stocks you're interested in and their forecast future prices. Please provide today's price for each stock and its expected future price, along with how many stocks there are.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that the question lacks necessary information and politely requests it, without inventing any data."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
-      }
-    }
-  }, {
-    "id" : "missing-future-prices",
-    "title" : "No future prices given",
-    "question" : "I have 10 euros and the stocks cost 3, 4 and 5. Which should I buy?",
-    "kind" : "refuse",
-    "runs" : 10,
-    "safeRefusals" : 0.9,
-    "medianLatencyMs" : 1666,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "You did not provide the future prices for the stocks. Please give me the forecasted prices so I can calculate which stocks to buy.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that the question lacks necessary information (future prices) and politely requests it, without inventing any data."
-      }, {
-        "answer" : "I need the forecast future prices for each stock to calculate the profit. Please provide them.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that a calculation is not possible and clearly explains what additional information is needed."
-      }, {
-        "answer" : "I need the future forecast prices for each stock to make the calculation. Please provide them.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that further information is needed and politely requests it, without inventing any numbers or making unsupported claims."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
-      }
-    }
-  }, {
-    "id" : "off-topic",
-    "title" : "Off-topic question",
-    "question" : "What will the weather be like tomorrow?",
-    "kind" : "refuse",
-    "runs" : 10,
-    "safeRefusals" : 1.0,
-    "medianLatencyMs" : 643,
-    "judge" : {
-      "examples" : [ {
-        "answer" : "I cannot predict the weather as I am a stock-buying advisor and do not have access to meteorological data. Please check a weather forecast service for tomorrow's conditions.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that it cannot answer the question and explains why, without inventing any information."
-      }, {
-        "answer" : "I cannot predict the weather; I am a stock-buying advisor and can only help you decide which stocks to buy based on your savings and price forecasts.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly declines to answer, explains why, and doesn't invent any information."
-      }, {
-        "answer" : "I cannot predict the weather as I am a stock-buying advisor and do not have access to meteorological data. Please check a local weather service for tomorrow's forecast.",
-        "verdict" : "pass",
-        "votes" : [ "pass", "pass", "pass" ],
-        "reason" : "The advisor correctly states that it cannot answer the question and politely directs the user to a weather service, without inventing any data."
-      } ],
-      "tieBreaks" : 0,
-      "verdicts" : {
-        "partial" : 0,
-        "fail" : 0,
-        "pass" : 3
-      }
-    }
-  } ]
+  ]
 }

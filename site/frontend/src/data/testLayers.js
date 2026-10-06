@@ -42,6 +42,7 @@ export const testLayers = [
       { name: 'apiFooter.test.js', style: 'example', count: 8, file: 'site/frontend/tests/unit/apiFooter.test.js' },
       { name: 'calculatorApi.test.js', style: 'example', count: 7, file: 'site/frontend/tests/unit/calculatorApi.test.js' },
       { name: 'reports.test.js', style: 'example', count: 6, file: 'site/frontend/tests/unit/reports.test.js' },
+      { name: 'advisorApi.test.js', style: 'example', count: 4, file: 'site/frontend/tests/unit/advisorApi.test.js' },
       { name: 'testLayers.test.js', style: 'example', count: 8, file: 'site/frontend/tests/unit/testLayers.test.js' },
     ],
     codeExample: `// ExampleBasedTests.java
@@ -207,6 +208,7 @@ public void testAppAndSite() {
     testClasses: [
       { name: 'MaxProfit.feature', style: 'bdd', count: 7, file: 'src/test/resources/com/maxprofit/calculator/MaxProfit.feature' },
       { name: 'calculator.spec.js', style: 'example', count: 3, file: 'site/frontend/tests/e2e/calculator.spec.js' },
+      { name: 'agents.spec.js', style: 'example', count: 2, file: 'site/frontend/tests/e2e/agents.spec.js' },
     ],
     codeExample: `// steps/StepDefinitions.java — a Gherkin step, automated through the UI
 @Then("profit is {int} Euros")
@@ -250,6 +252,10 @@ private static double medianMillis(List<Integer> buy, List<Integer> sell) { ... 
 ];
 
 // Top of the pyramid first.
+// Latest mutation testing result (mvn test -Ppitest), shown on several pages.
+export const mutationScore = { killed: 177, total: 177, floor: 90 };
+export const mutationPercent = Math.round((100 * mutationScore.killed) / mutationScore.total);
+
 export const layerOrder = ['e2e', 'system', 'contract', 'integration', 'unit'];
 
 export const layerTestCount = (layer) =>
@@ -290,7 +296,7 @@ export const lenses = [
     idea: 'Tests your tests: it makes small deliberate bugs in the code (flip a > to >=, return early) and checks that some test fails for each one.',
     value: 'High coverage can still hide tests that assert nothing. A surviving mutant points at exactly that gap.',
     appliesTo: ['unit', 'integration'],
-    inThisProject: '97% of 107 deliberate bugs are caught; the build fails below 90%.',
+    inThisProject: `${mutationScore.killed} of ${mutationScore.total} deliberate bugs are caught; the build fails below ${mutationScore.floor}%.`,
   },
   {
     id: 'coverage',
