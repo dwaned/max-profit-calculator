@@ -94,9 +94,24 @@ profit. It runs on a local [Ollama](https://ollama.com) model, so it is off by d
 
 ```bash
 ollama pull qwen3.5:4b
-APP_ADVISOR_ENABLED=true mvn spring-boot:run      # or: ADVISOR_ENABLED=true docker compose up --build
+
+# API with the advisor on (http://localhost:9095/api)
+APP_ADVISOR_ENABLED=true mvn spring-boot:run
+
+# Site (http://localhost:5173), proxying /api to the local API
+cd site/frontend && npm ci && npm run dev
+# open http://localhost:5173/#/testing-ai-agents
 ```
 
+Or everything in Docker, with Ollama running on the host:
+
+```bash
+ADVISOR_ENABLED=true docker compose up --build
+# open http://localhost:3000/#/testing-ai-agents
+```
+
+The Testing AI Agents page then shows a live "Ask the advisor" form. Anywhere the advisor is off,
+including the hosted site, the page shows real answers recorded in the latest evaluation run instead.
 `app.advisor.*` in `application.properties` sets the Ollama URL, model, temperature and turn limit.
 
 ## Testing
