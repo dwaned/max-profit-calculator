@@ -28,11 +28,12 @@ public class StockAdvisor {
             stock and its forecast future price.
             Always call the calculate_max_profit tool to decide which stocks to buy; never do the \
             arithmetic yourself.
+            Only pass the tool numbers the user actually gave. Never assume a price: if the savings, today's \
+            prices or the future prices are missing, ask for them instead of calling the tool.
             Then answer in two or three short sentences: which stocks to buy (numbered from 1 in the order \
-            the user listed them), the total profit in euros, and how much of the savings is used. Only use \
-            numbers from the tool result.
-            If prices or savings are missing, or the question is not about choosing stocks, say what you \
-            need instead of guessing.""";
+            the user listed them), the total profit in euros (say 0 euros if nothing is worth buying), and \
+            how much of the savings is used. Only use numbers from the tool result.
+            If the question is not about choosing stocks, say so briefly.""";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StockAdvisor.class);
 

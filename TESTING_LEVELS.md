@@ -61,7 +61,19 @@ tolerates, after Angie Jones's [test pyramid for AI agents](https://angiejones.t
 - `AdvisorControllerTest` (narrow) and `ApiSecurityTest` (broad) cover the endpoint: 503 when
   disabled or the model is unreachable, validation, and rate limiting.
 
-All of these run in CI without a model.
+All of these run in CI without a model. The top two layers need a local Ollama, so they run on
+demand: `mvn test -Pagent-evals` (about 10 minutes):
+
+- **Probabilistic performance:** `AdvisorEvaluation` asks each task in
+  `src/test/resources/advisor/evals/eval-tasks.json` ten times (`-Devals.runs`) and measures how often
+  the right tool arguments are sent, how often the answer is verified against the calculator, and
+  how often the agent refuses to calculate with data it was never given.
+- **Vibes and judgment:** a larger model from another family (`gemma3:12b`, `-Devals.judge-model`)
+  grades three answers per task (`-Devals.judged`) against a rubric in `OllamaJudge`, with three
+  votes per answer and a fourth to break a three-way tie.
+
+The run writes `site/frontend/src/data/agentEvalResults.json`, shown on the Testing AI Agents page,
+and fails if any rate drops below 80%.
 
 ## 5. Contract tests (consumer-driven)
 

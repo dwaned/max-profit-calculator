@@ -113,6 +113,8 @@
                             <mutationThreshold>90</mutationThreshold>
                            <excludedTestClasses>
                                  <param>*.RunCucumberTest*</param>
+                                 <!-- Needs a local Ollama model; run with -Pagent-evals -->
+                                 <param>*.AdvisorEvaluation*</param>
                            </excludedTestClasses>
                         </configuration>                        
                     </plugin>
@@ -172,6 +174,24 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- AI agent evaluations against a local Ollama (never in CI):
+                 mvn test -Pagent-evals [-Devals.runs=10 -Devals.judged=3] -->
+            <id>agent-evals</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>**/AdvisorEvaluation.java</include>
+                            </includes>
+                            <excludes combine.self="override"/>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

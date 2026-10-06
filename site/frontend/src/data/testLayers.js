@@ -42,7 +42,7 @@ export const testLayers = [
       { name: 'apiFooter.test.js', style: 'example', count: 8, file: 'site/frontend/tests/unit/apiFooter.test.js' },
       { name: 'calculatorApi.test.js', style: 'example', count: 7, file: 'site/frontend/tests/unit/calculatorApi.test.js' },
       { name: 'reports.test.js', style: 'example', count: 6, file: 'site/frontend/tests/unit/reports.test.js' },
-      { name: 'testLayers.test.js', style: 'example', count: 7, file: 'site/frontend/tests/unit/testLayers.test.js' },
+      { name: 'testLayers.test.js', style: 'example', count: 8, file: 'site/frontend/tests/unit/testLayers.test.js' },
     ],
     codeExample: `// ExampleBasedTests.java
 @Test
@@ -76,7 +76,7 @@ void shouldWorkWithThreeIndices() {
       { name: 'CalculatorControllerHttpStatusTest', style: 'example', count: 9, file: `${JAVA}/controller/CalculatorControllerHttpStatusTest.java` },
       { name: 'MetricsInstrumentationTest', style: 'example', count: 1, file: `${JAVA}/controller/MetricsInstrumentationTest.java` },
       { name: 'AdvisorControllerTest', style: 'example', count: 5, file: `${JAVA}/advisor/AdvisorControllerTest.java` },
-      { name: 'AdvisorReplayTests', style: 'replay', count: 5, file: `${JAVA}/advisor/AdvisorReplayTests.java` },
+      { name: 'AdvisorReplayTests', style: 'replay', count: 6, file: `${JAVA}/advisor/AdvisorReplayTests.java` },
       { name: 'ApiSecurityTest', style: 'example', count: 18, file: `${JAVA}/controller/ApiSecurityTest.java` },
       { name: 'OpenApiDocsTest', style: 'example', count: 2, file: `${JAVA}/controller/OpenApiDocsTest.java` },
     ],

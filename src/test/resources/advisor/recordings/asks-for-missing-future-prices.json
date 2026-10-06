@@ -1,6 +1,6 @@
 {
   "model" : "qwen3.5:4b",
-  "question" : "What will the weather be like tomorrow?",
+  "question" : "I have 10 euros and the stocks cost 3, 4 and 5. Which should I buy?",
   "tools" : [ {
     "function" : {
       "description" : "Chooses which stocks to buy for the highest total profit without spending more than the savings. Returns the profit, the stocks to buy (numbered from 1 in the order given) and the savings used.",
@@ -40,13 +40,55 @@
       "toolName" : null
     }, {
       "role" : "user",
-      "content" : "What will the weather be like tomorrow?",
+      "content" : "I have 10 euros and the stocks cost 3, 4 and 5. Which should I buy?",
       "toolCalls" : [ ],
       "toolName" : null
     } ],
     "response" : {
       "role" : "assistant",
-      "content" : "I cannot provide weather forecasts as I am a stock-buying advisor and do not have access to meteorological data. Please consult a weather service for that information.",
+      "content" : "",
+      "toolCalls" : [ {
+        "name" : "calculate_max_profit",
+        "arguments" : {
+          "savings" : 10,
+          "buyPrices" : [ 3, 4, 5 ],
+          "sellPrices" : [ ]
+        }
+      } ],
+      "toolName" : null
+    }
+  }, {
+    "request" : [ {
+      "role" : "system",
+      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nOnly pass the tool numbers the user actually gave. Never assume a price: if the savings, today's prices or the future prices are missing, ask for them instead of calling the tool.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros (say 0 euros if nothing is worth buying), and how much of the savings is used. Only use numbers from the tool result.\nIf the question is not about choosing stocks, say so briefly.",
+      "toolCalls" : [ ],
+      "toolName" : null
+    }, {
+      "role" : "user",
+      "content" : "I have 10 euros and the stocks cost 3, 4 and 5. Which should I buy?",
+      "toolCalls" : [ ],
+      "toolName" : null
+    }, {
+      "role" : "assistant",
+      "content" : "",
+      "toolCalls" : [ {
+        "name" : "calculate_max_profit",
+        "arguments" : {
+          "savings" : 10,
+          "buyPrices" : [ 3, 4, 5 ],
+          "sellPrices" : [ ]
+        }
+      } ],
+      "toolName" : null
+    }, {
+      "role" : "tool",
+      "content" : "{\"error\":\"sellPrices must be a list of 1 to 100 whole numbers\"}",
+      "toolCalls" : [ ],
+      "toolName" : "calculate_max_profit"
+    } ],
+    "response" : {
+      "role" : "assistant",
+      "content" : "I need the forecast future prices for each stock to calculate the profit. Please provide them.",
       "toolCalls" : [ ],
       "toolName" : null
     }

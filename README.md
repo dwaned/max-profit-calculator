@@ -113,6 +113,7 @@ mvn test -Pplaywright-tests   # BDD acceptance scenarios through the UI (needs t
 mvn test -Pcontainer-tests    # system tests + API performance via Testcontainers (needs Docker)
 mvn test -Dtest=AdvisorReplayTests -Dadvisor.record=true
                               # re-record the advisor's conversations (needs Ollama)
+mvn test -Pagent-evals        # advisor evaluations: repeated runs + LLM-as-judge (needs Ollama, ~10 min)
 uvx schemathesis run http://localhost:9095/api/v3/api-docs --checks all --exclude-checks positive_data_acceptance
                               # API fuzzing from the OpenAPI spec (needs the API running)
 

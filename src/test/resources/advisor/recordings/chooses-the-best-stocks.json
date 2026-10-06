@@ -4,8 +4,9 @@
   "tools" : [ {
     "function" : {
       "description" : "Chooses which stocks to buy for the highest total profit without spending more than the savings. Returns the profit, the stocks to buy (numbered from 1 in the order given) and the savings used.",
-      "name" : "calculate_max_profit",
       "parameters" : {
+        "required" : [ "savings", "buyPrices", "sellPrices" ],
+        "type" : "object",
         "properties" : {
           "savings" : {
             "description" : "Savings in whole euros (1 to 1000)",
@@ -25,17 +26,16 @@
             "type" : "array",
             "description" : "Forecast future price of each stock, in the same order as buyPrices"
           }
-        },
-        "type" : "object",
-        "required" : [ "savings", "buyPrices", "sellPrices" ]
-      }
+        }
+      },
+      "name" : "calculate_max_profit"
     },
     "type" : "function"
   } ],
   "exchanges" : [ {
     "request" : [ {
       "role" : "system",
-      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros, and how much of the savings is used. Only use numbers from the tool result.\nIf prices or savings are missing, or the question is not about choosing stocks, say what you need instead of guessing.",
+      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nOnly pass the tool numbers the user actually gave. Never assume a price: if the savings, today's prices or the future prices are missing, ask for them instead of calling the tool.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros (say 0 euros if nothing is worth buying), and how much of the savings is used. Only use numbers from the tool result.\nIf the question is not about choosing stocks, say so briefly.",
       "toolCalls" : [ ],
       "toolName" : null
     }, {
@@ -60,7 +60,7 @@
   }, {
     "request" : [ {
       "role" : "system",
-      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros, and how much of the savings is used. Only use numbers from the tool result.\nIf prices or savings are missing, or the question is not about choosing stocks, say what you need instead of guessing.",
+      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nOnly pass the tool numbers the user actually gave. Never assume a price: if the savings, today's prices or the future prices are missing, ask for them instead of calling the tool.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros (say 0 euros if nothing is worth buying), and how much of the savings is used. Only use numbers from the tool result.\nIf the question is not about choosing stocks, say so briefly.",
       "toolCalls" : [ ],
       "toolName" : null
     }, {
@@ -88,7 +88,7 @@
     } ],
     "response" : {
       "role" : "assistant",
-      "content" : "You should buy stocks 2 and 3 for a total profit of 4 euros, using 4 euros of your savings.",
+      "content" : "You should buy stocks 2 and 3 for a total profit of 4 euros. This will use your entire 4 euros in savings, leaving you with 1 euro remaining.",
       "toolCalls" : [ ],
       "toolName" : null
     }

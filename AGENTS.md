@@ -23,6 +23,9 @@ CI publishes the reports to GitHub Pages on every relevant push to `main`
 
 The frontend's Reports page links there (override with `VITE_REPORTS_URL`).
 Generated reports are never committed.
+The one exception is `site/frontend/src/data/agentEvalResults.json`: the AI
+agent evaluations need a local Ollama, which CI cannot reach, so they are run
+locally (`mvn test -Pagent-evals`) and the results committed for the page.
 
 For a manual local run:
 
@@ -69,6 +72,11 @@ cd site/frontend && npx pact-broker publish pacts/ --broker-base-url=https://no-
 
 # Run mutation testing with PITest
 mvn test -Ppitest
+
+# AI agent evaluations: repeated runs + LLM-as-judge (needs Ollama, ~10 min)
+mvn test -Pagent-evals
+# Re-record the advisor's replayed conversations (needs Ollama)
+mvn test -Dtest=AdvisorReplayTests -Dadvisor.record=true
 
 # Run OWASP dependency check
 mvn verify -Pdependency-check

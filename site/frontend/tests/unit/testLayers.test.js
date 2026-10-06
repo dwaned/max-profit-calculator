@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { techniques } from '../../src/data/techniques';
+import { agentLayerOrder, agentLayers } from '../../src/data/agentLayers';
 import { layerOrder, lenses, safetyNet, testLayers, tradeoffLabels } from '../../src/data/testLayers';
 
 // Keeps the Testing Pyramid page honest: it must list exactly the tests that
@@ -10,6 +11,8 @@ import { layerOrder, lenses, safetyNet, testLayers, tradeoffLabels } from '../..
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const allClasses = testLayers.flatMap((layer) => layer.testClasses.map((c) => ({ ...c, layer: layer.id })));
+// The AI agent pyramid lists the advisor's tests by uncertainty instead of by type.
+const agentClasses = agentLayers.flatMap((layer) => layer.testClasses.map((c) => ({ ...c, layer: layer.id })));
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -47,18 +50,18 @@ function declaredTests(file) {
 
 describe('Testing Pyramid data', () => {
   it('lists only test files that exist', () => {
-    const missing = allClasses.filter((c) => !fs.existsSync(path.join(REPO_ROOT, c.file)));
+    const missing = [...allClasses, ...agentClasses].filter((c) => !fs.existsSync(path.join(REPO_ROOT, c.file)));
     expect(missing.map((c) => c.file)).toEqual([]);
   });
 
   it('lists every test file in the repository', () => {
-    const listed = new Set(allClasses.map((c) => c.file));
+    const listed = new Set([...allClasses, ...agentClasses].map((c) => c.file));
     const unlisted = testFilesInRepo().filter((file) => !listed.has(file));
     expect(unlisted).toEqual([]);
   });
 
   it('shows test counts that match the source', () => {
-    const mismatches = allClasses
+    const mismatches = [...allClasses, ...agentClasses]
       .filter((c) => !c.generated) // config-driven suites (e.g. Schemathesis) have no test methods
       .map((c) => ({ ...c, ...declaredTests(c.file) }))
       .filter((c) => (c.expands ? c.count < c.declared : c.count !== c.declared))
@@ -105,5 +108,14 @@ describe('Testing Pyramid data', () => {
       ...techniques.flatMap((technique) => technique.layers),
     ];
     expect(referenced.filter((id) => !ids.has(id))).toEqual([]);
+  });
+
+  it('draws every AI agent layer once and lists each advisor test in the same way on both pages', () => {
+    expect([...agentLayerOrder].sort()).toEqual(agentLayers.map((l) => l.id).sort());
+    const classicCounts = new Map(allClasses.map((c) => [c.file, c.count]));
+    const differing = agentClasses
+      .filter((c) => classicCounts.has(c.file) && classicCounts.get(c.file) !== c.count)
+      .map((c) => c.name);
+    expect(differing).toEqual([]);
   });
 });
