@@ -24,7 +24,9 @@ function testFilesInRepo() {
   const java = walk(path.join(REPO_ROOT, 'src/test/java'))
     .filter((f) => f.endsWith('.java'))
     // The Cucumber runner and its step definitions are represented by the feature file.
-    .filter((f) => !/(RunCucumberTest|StepDefinitions)\.java$/.test(f));
+    .filter((f) => !/(RunCucumberTest|StepDefinitions)\.java$/.test(f))
+    // Test helpers (fakes, recorders) declare no tests of their own.
+    .filter((f) => /@(Test|Property|ParameterizedTest|TestTemplate)\b/.test(fs.readFileSync(f, 'utf8')));
   const features = walk(path.join(REPO_ROOT, 'src/test/resources')).filter((f) => f.endsWith('.feature'));
   const frontend = walk(path.join(REPO_ROOT, 'site/frontend/tests')).filter((f) => /\.(test|spec)\.js$/.test(f));
   return [...java, ...features, ...frontend].map(relative).sort();

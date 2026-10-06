@@ -6,6 +6,12 @@ services:
       - 9095
     ports:
       - "9095:9095"
+    environment:
+      # The stock advisor needs Ollama on the host: ADVISOR_ENABLED=true docker compose up
+      APP_ADVISOR_ENABLED: ${ADVISOR_ENABLED:-false}
+      APP_ADVISOR_OLLAMA_URL: http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:9095/api/health"]
       interval: 30s

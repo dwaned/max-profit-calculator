@@ -44,6 +44,25 @@ Components of the backend working together (ISTQB: component integration testing
 
 CI: `maven.yml` (part of `mvn verify`).
 
+### The stock advisor (AI agent)
+
+The advisor (`com.maxprofit.calculator.advisor`) is tested in layers by how much uncertainty each
+tolerates, after Angie Jones's [test pyramid for AI agents](https://angiejones.tech/test-pyramid-for-ai-agents/):
+
+- **Deterministic foundations** (unit): `ProfitToolTests` (the tool validates the model's
+  arguments with the API's limits), `StockAdvisorTests` (the agent loop with a scripted fake model:
+  tool results fed back, invalid arguments reported, unknown tools refused, turn limit, and a
+  property-based check of the "answer quotes the calculator's profit" verifier) and
+  `OllamaChatModelTest` (the Ollama client against a mock server).
+- **Reproducible reality** (integration): `AdvisorReplayTests` replays real conversations with
+  `qwen3.5:4b` recorded in `src/test/resources/advisor/recordings/`. It asserts the flow (which tool,
+  which arguments, verified or not), not the wording, and fails if the prompt, tool definition or
+  tool results change: re-record with `-Dadvisor.record=true` against a running Ollama.
+- `AdvisorControllerTest` (narrow) and `ApiSecurityTest` (broad) cover the endpoint: 503 when
+  disabled or the model is unreachable, validation, and rate limiting.
+
+All of these run in CI without a model.
+
 ## 5. Contract tests (consumer-driven)
 
 - **Consumer:** `site/frontend/tests/pact/calculate.api.test.js` runs the frontend's real API

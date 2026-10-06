@@ -9,6 +9,7 @@ const STYLE_LABELS = {
   bdd: 'BDD scenario',
   contract: 'Contract',
   performance: 'Performance',
+  replay: 'Record & replay',
 };
 
 function scrollToLens(lensId) {

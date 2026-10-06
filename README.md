@@ -85,6 +85,20 @@ curl -X POST http://localhost:9095/api/calculate \
   -d '{"savings":5,"buyPrices":[4,1,3],"sellPrices":[5,2,6]}'
 ```
 
+### Stock advisor (AI agent)
+
+`POST /api/advisor` answers plain-language questions ("I have €5, stocks cost 4, 1 and 3 and will
+be worth 5, 2 and 6. Which should I buy?"). A small model reads the question, calls the calculator
+as a tool and explains the result; `verified` is true only when the answer quotes the calculator's
+profit. It runs on a local [Ollama](https://ollama.com) model, so it is off by default:
+
+```bash
+ollama pull qwen3.5:4b
+APP_ADVISOR_ENABLED=true mvn spring-boot:run      # or: ADVISOR_ENABLED=true docker compose up --build
+```
+
+`app.advisor.*` in `application.properties` sets the Ollama URL, model, temperature and turn limit.
+
 ## Testing
 
 See [TESTING_LEVELS.md](TESTING_LEVELS.md) for every test suite, the tools it uses, how to
@@ -97,6 +111,8 @@ mvn test -Pperformance-tests  # algorithm stress tests
 mvn test -Pcontract-tests     # Pact provider verification (needs the API running on :9095)
 mvn test -Pplaywright-tests   # BDD acceptance scenarios through the UI (needs the UI running; PLAYWRIGHT_BASE_URL)
 mvn test -Pcontainer-tests    # system tests + API performance via Testcontainers (needs Docker)
+mvn test -Dtest=AdvisorReplayTests -Dadvisor.record=true
+                              # re-record the advisor's conversations (needs Ollama)
 uvx schemathesis run http://localhost:9095/api/v3/api-docs --checks all --exclude-checks positive_data_acceptance
                               # API fuzzing from the OpenAPI spec (needs the API running)
 
