@@ -68,7 +68,7 @@ mvn test -Pcontract-tests -Dpactbroker.url=https://your-broker-url -Dpactbroker.
 cd site/frontend && npm run test:pact
 
 # Publish frontend contracts to broker
-cd site/frontend && npx pact-broker publish pacts/ --broker-base-url=https://no-company-399294d1.pactflow.io --broker-token=your-token
+cd site/frontend && npx pact-broker publish pacts/ --broker-base-url=https://your-tenant.pactflow.io --broker-token=your-token
 
 # Run mutation testing with PITest
 mvn test -Ppitest
