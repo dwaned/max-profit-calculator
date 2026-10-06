@@ -113,6 +113,8 @@
                             <mutationThreshold>90</mutationThreshold>
                            <excludedTestClasses>
                                  <param>*.RunCucumberTest*</param>
+                                 <!-- Needs a local Ollama model; run with -Pagent-evals -->
+                                 <param>*.AdvisorEvaluation*</param>
                            </excludedTestClasses>
                         </configuration>                        
                     </plugin>

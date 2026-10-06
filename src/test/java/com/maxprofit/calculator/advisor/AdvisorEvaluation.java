@@ -24,7 +24,7 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * <ul>
  *   <li><b>Probabilistic performance:</b> every task in
- *   {@code advisor/evals/tasks.json} is asked many times. One run says little;
+ *   {@code advisor/evals/eval-tasks.json} is asked many times. One run says little;
  *   the rates say a lot: how often the right tool arguments are sent, how often
  *   the answer is verified against the calculator, and how often the agent
  *   refuses to calculate with data the user never gave.</li>
@@ -40,7 +40,7 @@ import tools.jackson.databind.json.JsonMapper;
 @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:LineLength"})
 class AdvisorEvaluation {
 
-    /** A task from tasks.json; {@code expected} is null when no calculation should run. */
+    /** A task from eval-tasks.json; {@code expected} is null when no calculation should run. */
     record Task(String id, String title, String question, Map<String, Object> expected) {
     }
 
@@ -63,7 +63,7 @@ class AdvisorEvaluation {
     void shouldMeetTheQualityBarAcrossRepeatedRuns() throws Exception {
         final List<String> only = List.of(System.getProperty("evals.tasks", "").split(","));
         final List<Task> tasks = json.<List<Task>>readValue(
-                Files.readString(Path.of("src/test/resources/advisor/evals/tasks.json")), new TypeReference<>() { })
+                Files.readString(Path.of("src/test/resources/advisor/evals/eval-tasks.json")), new TypeReference<>() { })
                 .stream().filter(task -> only.equals(List.of("")) || only.contains(task.id())).toList();
         final StockAdvisor advisor = new StockAdvisor(new OllamaChatModel(RestClient.builder(),
                 new AdvisorProperties(true, OLLAMA, MODEL, 0.3, 120, 4)), 4);
