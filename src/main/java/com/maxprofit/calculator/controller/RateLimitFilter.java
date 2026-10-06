@@ -60,14 +60,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     /**
-     * @return {@code true} iff the request URI is the {@code /api/calculate}
-     *         endpoint and should be rate-limited. Uses {@code endsWith} so the
+     * @return {@code true} iff the request URI is {@code /api/calculate} or
+     *         {@code /api/advisor} (each question costs a model call) and
+     *         should be rate-limited. Uses {@code endsWith} so the
      *         filter works whether or not a servlet context path is configured
      *         (production has context path {@code /api}; MockMvc tests do not).
      */
     static boolean isRateLimited(final HttpServletRequest request) {
         String uri = request.getRequestURI();
-        return uri != null && uri.endsWith("/calculate");
+        return uri != null && (uri.endsWith("/calculate") || uri.endsWith("/advisor"));
     }
 
     /**

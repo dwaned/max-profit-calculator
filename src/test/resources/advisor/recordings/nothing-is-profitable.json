@@ -1,0 +1,96 @@
+{
+  "model" : "qwen3.5:4b",
+  "question" : "I have 20 euros. Two stocks cost 8 and 9 now and will be worth 6 and 9 later. What should I buy?",
+  "tools" : [ {
+    "function" : {
+      "description" : "Chooses which stocks to buy for the highest total profit without spending more than the savings. Returns the profit, the stocks to buy (numbered from 1 in the order given) and the savings used.",
+      "name" : "calculate_max_profit",
+      "parameters" : {
+        "properties" : {
+          "savings" : {
+            "description" : "Savings in whole euros (1 to 1000)",
+            "type" : "integer"
+          },
+          "buyPrices" : {
+            "items" : {
+              "type" : "integer"
+            },
+            "type" : "array",
+            "description" : "Today's price of each stock, in euros"
+          },
+          "sellPrices" : {
+            "items" : {
+              "type" : "integer"
+            },
+            "type" : "array",
+            "description" : "Forecast future price of each stock, in the same order as buyPrices"
+          }
+        },
+        "type" : "object",
+        "required" : [ "savings", "buyPrices", "sellPrices" ]
+      }
+    },
+    "type" : "function"
+  } ],
+  "exchanges" : [ {
+    "request" : [ {
+      "role" : "system",
+      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros, and how much of the savings is used. Only use numbers from the tool result.\nIf prices or savings are missing, or the question is not about choosing stocks, say what you need instead of guessing.",
+      "toolCalls" : [ ],
+      "toolName" : null
+    }, {
+      "role" : "user",
+      "content" : "I have 20 euros. Two stocks cost 8 and 9 now and will be worth 6 and 9 later. What should I buy?",
+      "toolCalls" : [ ],
+      "toolName" : null
+    } ],
+    "response" : {
+      "role" : "assistant",
+      "content" : "",
+      "toolCalls" : [ {
+        "name" : "calculate_max_profit",
+        "arguments" : {
+          "savings" : 20,
+          "buyPrices" : [ 8, 9 ],
+          "sellPrices" : [ 6, 9 ]
+        }
+      } ],
+      "toolName" : null
+    }
+  }, {
+    "request" : [ {
+      "role" : "system",
+      "content" : "You are a stock-buying advisor. The user gives their savings in euros, today's price of each stock and its forecast future price.\nAlways call the calculate_max_profit tool to decide which stocks to buy; never do the arithmetic yourself.\nThen answer in two or three short sentences: which stocks to buy (numbered from 1 in the order the user listed them), the total profit in euros, and how much of the savings is used. Only use numbers from the tool result.\nIf prices or savings are missing, or the question is not about choosing stocks, say what you need instead of guessing.",
+      "toolCalls" : [ ],
+      "toolName" : null
+    }, {
+      "role" : "user",
+      "content" : "I have 20 euros. Two stocks cost 8 and 9 now and will be worth 6 and 9 later. What should I buy?",
+      "toolCalls" : [ ],
+      "toolName" : null
+    }, {
+      "role" : "assistant",
+      "content" : "",
+      "toolCalls" : [ {
+        "name" : "calculate_max_profit",
+        "arguments" : {
+          "savings" : 20,
+          "buyPrices" : [ 8, 9 ],
+          "sellPrices" : [ 6, 9 ]
+        }
+      } ],
+      "toolName" : null
+    }, {
+      "role" : "tool",
+      "content" : "{\"maxProfit\":0,\"stocksToBuy\":[],\"savingsUsed\":0,\"remainingSavings\":20}",
+      "toolCalls" : [ ],
+      "toolName" : "calculate_max_profit"
+    } ],
+    "response" : {
+      "role" : "assistant",
+      "content" : "Based on the tool's results, you should buy no stocks. The maximum profit is 0 euros because buying stock #1 would result in a loss (buying at 8 and selling at 6), while buying stock #2 would also result in a loss (buying at 9 and selling at 9). Therefore, it is best to keep your 20 euros.",
+      "toolCalls" : [ ],
+      "toolName" : null
+    }
+  } ]
+}

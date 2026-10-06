@@ -220,4 +220,46 @@ class ApiSecurityTest {
             assertThat(response.getBody()).as(bodies[i]).contains("\"message\":\"Invalid input: malformed request body\"");
         }
     }
+
+    @Test
+    @DisplayName("The advisor is off by default and rate limited like /calculate")
+    void advisorIsDisabledAndRateLimited() {
+        HttpHeaders headers = client("198.51.100.42", "203.0.113.1");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> question = new HttpEntity<>("{\"question\":\"Which stocks?\"}", headers);
+        ResponseEntity<String> first = rest.postForEntity("/advisor", question, String.class);
+        assertThat(first.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+        assertThat(first.getBody()).contains("turned off in this deployment");
+        // The test HTTP client retries a 503 once, so count attempts rather than
+        // expecting the 429 at an exact request: the bucket (capacity 3) must run out.
+        boolean limited = false;
+        for (int i = 0; i < 3 && !limited; i++) {
+            limited = rest.postForEntity("/advisor", question, String.class).getStatusCode()
+                    == HttpStatus.TOO_MANY_REQUESTS;
+        }
+        assertThat(limited).as("advisor requests are rate limited").isTrue();
+    }
+
+    @Test
+    @DisplayName("The advisor status endpoint is not rate limited")
+    void advisorStatusIsNotRateLimited() {
+        HttpEntity<Void> request = new HttpEntity<>(client("198.51.100.43", "203.0.113.1"));
+        for (int i = 0; i < 5; i++) {
+            ResponseEntity<String> response = rest.exchange("/advisor/status", HttpMethod.GET, request, String.class);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(response.getBody()).contains("\"enabled\":false");
+        }
+    }
+
+    @Test
+    @DisplayName("A multipart Content-Type without a boundary is not a server error")
+    void multipartWithoutBoundaryIsRejected() {
+        HttpHeaders headers = client("198.51.100.44", "203.0.113.1");
+        headers.set(HttpHeaders.CONTENT_TYPE, "multipart/form-data");
+        // A GET without a body has nothing to parse; it just must not fail
+        assertThat(rest.exchange("/health", HttpMethod.GET, new HttpEntity<>(headers), String.class)
+                .getStatusCode().is5xxServerError()).isFalse();
+        assertThat(rest.exchange("/calculate", HttpMethod.POST, new HttpEntity<>(VALID_BODY, headers), String.class)
+                .getStatusCode()).isIn(HttpStatus.BAD_REQUEST, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
 }

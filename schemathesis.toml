@@ -19,3 +19,11 @@ rate-limit = "8/s"
 
 [generation]
 max-examples = 300
+
+# The advisor needs a local Ollama model, so in CI (and production) it answers
+# the documented 503. Accept 503 there, but still flag 500 and any other 5xx.
+[[operations]]
+include-name = "POST /advisor"
+
+[operations.checks]
+not_a_server_error.expected-statuses = ["2xx", "3xx", "4xx", 503]
