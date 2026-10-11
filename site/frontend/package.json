@@ -16,7 +16,7 @@
     "test:ui:report": "playwright test --config=playwright.config.js --reporter=html"
   },
   "dependencies": {
-    "framer-motion": "^13.5.0",
+    "framer-motion": "^14.0.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.13.0"
