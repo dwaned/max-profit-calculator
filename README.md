@@ -12,7 +12,7 @@ A small "Max Profit Calculator" (Spring Boot API + React UI) is the system under
 and the repository demonstrates many testing levels around it, from property-based
 and mutation testing to consumer-driven contracts and browser tests.
 
-- **App:** <https://max-profit-frontend.onrender.com>
+- **App:** <https://lab.debonoconsultancy.com> (also <https://max-profit-frontend.onrender.com>)
 - **API:** <https://max-profit-calculator.onrender.com/api> ([Swagger UI](https://max-profit-calculator.onrender.com/api/swagger-ui.html))
 - **Test reports:** <https://dwaned.github.io/max-profit-calculator/reports/> (Maven site: tests, coverage, mutation, checkstyle) and the [Playwright report](https://dwaned.github.io/max-profit-calculator/playwright-report/)
 
@@ -50,7 +50,7 @@ O(n · savings) (`Stock.java`).
 | Part | Stack | Where it runs |
 |---|---|---|
 | Backend API | Java 25, Spring Boot 4.1 (Spring MVC, validation, actuator, springdoc), Bucket4j | Render web service (`Dockerfile`), behind Cloudflare |
-| Frontend | React 19, Vite, Tailwind CSS, framer-motion | Render static site (`site/frontend`) |
+| Frontend | React 19, Vite, Tailwind CSS, framer-motion | Cloudflare Worker static assets at lab.debonoconsultancy.com (`site/frontend/wrangler.jsonc`) and Render static site (`site/frontend`) |
 | Test reports | Maven site + Playwright HTML report | GitHub Pages (`.github/workflows/reports.yml`) |
 
 The API is served under the `/api` context path on port 9095:
