@@ -14,6 +14,8 @@ export default function Navigation() {
     { path: '/reports', label: 'Reports' },
   ];
 
+  const siteUrl = 'https://debonoconsultancy.com';
+
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
@@ -40,6 +42,13 @@ export default function Navigation() {
                 ))}
               </div>
             </div>
+
+            <a
+              href={siteUrl}
+              className="hidden lg:block whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+            >
+              Dwane Debono ↗
+            </a>
 
             <button
               className="lg:hidden p-2 text-slate-400 hover:text-white"
@@ -89,6 +98,12 @@ export default function Navigation() {
                   {link.label}
                 </Link>
               ))}
+              <a
+                href={siteUrl}
+                className="block px-4 py-3 mt-2 border-t border-slate-700 text-base font-medium text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+              >
+                Dwane Debono ↗
+              </a>
             </div>
           </div>
         </div>
