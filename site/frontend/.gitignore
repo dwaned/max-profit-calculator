@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.wrangler
 *.local
 
 # Playwright outputs (the reports workflow publishes playwright-report/ to

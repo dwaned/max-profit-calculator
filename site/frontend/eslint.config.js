@@ -7,7 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   // Generated output: Maven site reports and the Playwright HTML report are
   // copied into public/ at build time and are not project source.
-  globalIgnores(['dist', 'public/reports', 'public/playwright-report', 'playwright-report', 'test-results']),
+  globalIgnores(['dist', '.wrangler', 'public/reports', 'public/playwright-report', 'playwright-report', 'test-results']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
