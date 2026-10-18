@@ -24,10 +24,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.15</jacoco.version>
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
-        <jqwik.version>1.10.1</jqwik.version>
-        <cucumber.version>8.0.3</cucumber.version>
+        <jqwik.version>1.10.2</jqwik.version>
+        <cucumber.version>8.0.4</cucumber.version>
         <dependency-check.version>13.0.0</dependency-check.version>
-        <pitest.version>1.30.0</pitest.version>
+        <pitest.version>1.30.1</pitest.version>
         <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
         <playwright.version>1.63.0</playwright.version>
         <datafaker.version>2.7.0</datafaker.version>
@@ -647,7 +647,7 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>6.0.1</version>
+            <version>6.1.0</version>
             <scope>test</scope>
         </dependency>
 
