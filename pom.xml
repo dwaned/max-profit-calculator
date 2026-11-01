@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -22,16 +22,16 @@
     <properties>
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jacoco.version>0.8.15</jacoco.version>
+        <jacoco.version>0.8.16</jacoco.version>
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
-        <jqwik.version>1.10.1</jqwik.version>
-        <cucumber.version>8.0.3</cucumber.version>
+        <jqwik.version>1.10.2</jqwik.version>
+        <cucumber.version>8.0.4</cucumber.version>
         <dependency-check.version>13.0.0</dependency-check.version>
-        <pitest.version>1.30.0</pitest.version>
+        <pitest.version>1.30.1</pitest.version>
         <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
-        <playwright.version>1.63.0</playwright.version>
+        <playwright.version>1.64.0</playwright.version>
         <datafaker.version>2.7.0</datafaker.version>
-        <pact.version>4.7.5</pact.version>
+        <pact.version>4.7.6</pact.version>
         <!-- Spring Boot 4.1.1 ships Tomcat 11.0.24, which has critical CVEs
              (CVE-2026-65905, CVE-2026-68525, CVE-2026-65182; fixed in 11.0.25),
              flagged by Docker Scout. Drop once the parent catches up. -->
@@ -647,7 +647,7 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>6.0.1</version>
+            <version>6.3.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -691,7 +691,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.0</version>
         </dependency>
 
         <dependency>
