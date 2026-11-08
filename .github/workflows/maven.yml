@@ -34,7 +34,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           java-version: "25"
           distribution: "temurin"
@@ -55,7 +55,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report Test Results
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        uses: mikepenz/action-junit-report@4a26df3e2ae132254ba12a53f65a388d0961e786 # v6.7.0
         if: always()
         with:
           report_paths: "**/target/surefire-reports/TEST-*.xml"
@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload Mutation Test Results
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: mutation-test-results
           path: |
@@ -121,7 +121,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           java-version: "25"
           distribution: "temurin"
@@ -161,7 +161,7 @@ jobs:
 
       - name: Upload Security Report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: security-reports
           path: target/dependency-check-report.*
@@ -182,7 +182,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           java-version: "25"
           distribution: "temurin"
